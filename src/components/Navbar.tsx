@@ -1,16 +1,21 @@
 // src/components/Navbar.tsx
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, Settings, Sun, Moon } from 'lucide-react';
 import { LinkedinIcon, GithubIcon } from '@/components/icons';
 import { navLinks } from '@/data/navigation';
+import { useSettings } from '@/context/SettingsContext';
 
 export default function Navbar() {
+  const { theme, language, toggleTheme, toggleLanguage, t } = useSettings();
   const [activeSection, setActiveSection] = useState('hero');
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  
+  const settingsRef = useRef<HTMLDivElement>(null);
 
   const handleScroll = useCallback(() => {
     setScrolled(window.scrollY > 40);
@@ -20,6 +25,19 @@ export default function Navbar() {
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, [handleScroll]);
+
+  // Click outside listener for Settings Popover
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (settingsRef.current && !settingsRef.current.contains(e.target as Node)) {
+        setSettingsOpen(false);
+      }
+    };
+    if (settingsOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [settingsOpen]);
 
   // Intersection observer for active section tracking
   useEffect(() => {
@@ -52,6 +70,10 @@ export default function Navbar() {
     if (el) {
       el.scrollIntoView({ behavior: 'smooth' });
     }
+  };
+
+  const getNavLabel = (id: string) => {
+    return t(id === 'hero' ? 'nav_home' : `nav_${id}`);
   };
 
   return (
@@ -89,33 +111,116 @@ export default function Navbar() {
                   : 'text-desat hover:text-mist'
               }`}
             >
-              {link.label}
+              {getNavLabel(link.id)}
             </button>
           ))}
         </div>
 
         {/* Right side — social + controls */}
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-1.5 relative" ref={settingsRef}>
           <a
             href="https://www.linkedin.com/in/rechandrei/"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-1.5 rounded-full border border-glass-border px-3 py-1.5 text-xs text-desat transition-all hover:border-mist/20 hover:text-mist"
+            className="hidden items-center gap-1.5 rounded-full border border-glass-border px-3 py-1.5 text-xs text-desat transition-all hover:border-mist/20 hover:text-mist sm:flex"
             aria-label="LinkedIn"
           >
             <LinkedinIcon size={12} />
-            <span className="hidden sm:inline">LinkedIn</span>
+            <span>LinkedIn</span>
           </a>
           <a
             href="https://github.com/AndreiRech"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-1.5 rounded-full border border-glass-border px-3 py-1.5 text-xs text-desat transition-all hover:border-mist/20 hover:text-mist"
+            className="hidden items-center gap-1.5 rounded-full border border-glass-border px-3 py-1.5 text-xs text-desat transition-all hover:border-mist/20 hover:text-mist sm:flex"
             aria-label="GitHub"
           >
             <GithubIcon size={12} />
-            <span className="hidden sm:inline">GitHub</span>
+            <span>GitHub</span>
           </a>
+
+          {/* Settings Toggle */}
+          <button
+            onClick={() => setSettingsOpen(!settingsOpen)}
+            className={`ml-1 flex h-8 w-8 items-center justify-center rounded-full border transition-all duration-200 ${
+              settingsOpen
+                ? 'border-mist/30 bg-mist/10 text-mist shadow-inner'
+                : 'border-glass-border bg-transparent text-desat hover:border-mist/20 hover:text-mist'
+            }`}
+            aria-label="Settings"
+          >
+            <Settings size={14} className={settingsOpen ? 'animate-spin-slow' : ''} />
+          </button>
+
+          {/* Settings Popover */}
+          <AnimatePresence>
+            {settingsOpen && (
+              <motion.div
+                initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                transition={{ duration: 0.2, ease: "easeOut" }}
+                className="absolute right-0 top-full mt-3 w-40 rounded-2xl border border-glass-border bg-[#15181A] p-4 shadow-2xl"
+                style={{ zIndex: 100 }}
+              >
+                {/* THEME */}
+                <div className="mb-5">
+                  <span className="mb-2 block text-[10px] font-bold tracking-widest text-desat uppercase">
+                    {t('theme_label')}
+                  </span>
+                  <div className="relative flex h-10 w-full items-center rounded-full bg-[#0B0D0F] p-1 shadow-inner border border-white/5">
+                    <motion.div
+                      className="absolute top-1 bottom-1 w-[calc(50%-4px)] rounded-full bg-[#4F90F2]"
+                      animate={{ left: theme === 'dark' ? 'calc(50% + 2px)' : '4px' }}
+                      transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+                    />
+                    <button
+                      onClick={() => toggleTheme('light')}
+                      className={`relative z-10 flex flex-1 items-center justify-center transition-colors duration-200 ${
+                        theme === 'light' ? 'text-white' : 'text-desat'
+                      }`}
+                    >
+                      <Sun size={14} />
+                    </button>
+                    <button
+                      onClick={() => toggleTheme('dark')}
+                      className={`relative z-10 flex flex-1 items-center justify-center transition-colors duration-200 ${
+                        theme === 'dark' ? 'text-white' : 'text-desat'
+                      }`}
+                    >
+                      <Moon size={14} />
+                    </button>
+                  </div>
+                </div>
+
+                {/* LANGUAGE */}
+                <div>
+                  <span className="mb-2 block text-[10px] font-bold tracking-widest text-desat uppercase">
+                    {t('lang_label')}
+                  </span>
+                  <div className="relative flex h-10 w-full items-center rounded-full bg-[#0B0D0F] p-1 shadow-inner border border-white/5">
+                    <motion.div
+                      className="absolute top-1 bottom-1 w-[calc(50%-4px)] rounded-full bg-[#4F90F2]"
+                      animate={{ left: language === 'en' ? 'calc(50% + 2px)' : '4px' }}
+                      transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+                    />
+                    <button
+                      onClick={() => toggleLanguage('pt')}
+                      className="relative z-10 flex flex-1 items-center justify-center"
+                    >
+                      <span className="text-[16px] leading-none grayscale-[0.2]">🇧🇷</span>
+                    </button>
+                    <button
+                      onClick={() => toggleLanguage('en')}
+                      className="relative z-10 flex flex-1 items-center justify-center"
+                    >
+                      <span className="text-[16px] leading-none grayscale-[0.2]">🇺🇸</span>
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           {/* Mobile hamburger */}
           <button
@@ -149,7 +254,7 @@ export default function Navbar() {
                       : 'text-desat hover:text-mist'
                   }`}
                 >
-                  {link.label}
+                  {getNavLabel(link.id)}
                 </button>
               ))}
             </div>

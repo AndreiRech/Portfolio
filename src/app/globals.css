@@ -15,10 +15,28 @@
   --font-body: var(--font-literata);
 }
 
-/* Absolute suppression of system cursor globally.
-  Using high specificity (html body *) to aggressively override 
-  inline styles and Framer Motion's injected drag stylesheets.
-*/
+/* Light Theme Variables Injection */
+:root.light {
+  --color-base: #ECEFF1;
+  --color-mist: #111517;
+  --color-midnight: #E2E8F0;
+  --color-accent: #CC3766;
+  --color-desat: #5A5B7A;
+  --color-glass: rgba(255, 255, 255, 0.65);
+  --color-glass-border: rgba(17, 21, 23, 0.15);
+  --color-glass-hover: rgba(17, 21, 23, 0.08);
+}
+
+:root.light .section-overlay::before {
+  background: rgba(240, 244, 248, 0.85);
+}
+
+:root.light .glass {
+  background: rgba(255, 255, 255, 0.55);
+  border: 1px solid rgba(17, 21, 23, 0.15);
+}
+
+/* Absolute suppression of system cursor globally. */
 html body,
 html body *,
 html body [data-cursor="grab"] {
@@ -31,15 +49,16 @@ html {
 
 /* Custom selection */
 ::selection {
-  background-color: #CC3766;
+  background-color: var(--color-accent);
   color: #ECEFF1;
 }
 
 body {
-  background: transparent;
-  color: #ECEFF1;
+  background: var(--color-base);
+  color: var(--color-mist);
   font-family: var(--font-body), Georgia, serif;
   overflow-x: hidden;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* ── Custom cursor ───────────────────────────────────────── */
@@ -50,7 +69,6 @@ body {
   border-radius: 50%;
   pointer-events: none;
   z-index: 9999;
-  /* Centre the dot exactly on the pointer tip */
   transform: translate(-50%, -50%);
   will-change: transform, width, height, background-color;
   mix-blend-mode: normal;
@@ -66,27 +84,27 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #8384B1;
+  background: var(--color-desat);
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #CC3766;
+  background: var(--color-accent);
 }
 
 /* Glass utility */
 .glass {
-  background: rgba(17, 21, 23, 0.55);
+  background: var(--color-glass);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
-  border: 1px solid rgba(236, 239, 241, 0.12);
+  border: 1px solid var(--color-glass-border);
 }
 
 .glass-hover:hover {
-  background: rgba(236, 239, 241, 0.08);
+  background: var(--color-glass-hover);
 }
 
-/* Section readability overlay — glassmorphism backdrop for text legibility */
+/* Section readability overlay */
 .section-overlay {
   position: relative;
 }
@@ -100,6 +118,7 @@ body {
   -webkit-backdrop-filter: blur(40px);
   z-index: 0;
   pointer-events: none;
+  transition: background-color 0.3s ease;
 }
 
 .section-overlay > * {

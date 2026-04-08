@@ -1,6 +1,8 @@
+// src/app/layout.tsx
 import type { Metadata } from 'next';
 import { Archivo_Black, Literata } from 'next/font/google';
 import './globals.css';
+import { SettingsProvider } from '@/context/SettingsContext'; // 1. Import the provider
 
 const archivoBlack = Archivo_Black({
   weight: '400',
@@ -16,7 +18,7 @@ const literata = Literata({
 });
 
 export const metadata: Metadata = {
-  title: 'Andrei Rech — Portfolio',
+  title: 'Andrei Rech',
   description:
     'Personal portfolio of Andrei Rech, a passionate iOS and Fullstack Developer crafting beautiful, performant digital experiences.',
     keywords: [
@@ -40,7 +42,12 @@ export default function RootLayout({
       lang="en"
       className={`${archivoBlack.variable} ${literata.variable} h-full antialiased`}
     >
-      <body className="min-h-full">{children}</body>
+      <body className="min-h-full">
+        {/* 2. Wrap children with the SettingsProvider */}
+        <SettingsProvider>
+          {children}
+        </SettingsProvider>
+      </body>
     </html>
   );
 }
