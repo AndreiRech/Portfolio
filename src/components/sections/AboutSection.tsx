@@ -1,3 +1,4 @@
+// src/components/sections/AboutSection.tsx
 'use client';
 
 import AnimatedSection from '@/components/AnimatedSection';
@@ -29,12 +30,30 @@ export default function AboutSection() {
         <div className="mt-12 grid gap-12 md:grid-cols-[280px_1fr]">
           {/* Profile image column */}
           <AnimatedSection direction="left" delay={0.15}>
-            <div className="flex flex-col items-center gap-4 md:items-start">
+            <div className="flex flex-col items-center gap-8 md:items-start w-full">
               <div className="glass flex h-72 w-full items-center justify-center overflow-hidden rounded-2xl md:h-80">
                 <div className="flex flex-col items-center gap-3 text-desat/40">
                   <User size={48} strokeWidth={1} />
                   <span className="text-xs tracking-widest uppercase">
                     Profile Photo
+                  </span>
+                </div>
+              </div>
+
+              {/* Education Block */}
+              <div className="flex flex-col gap-2 w-full">
+                <h2 className="text-md font-bold text-accent leading-tight" style={{ fontFamily: 'var(--font-heading)' }}>
+                  Education
+                </h2>
+                <h3 className="text-lg font-bold text-mist leading-tight" style={{ fontFamily: 'var(--font-heading)' }}>
+                  Bachelor of Software Engineering
+                </h3>
+                <div className="flex flex-col gap-1">
+                  <p className="text-sm text-desat leading-relaxed" style={{ fontFamily: 'var(--font-body)' }}>
+                    PUCRS — Pontifícia Universidade Católica do Rio Grande do Sul
+                  </p>
+                  <span className="text-xs font-medium tracking-wider text-desat/60 uppercase">
+                    2023 — 2026
                   </span>
                 </div>
               </div>
