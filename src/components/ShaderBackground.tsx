@@ -1,6 +1,7 @@
 'use client';
 
 import dynamic from 'next/dynamic';
+import { useSettings } from '@/context/SettingsContext';
 
 const ShaderGradientCanvas = dynamic(
   () =>
@@ -14,19 +15,23 @@ const ShaderGradientComponent = dynamic(
 );
 
 // All shader props in one object to avoid individual ts-expect-error lines
-const shaderProps = {
+
+export default function ShaderBackground() {
+  const { theme } = useSettings();
+
+  const shaderProps = {
   animate: 'on' as const,
   axesHelper: 'off',
-  bgColor1: '#111517',
-  bgColor2: '#111517',
+  bgColor1: theme === 'light' ? '#ECEFF1' : '#111517',
+  bgColor2: theme === 'light' ? '#ECEFF1' : '#111517',
   brightness: 1,
   cAzimuthAngle: 180,
   cDistance: 2.8,
   cPolarAngle: 80,
   cameraZoom: 9.1,
-  color1: '#8384B1',
-  color2: '#191970',
-  color3: '#212121',
+  color1: theme === 'light' ? '#8384B1' : '#8384B1',
+  color2: theme === 'light' ? '#ECEFF1' : '#191970',
+  color3: theme === 'light' ? '#ECEFF1' : '#212121',
   destination: 'onCanvas',
   embedMode: 'off',
   envPreset: 'city' as const,
@@ -57,7 +62,6 @@ const shaderProps = {
   wireframe: false,
 };
 
-export default function ShaderBackground() {
   return (
     <div
       className="fixed inset-0"
