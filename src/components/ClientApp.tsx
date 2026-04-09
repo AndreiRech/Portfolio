@@ -32,15 +32,6 @@ export default function ClientApp() {
         <ContactSection />
       </main>
 
-      {/* Footer */}
-      <footer className="section-overlay border-t border-glass-border py-8">
-        <div className="section-container text-center text-sm text-desat">
-          <p>
-            © {new Date().getFullYear()} Andrei Rech. Built with Next.js &
-            Framer Motion.
-          </p>
-        </div>
-      </footer>
     </>
   );
 }

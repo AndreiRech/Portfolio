@@ -47,6 +47,15 @@ export default function RootLayout({
         <SettingsProvider>
           <CustomCursor />
           {children}
+          
+          {/* Footer */}
+          <footer className="section-overlay py-3">
+            <div className="section-container text-center text-sm text-desat">
+              <p>
+                © {new Date().getFullYear()} Andrei Rech
+              </p>
+            </div>
+          </footer>
         </SettingsProvider>
       </body>
     </html>
