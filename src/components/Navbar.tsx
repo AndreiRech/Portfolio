@@ -7,6 +7,12 @@ import { Menu, X, Settings, Sun, Moon } from 'lucide-react';
 import { LinkedinIcon, GithubIcon } from '@/components/icons';
 import { navLinks } from '@/data/navigation';
 import { useSettings } from '@/context/SettingsContext';
+import { IconConfig } from '@/types';
+
+const ICON_CONFIG: IconConfig[] = [
+  { id: 'linkedin', component: LinkedinIcon, href: 'https://www.linkedin.com/in/rechandrei/', ariaLabel: 'LinkedIn' },
+  { id: 'github', component: GithubIcon, href: 'https://github.com/AndreiRech', ariaLabel: 'GitHub' }
+];
 
 export default function Navbar() {
   const { theme, language, toggleTheme, toggleLanguage, t } = useSettings();
@@ -26,20 +32,16 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [handleScroll]);
 
-  // Click outside listener for Settings Popover
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (settingsRef.current && !settingsRef.current.contains(e.target as Node)) {
         setSettingsOpen(false);
       }
     };
-    if (settingsOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
+    if (settingsOpen) document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [settingsOpen]);
 
-  // Intersection observer for active section tracking
   useEffect(() => {
     const sectionIds = navLinks.map((l) => l.id);
     const observers: IntersectionObserver[] = [];
@@ -47,16 +49,10 @@ export default function Navbar() {
     sectionIds.forEach((id) => {
       const el = document.getElementById(id);
       if (!el) return;
-
       const observer = new IntersectionObserver(
-        ([entry]) => {
-          if (entry.isIntersecting) {
-            setActiveSection(id);
-          }
-        },
+        ([entry]) => { if (entry.isIntersecting) setActiveSection(id); },
         { rootMargin: '-40% 0px -55% 0px' }
       );
-
       observer.observe(el);
       observers.push(observer);
     });
@@ -67,13 +63,7 @@ export default function Navbar() {
   const handleNavClick = (href: string) => {
     setMobileOpen(false);
     const el = document.querySelector(href);
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
-
-  const getNavLabel = (id: string) => {
-    return t(id === 'hero' ? 'nav_home' : `nav_${id}`);
+    if (el) el.scrollIntoView({ behavior: 'smooth' });
   };
 
   return (
@@ -84,13 +74,8 @@ export default function Navbar() {
       className="fixed top-0 left-0 right-0 z-50 px-4 py-3 md:px-6"
     >
       <div
-        className={`mx-auto flex max-w-5xl items-center justify-between rounded-full px-5 py-2.5 transition-all duration-500 ${
-          scrolled
-            ? 'glass shadow-lg shadow-black/20'
-            : 'bg-transparent border border-transparent'
-        }`}
+        className={`mx-auto flex max-w-5xl items-center justify-between rounded-full px-5 py-2.5 transition-all duration-500 glass shadow-lg shadow-black/20`}
       >
-        {/* Brand */}
         <button
           onClick={() => handleNavClick('#hero')}
           className="text-base font-black tracking-tight text-mist transition-colors hover:text-accent"
@@ -99,60 +84,54 @@ export default function Navbar() {
           Andrei Rech
         </button>
 
-        {/* Desktop links */}
         <div className="hidden items-center gap-0.5 md:flex">
           {navLinks.map((link) => (
             <button
               key={link.id}
               onClick={() => handleNavClick(link.href)}
               className={`px-3 py-1.5 text-sm font-medium transition-colors duration-200 ${
-                activeSection === link.id
-                  ? 'text-accent'
-                  : 'text-desat hover:text-mist'
+                activeSection === link.id ? 'text-accent' : 'text-mist hover:text-accent'
               }`}
             >
-              {getNavLabel(link.id)}
+              {t(link.id === 'hero' ? 'nav_home' : `nav_${link.id}`)}
             </button>
           ))}
         </div>
 
-        {/* Right side — social + controls */}
-        <div className="flex items-center gap-1.5 relative" ref={settingsRef}>
-          <a
-            href="https://www.linkedin.com/in/rechandrei/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hidden items-center gap-1.5 rounded-full border border-glass-border px-3 py-1.5 text-xs text-desat transition-all hover:border-mist/20 hover:text-mist sm:flex"
-            aria-label="LinkedIn"
-          >
-            <LinkedinIcon size={12} />
-            <span>LinkedIn</span>
-          </a>
-          <a
-            href="https://github.com/AndreiRech"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hidden items-center gap-1.5 rounded-full border border-glass-border px-3 py-1.5 text-xs text-desat transition-all hover:border-mist/20 hover:text-mist sm:flex"
-            aria-label="GitHub"
-          >
-            <GithubIcon size={12} />
-            <span>GitHub</span>
-          </a>
+        <div className="flex items-center gap-2 relative" ref={settingsRef}>
+          <div className="hidden sm:flex items-center gap-1 border-r border-glass-border pr-2 mr-1">
+            {ICON_CONFIG.map((icon) => {
+              const Icon = icon.component;
+              return (
+                <motion.a
+                  key={icon.id}
+                  href={icon.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={icon.ariaLabel}
+                  className="flex items-center justify-center rounded-full p-2"
+                  initial={{ color: '#ECEFF1', backgroundColor: 'transparent' }}
+                  whileHover={{ color: '#CC3766', backgroundColor: 'rgba(236, 239, 241, 0.05)' }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <Icon size={16} />
+                </motion.a>
+              );
+            })}
+          </div>
 
-          {/* Settings Toggle */}
           <button
             onClick={() => setSettingsOpen(!settingsOpen)}
-            className={`ml-1 flex h-8 w-8 items-center justify-center rounded-full border transition-all duration-200 ${
+            className={`flex h-8 w-8 items-center justify-center rounded-full border transition-all duration-200 ${
               settingsOpen
-                ? 'border-mist/30 bg-mist/10 text-mist shadow-inner'
-                : 'border-glass-border bg-transparent text-desat hover:border-mist/20 hover:text-mist'
+                ? 'border-mist/30 bg-mist/10 text-accent shadow-inner'
+                : 'border-glass-border bg-transparent text-mist hover:text-accent'
             }`}
             aria-label="Settings"
           >
             <Settings size={14} className={settingsOpen ? 'animate-spin-slow' : ''} />
           </button>
 
-          {/* Settings Popover */}
           <AnimatePresence>
             {settingsOpen && (
               <motion.div
@@ -160,69 +139,37 @@ export default function Navbar() {
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: 10, scale: 0.95 }}
                 transition={{ duration: 0.2, ease: "easeOut" }}
-                className="absolute right-0 top-full mt-3 w-40 rounded-2xl border border-glass-border bg-[#15181A] p-4 shadow-2xl"
+                className={`absolute right-0 top-full mt-3 w-40 rounded-2xl border border-glass-border ${theme === 'light' ? 'bg-mist' : 'bg-base'} p-4 shadow-2xl`}
                 style={{ zIndex: 100 }}
               >
-                {/* THEME */}
                 <div className="mb-5">
-                  <span className="mb-2 block text-[10px] font-bold tracking-widest text-desat uppercase">
-                    {t('theme_label')}
-                  </span>
-                  <div className="relative flex h-10 w-full items-center rounded-full bg-[#0B0D0F] p-1 shadow-inner border border-white/5">
+                  <span className="mb-2 block text-[10px] font-bold tracking-widest text-desat uppercase">{t('theme_label')}</span>
+                  <div className={`relative flex h-10 w-full items-center rounded-full ${theme === 'light' ? 'bg-mist' : 'bg-base'} p-1 shadow-inner border border-white/5`}>
                     <motion.div
-                      className="absolute top-1 bottom-1 w-[calc(50%-4px)] rounded-full bg-[#4F90F2]"
+                      className={`absolute top-1 bottom-1 w-[calc(50%-4px)] rounded-full ${theme === 'light' ? 'bg-accent' : 'bg-midnight'}`}
                       animate={{ left: theme === 'dark' ? 'calc(50% + 2px)' : '4px' }}
                       transition={{ type: 'spring', stiffness: 400, damping: 25 }}
                     />
-                    <button
-                      onClick={() => toggleTheme('light')}
-                      className={`relative z-10 flex flex-1 items-center justify-center transition-colors duration-200 ${
-                        theme === 'light' ? 'text-white' : 'text-desat'
-                      }`}
-                    >
-                      <Sun size={14} />
-                    </button>
-                    <button
-                      onClick={() => toggleTheme('dark')}
-                      className={`relative z-10 flex flex-1 items-center justify-center transition-colors duration-200 ${
-                        theme === 'dark' ? 'text-white' : 'text-desat'
-                      }`}
-                    >
-                      <Moon size={14} />
-                    </button>
+                    <button onClick={() => toggleTheme('light')} className={`relative z-10 flex flex-1 items-center justify-center transition-colors duration-200 ${theme === 'light' ? 'text-white' : 'text-desat'}`}><Sun size={14} /></button>
+                    <button onClick={() => toggleTheme('dark')} className={`relative z-10 flex flex-1 items-center justify-center transition-colors duration-200 ${theme === 'dark' ? 'text-white' : 'text-desat'}`}><Moon size={14} /></button>
                   </div>
                 </div>
-
-                {/* LANGUAGE */}
                 <div>
-                  <span className="mb-2 block text-[10px] font-bold tracking-widest text-desat uppercase">
-                    {t('lang_label')}
-                  </span>
-                  <div className="relative flex h-10 w-full items-center rounded-full bg-[#0B0D0F] p-1 shadow-inner border border-white/5">
+                  <span className="mb-2 block text-[10px] font-bold tracking-widest text-desat uppercase">{t('lang_label')}</span>
+                  <div className={`relative flex h-10 w-full items-center rounded-full ${theme === 'light' ? 'bg-mist' : 'bg-base'} p-1 shadow-inner border border-white/5`}>
                     <motion.div
-                      className="absolute top-1 bottom-1 w-[calc(50%-4px)] rounded-full bg-[#4F90F2]"
+                      className={`absolute top-1 bottom-1 w-[calc(50%-4px)] rounded-full ${theme === 'light' ? 'bg-accent' : 'bg-midnight'}`}
                       animate={{ left: language === 'en' ? 'calc(50% + 2px)' : '4px' }}
                       transition={{ type: 'spring', stiffness: 400, damping: 25 }}
                     />
-                    <button
-                      onClick={() => toggleLanguage('pt')}
-                      className="relative z-10 flex flex-1 items-center justify-center"
-                    >
-                      <span className="text-[16px] leading-none grayscale-[0.2]">🇧🇷</span>
-                    </button>
-                    <button
-                      onClick={() => toggleLanguage('en')}
-                      className="relative z-10 flex flex-1 items-center justify-center"
-                    >
-                      <span className="text-[16px] leading-none grayscale-[0.2]">🇺🇸</span>
-                    </button>
+                    <button onClick={() => toggleLanguage('pt')} className="relative z-10 flex flex-1 items-center justify-center"><span className="text-[16px] leading-none grayscale-[0.2]">🇧🇷</span></button>
+                    <button onClick={() => toggleLanguage('en')} className="relative z-10 flex flex-1 items-center justify-center"><span className="text-[16px] leading-none grayscale-[0.2]">🇺🇸</span></button>
                   </div>
                 </div>
               </motion.div>
             )}
           </AnimatePresence>
 
-          {/* Mobile hamburger */}
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
             className="ml-1 rounded-full p-2 text-desat transition-colors hover:text-mist md:hidden"
@@ -233,7 +180,6 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Mobile menu */}
       <AnimatePresence>
         {mobileOpen && (
           <motion.div
@@ -249,12 +195,10 @@ export default function Navbar() {
                   key={link.id}
                   onClick={() => handleNavClick(link.href)}
                   className={`rounded-lg px-4 py-2.5 text-left text-sm transition-colors ${
-                    activeSection === link.id
-                      ? 'text-accent'
-                      : 'text-desat hover:text-mist'
+                    activeSection === link.id ? 'text-accent' : 'text-desat hover:text-mist'
                   }`}
                 >
-                  {getNavLabel(link.id)}
+                  {t(link.id === 'hero' ? 'nav_home' : `nav_${link.id}`)}
                 </button>
               ))}
             </div>
