@@ -26,9 +26,9 @@ const STATE_CONFIG: Record<
   CursorState,
   { width: number; height: number; bg: string; border: string; opacity: number; scale: number }
 > = {
-  default: { width: 14, height: 14, bg: '#8384B1', border: 'transparent', opacity: 1, scale: 1 },
-  hover:   { width: 40, height: 40, bg: '#CC3766', border: 'transparent', opacity: 1, scale: 1 },
-  grab:    { width: 36, height: 36, bg: 'transparent', border: '#8384B1', opacity: 0.85, scale: 1 },
+  default: { width: 14, height: 14, bg: '#8384B1', border: 'rgba(0, 0, 0, 0)', opacity: 1, scale: 1 },
+  hover:   { width: 40, height: 40, bg: '#CC3766', border: 'rgba(0, 0, 0, 0)', opacity: 1, scale: 1 },
+  grab:    { width: 36, height: 36, bg: 'rgba(0, 0, 0, 0)', border: '#8384B1', opacity: 0.85, scale: 1 },
 };
 
 const SPRING = { stiffness: 500, damping: 38, mass: 0.5 };
@@ -50,8 +50,9 @@ export default function CustomCursor() {
 
   const evaluate = useCallback((target: Element | null) => {
     if (!target) { setState('default'); return; }
+    // Prioriza o estado clicável (hover) antes do estado de arrastar (grab)
+    if (isInteractable(target)) { setState('hover'); return; } 
     if (isGrabTarget(target))   { setState('grab');  return; }
-    if (isInteractable(target)) { setState('hover'); return; }
     setState('default');
   }, []);
 
@@ -114,7 +115,13 @@ export default function CustomCursor() {
       ref={cursorRef}
       aria-hidden="true"
       className="custom-cursor"
-      style={{ x, y, opacity: visible ? 1 : 0 }}
+      style={{ 
+        x, 
+        y, 
+        opacity: visible ? 1 : 0,
+        borderWidth: '1.5px',
+        borderStyle: 'solid'
+      }}
       animate={{
         width:           cfg.width,
         height:          cfg.height,
