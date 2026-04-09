@@ -19,9 +19,9 @@
 :root.light {
   --color-base: #ECEFF1;
   --color-mist: #111517;
-  --color-midnight: #E2E8F0;
+  --color-midnight: #191970;
   --color-accent: #CC3766;
-  --color-desat: #5A5B7A;
+  --color-desat: #8384B1;
   --color-glass: rgba(255, 255, 255, 0.65);
   --color-glass-border: rgba(17, 21, 23, 0.15);
   --color-glass-hover: rgba(17, 21, 23, 0.08);
