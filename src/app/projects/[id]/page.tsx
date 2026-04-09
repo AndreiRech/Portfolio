@@ -1,43 +1,50 @@
 // src/app/projects/[id]/page.tsx
+'use client';
+
+import { use } from 'react';
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowLeft, ExternalLink, Smartphone, Image as ImageIcon } from 'lucide-react';
 import { GithubIcon, ExternalSquareIcon } from '@/components/icons';
-import { Project } from '@/types';
-import { projects } from '@/data/projects';
-
-async function getProjectData(id: string): Promise<Project | null> {
-  const project = projects.find((p) => p.id === id);
-  return project || null;
-}
+import { getProjects } from '@/data/projects';
+import { useSettings } from '@/context/SettingsContext';
 
 interface ProjectPageProps {
   params: Promise<{ id: string }>;
 }
 
-export default async function ProjectPage({ params }: ProjectPageProps) {
-  const resolvedParams = await params;
-  const project = await getProjectData(resolvedParams.id);
+export default function ProjectPage({ params }: ProjectPageProps) {
+  // Desembrulha o ID da rota dinamicamente no client
+  const resolvedParams = use(params);
+  
+  // Pegamos o estado global de idioma
+  const { language, t } = useSettings();
+  
+  // Buscamos o projeto na linguagem correta
+  const project = getProjects(language).find((p) => p.id === resolvedParams.id);
 
   if (!project) notFound();
 
+  // Mapeia a categoria para exibir na linguagem correta
+  const categoryLabel = t(`cat_${project.category.toLowerCase()}`) || project.category;
+
   return (
     <main className="min-h-screen bg-base text-mist pb-8 pt-16 px-6 md:px-10 selection:bg-accent selection:text-mist">
-      <div className="max-w-8xl mx-auto">
+      <div className="max-w-5xl mx-auto">
         
         {/* Navigation */}
         <Link 
           href="/#projects" 
-          className="inline-flex items-center gap-2 text-sm font-medium text-msit hover:text-accent transition-colors mb-10"
+          className="inline-flex items-center gap-2 text-sm font-medium text-desat hover:text-accent transition-colors mb-10"
         >
           <ArrowLeft size={16} />
-          Back to Projects
+          {t('proj_back')}
         </Link>
 
         {/* Header Block */}
         <header className="flex flex-row justify-between relative border-b border-glass-border pb-8">
-        <div className="flex flex-row gap-6">
+          <div className="flex flex-row gap-6">
             {project.logoUrl ? (
                 <div className="w-28 h-28 rounded-xl overflow-hidden glass flex items-center justify-center shrink-0 bg-midnight">
                   <Image src={project.logoUrl} alt={`${project.name} Logo`} width={64} height={64} className="object-cover" />
@@ -47,25 +54,24 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
                   <ImageIcon size={32} className="text-desat/50" strokeWidth={1.5} />
                 </div>
               )}
-            <div className="flex flex-col gap-4 max-w3xl">
-            <div className="flex items-center gap-4">
-              <h1 className="text-4xl md:text-6xl font-black text-accent" style={{ fontFamily: 'var(--font-heading)' }}>
-                {project.name}
-              </h1>
+            <div className="flex flex-col gap-4 max-w-[3xl]">
+              <div className="flex items-center gap-4">
+                <h1 className="text-4xl md:text-6xl font-black text-accent" style={{ fontFamily: 'var(--font-heading)' }}>
+                  {project.name}
+                </h1>
+              </div>
+              <p className="text-lg md:text-xl text-mist leading-relaxed" style={{ fontFamily: 'var(--font-body)' }}>
+                {project.shortDescription}
+              </p>
             </div>
-            <p className="text-lg md:text-xl text-mist leading-relaxed" style={{ fontFamily: 'var(--font-body)' }}>
-              {project.shortDescription}
-            </p>
           </div>
-        </div>
 
-          {/* Centered Date and Category at the bottom of the header */}
-          <div className="flex flex-col items-center justify-center gap-2 pt-8 mt-4">
+          <div className="flex flex-col items-center justify-center gap-2 ml-10 pt-8 mt-4">
             <span className="text-mist font-medium tracking-wide">
               {project.date}
             </span>
             <span className="inline-block px-4 py-1.5 text-xs font-bold tracking-widest bg-midnight/40 border border-glass-border text-mist rounded-full uppercase">
-              {project.category}
+              {categoryLabel}
             </span>
           </div>
         </header>
@@ -103,13 +109,12 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
         </section>
 
         {/* Block 2: Information Split Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 border-b border-glass-border pb-12">
+        <div className={`grid grid-cols-1 lg:grid-cols-12 ${project.team && project.team.length > 0 ? 'border-b border-glass-border pb-12' : 'pb-4 mt-12'}`}>
           
-          {/* Left Column */}
           <div className="lg:col-span-7 flex flex-col gap-12">
             <section className="flex flex-col gap-5">
               <h2 className="text-2xl font-bold text-accent tracking-wide" style={{ fontFamily: 'var(--font-heading)' }}>
-                About the Project
+                {t('proj_about')}
               </h2>
               <div className="text-base md:text-lg text-mist leading-relaxed space-y-5" style={{ fontFamily: 'var(--font-body)' }}>
                 {project.description.split('\n').map((paragraph, idx) => (
@@ -120,7 +125,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
 
             <section className="flex flex-col gap-5">
               <h2 className="text-2xl font-bold text-accent tracking-wide" style={{ fontFamily: 'var(--font-heading)' }}>
-                My Contributions
+                {t('proj_role')}
               </h2>
               <div className="text-base md:text-lg text-mist leading-relaxed space-y-5" style={{ fontFamily: 'var(--font-body)' }}>
                 {project.detailedRole.split('\n').map((paragraph, idx) => (
@@ -130,20 +135,13 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
             </section>
           </div>
 
-          {/* Right Column */}
           <div className="lg:col-span-5 flex flex-col lg:items-end pt-12 lg:pt-0">
-            
-            {/* WRAPPER (O equivalente à VStack após o Spacer)
-              Mantém o conteúdo interno alinhado à esquerda, mas tem a largura máxima contida 
-              para que o pai (lg:items-end) possa empurrá-lo como um bloco único para a direita.
-            */}
             <div className="flex flex-col gap-10 w-full lg:max-w-sm">
               
-              {/* Links Section */}
               {(project.links.github || project.links.appStore || project.links.live) && (
                 <section className="flex flex-col gap-4">
-                  <h3 className="text-xs font-bold tracking-widest text-mist uppercase">Links</h3>
-                  <div className="flex flex-wrap gap-3"> {/* Correção: flex-warp para flex-wrap */}
+                  <h3 className="text-xs font-bold tracking-widest text-mist uppercase">{t('proj_links')}</h3>
+                  <div className="flex flex-wrap gap-3">
                     {project.links.github && (
                       <a href={project.links.github} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 text-sm font-medium text-mist hover:text-accent transition-colors glass px-5 py-3 rounded-xl border border-glass-border w-fit">
                         <GithubIcon size={18} /> GitHub
@@ -163,9 +161,8 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
                 </section>
               )}
 
-              {/* Technologies Section */}
               <section className="flex flex-col gap-4">
-                <h3 className="text-xs font-bold tracking-widest text-mist uppercase">Technologies</h3>
+                <h3 className="text-xs font-bold tracking-widest text-mist uppercase">{t('proj_techs')}</h3>
                 <div className="flex flex-wrap items-center gap-2">
                   {project.technologies.map((tech) => (
                     <span key={tech} className="px-4 py-2 rounded-xl text-sm font-medium text-mist border border-glass-border transition-colors hover:text-accent">
@@ -175,9 +172,8 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
                 </div>
               </section>
 
-              {/* Roles Section */}
               <section className="flex flex-col gap-4">
-                <h3 className="text-xs font-bold tracking-widest text-mist uppercase">Roles</h3>
+                <h3 className="text-xs font-bold tracking-widest text-mist uppercase">{t('proj_roles')}</h3>
                 <div className="flex flex-wrap items-center gap-2">
                   {project.roles.map((role) => (
                     <span key={role} className="px-4 py-2 rounded-xl text-sm font-medium text-mist border border-glass-border transition-colors hover:text-accent">

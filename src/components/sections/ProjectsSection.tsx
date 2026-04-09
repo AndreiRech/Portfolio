@@ -5,9 +5,10 @@ import { useRef, useState, useEffect, useCallback, Suspense } from 'react';
 import { motion, useMotionValue, useSpring, useTransform, animate, PanInfo, MotionValue } from 'framer-motion';
 import { ImageIcon } from 'lucide-react';
 import AnimatedSection from '@/components/AnimatedSection';
-import { projects } from '@/data/projects';
+import { getProjects } from '@/data/projects';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
-import { FilterType } from '@/types';
+import { FilterType, Project } from '@/types';
+import { useSettings } from '@/context/SettingsContext';
 
 const CARD_WIDTH = 380;
 const CARD_HEIGHT = 460;
@@ -18,9 +19,19 @@ function FilterButtons() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
+  const { t } = useSettings();
   const currentFilter = (searchParams.get('filter') as FilterType) || 'All Projects';
 
   const filters: FilterType[] = ['All Projects', 'iOS', 'University', 'Personal', 'Others'];
+
+  // Mapeamos o valor do filtro para a label traduzida
+  const filterLabels: Record<FilterType, string> = {
+    'All Projects': t('cat_all'),
+    'iOS': t('cat_ios'),
+    'University': t('cat_university'),
+    'Personal': t('cat_personal'),
+    'Others': t('cat_others'),
+  };
 
   const handleFilter = (f: FilterType) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -40,7 +51,7 @@ function FilterButtons() {
               : 'bg-transparent text-desat border-glass-border hover:border-accent hover:text-accent'
           }`}
         >
-          {filter}
+          {filterLabels[filter]}
         </button>
       ))}
     </div>
@@ -51,11 +62,14 @@ function ProjectsCarousel() {
   const [isMounted, setIsMounted] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
   const searchParams = useSearchParams();
+  const { language, t } = useSettings();
+  
   const currentFilter = (searchParams.get('filter') as FilterType) || 'All Projects';
+  const localizedProjects = getProjects(language);
   
   const filteredProjects = currentFilter === 'All Projects' 
-    ? projects 
-    : projects.filter(p => p.category === currentFilter);
+    ? localizedProjects 
+    : localizedProjects.filter(p => p.category === currentFilter);
 
   const TOTAL_WIDTH = filteredProjects.length * ITEM_WIDTH;
   const x = useMotionValue(0);
@@ -110,7 +124,7 @@ function ProjectsCarousel() {
   if (filteredProjects.length === 0) {
     return (
       <div className="flex items-center justify-center min-h-[500px] text-desat">
-        No projects found for this category.
+        {t('proj_empty')}
       </div>
     );
   }
@@ -135,6 +149,7 @@ function ProjectsCarousel() {
             dragX={x}
             totalWidth={TOTAL_WIDTH}
             onClick={() => goTo(i)}
+            t={t}
           />
         ))}
       </motion.div>
@@ -143,15 +158,16 @@ function ProjectsCarousel() {
 }
 
 interface CarouselCardProps {
-  project: (typeof projects)[number];
+  project: Project;
   origIndex: number;
   activeOrigIndex: number;
   dragX: MotionValue<number>;
   totalWidth: number;
   onClick: () => void;
+  t: any;
 }
 
-function CarouselCard({ project, origIndex, activeOrigIndex, dragX, totalWidth, onClick }: CarouselCardProps) {
+function CarouselCard({ project, origIndex, activeOrigIndex, dragX, totalWidth, onClick, t }: CarouselCardProps) {
   const router = useRouter(); 
   const isActive = origIndex === activeOrigIndex;
   const baseOffset = origIndex * ITEM_WIDTH;
@@ -164,7 +180,6 @@ function CarouselCard({ project, origIndex, activeOrigIndex, dragX, totalWidth, 
   });
 
   const cardX = useTransform(xOffset, (offset) => baseOffset + offset);
-
   const distFromCenter = useTransform(dragX, (latestDragX) => {
     if (totalWidth === 0) return 0;
     const absoluteCenter = latestDragX + baseOffset;
@@ -175,7 +190,6 @@ function CarouselCard({ project, origIndex, activeOrigIndex, dragX, totalWidth, 
   const scale = useTransform(distFromCenter, [0, 450], [1.06, 0.88]);
   const opacity = useTransform(distFromCenter, [0, 600], [1, 0.45]);
   const springScale = useSpring(scale, { stiffness: 280, damping: 30 });
-
   const pointerDownPos = useRef({ x: 0, y: 0 });
 
   const handlePointerDown = (e: React.PointerEvent) => {
@@ -190,6 +204,9 @@ function CarouselCard({ project, origIndex, activeOrigIndex, dragX, totalWidth, 
     }
   };
 
+  // Mapeia a categoria para exibir na linguagem correta no card
+  const categoryLabel = t(`cat_${project.category.toLowerCase()}`) || project.category;
+
   return (
     <motion.div
       data-cursor-hover 
@@ -199,16 +216,11 @@ function CarouselCard({ project, origIndex, activeOrigIndex, dragX, totalWidth, 
       onPointerUp={handlePointerUp}
       onClick={(e) => e.preventDefault()}
     >
-      <div
-        className={`glass flex flex-col overflow-hidden rounded-2xl transition-all duration-500 ${
-          isActive ? 'border-accent/40 shadow-xl shadow-accent/10' : 'hover:border-mist/15'
-        }`}
-        style={{ height: CARD_HEIGHT }}
-      >
+      <div className={`glass flex flex-col overflow-hidden rounded-2xl transition-all duration-500 ${isActive ? 'border-accent/40 shadow-xl shadow-accent/10' : 'hover:border-mist/15'}`} style={{ height: CARD_HEIGHT }}>
         <div className="relative flex h-56 items-center justify-center overflow-hidden bg-midnight/40 pointer-events-none">
           <div className="flex flex-col items-center gap-2 text-desat/30">
             <ImageIcon size={32} strokeWidth={1} />
-            <span className="text-[10px] tracking-widest uppercase">{isActive ? 'View Details' : 'Preview'}</span>
+            <span className="text-[10px] tracking-widest uppercase">{isActive ? t('proj_view_details') : t('proj_preview')}</span>
           </div>
           <div className="absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-base/60 to-transparent" />
         </div>
@@ -216,16 +228,16 @@ function CarouselCard({ project, origIndex, activeOrigIndex, dragX, totalWidth, 
         <div className="flex flex-1 flex-col p-5 pointer-events-none">
           <h3 className="text-lg font-bold leading-tight text-mist" style={{ fontFamily: 'var(--font-heading)' }}>{project.name}</h3>
           <div className="mt-1.5 flex items-center gap-2">
-            <span className="text-[11px] font-medium tracking-wider text-accent/80 uppercase">{project.category}</span>
+            <span className="text-[11px] font-medium tracking-wider text-accent/80 uppercase">{categoryLabel}</span>
             <span className="text-[10px] text-desat/50">•</span>
             <span className="text-[11px] font-medium text-desat/60">{project.date}</span>
           </div>
           <div className="mt-3 flex flex-wrap gap-1.5">
             {project.technologies.map((tag) => (
-              <span key={tag} className="rounded-md border border-glass-border bg-glass-hover px-2 py-0.5 text-[11px] text-desat">{tag}</span>
+              <span key={tag} className="rounded-md border border-glass-border bg-glass-hover px-2 py-0.5 text-[11px] text-mist">{tag}</span>
             ))}
           </div>
-          <p className="mt-3 flex-1 text-xs leading-relaxed text-desat/75">{project.description}</p>
+          <p className="mt-3 flex-1 text-xs leading-relaxed text-mist">{project.shortDescription}</p>
         </div>
       </div>
     </motion.div>
@@ -233,13 +245,15 @@ function CarouselCard({ project, origIndex, activeOrigIndex, dragX, totalWidth, 
 }
 
 export default function ProjectsSection() {
+  const { t } = useSettings();
+
   return (
     <section id="projects" className="section-overlay py-28 md:py-36">
       <div className="section-container mb-12 flex flex-col md:flex-row md:items-end justify-between">
         <AnimatedSection direction="up" className="flex-1">
-          <span className="text-sm font-medium tracking-widest text-accent uppercase">Work</span>
-          <h2 className="mt-3 text-4xl font-black text-mist md:text-5xl" style={{ fontFamily: 'var(--font-heading)' }}>Featured Projects</h2>
-          <p className="mt-4 max-w-2xl text-base text-desat md:text-lg">Drag to browse. Click a centered project to view details.</p>
+          <span className="text-sm font-medium tracking-widest text-accent uppercase">{t('proj_subtitle')}</span>
+          <h2 className="mt-3 text-4xl font-black text-mist md:text-5xl" style={{ fontFamily: 'var(--font-heading)' }}>{t('proj_title')}</h2>
+          <p className="mt-4 max-w-2xl text-base text-desat md:text-lg">{t('proj_desc')}</p>
         </AnimatedSection>
         
         <Suspense fallback={<div className="h-10 w-full md:w-64" />}>

@@ -1,5 +1,7 @@
 // src/types/index.ts
 
+import { ReactNode } from "react";
+
 export type ProjectCategory = 'iOS' | 'University' | 'Personal' | 'Others';
 export type FilterType = 'All Projects' | ProjectCategory;
 
@@ -49,6 +51,6 @@ export interface Experience {
   role: string;
   company: string;
   period: string;
-  description: string;
+  description: string | ReactNode;
   technologies: string[];
 }
