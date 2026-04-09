@@ -1,3 +1,4 @@
+// src/components/ClientApp.tsx
 'use client';
 
 import dynamic from 'next/dynamic';
@@ -7,7 +8,6 @@ import AboutSection from '@/components/sections/AboutSection';
 import ProjectsSection from '@/components/sections/ProjectsSection';
 import ExperienceSection from '@/components/sections/ExperienceSection';
 import ContactSection from '@/components/sections/ContactSection';
-import CustomCursor from '@/components/CustomCursor';
 
 const ShaderBackground = dynamic(
   () => import('@/components/ShaderBackground'),
@@ -22,7 +22,6 @@ const ShaderBackground = dynamic(
 export default function ClientApp() {
   return (
     <>
-      <CustomCursor />
       <ShaderBackground />
       <Navbar />
       <main>

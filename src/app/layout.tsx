@@ -2,7 +2,8 @@
 import type { Metadata } from 'next';
 import { Archivo_Black, Literata } from 'next/font/google';
 import './globals.css';
-import { SettingsProvider } from '@/context/SettingsContext'; // 1. Import the provider
+import { SettingsProvider } from '@/context/SettingsContext';
+import CustomCursor from '@/components/CustomCursor';
 
 const archivoBlack = Archivo_Black({
   weight: '400',
@@ -43,8 +44,8 @@ export default function RootLayout({
       className={`${archivoBlack.variable} ${literata.variable} h-full antialiased`}
     >
       <body className="min-h-full">
-        {/* 2. Wrap children with the SettingsProvider */}
         <SettingsProvider>
+          <CustomCursor />
           {children}
         </SettingsProvider>
       </body>
