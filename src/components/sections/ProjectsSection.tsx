@@ -3,12 +3,13 @@
 
 import { useRef, useState, useEffect, useCallback, Suspense } from 'react';
 import { motion, useMotionValue, useSpring, useTransform, animate, PanInfo, MotionValue } from 'framer-motion';
-import { ImageIcon } from 'lucide-react';
 import AnimatedSection from '@/components/AnimatedSection';
 import { getProjects } from '@/data/projects';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { FilterType, Project } from '@/types';
 import { useSettings } from '@/context/SettingsContext';
+import Image from 'next/image';
+import { ImageIcon, Trophy } from 'lucide-react';
 
 const CARD_WIDTH = 380;
 const CARD_HEIGHT = 460;
@@ -219,25 +220,40 @@ function CarouselCard({ project, origIndex, activeOrigIndex, dragX, totalWidth, 
       <div className={`glass flex flex-col overflow-hidden rounded-2xl transition-all duration-500 ${isActive ? 'border-accent/40 shadow-xl shadow-accent/10' : 'hover:border-mist/15'}`} style={{ height: CARD_HEIGHT }}>
         <div className="relative flex h-56 items-center justify-center overflow-hidden bg-midnight/40 pointer-events-none">
           <div className="flex flex-col items-center gap-2 text-desat/30">
-            <ImageIcon size={32} strokeWidth={1} />
-            <span className="text-[10px] tracking-widest uppercase">{isActive ? t('proj_view_details') : t('proj_preview')}</span>
+            {project.cardImageUrl ? (
+              <Image src={project.cardImageUrl} alt={`${project.name} card`} fill sizes="100vw" className="object-cover" />
+            ) : (
+              <>
+                <ImageIcon size={32} strokeWidth={1} />
+                <span className="text-[10px] tracking-widest uppercase">{isActive ? t('proj_view_details') : t('proj_preview')}</span>
+              </>
+            )}
           </div>
           <div className="absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-base/60 to-transparent" />
         </div>
 
         <div className="flex flex-1 flex-col p-5 pointer-events-none">
-          <h3 className="text-lg font-bold leading-tight text-mist" style={{ fontFamily: 'var(--font-heading)' }}>{project.name}</h3>
+          {project.awards && project.awards.length > 0 && (
+            <div className="mb-2 flex items-center gap-1.5 text-yellow-500">
+              <Trophy size={14} />
+              <span className="text-[10px] font-bold tracking-widest uppercase truncate">
+                {project.awards[0].long}
+              </span>
+            </div>
+          )}
+
+          <h3 className="text-2xl font-bold leading-tight text-mist" style={{ fontFamily: 'var(--font-heading)' }}>{project.name}</h3>
           <div className="mt-1.5 flex items-center gap-2">
-            <span className="text-[11px] font-medium tracking-wider text-accent/80 uppercase">{categoryLabel}</span>
-            <span className="text-[10px] text-desat/50">•</span>
-            <span className="text-[11px] font-medium text-desat/60">{project.date}</span>
+            <span className="text-sm font-medium tracking-wider text-accent/80 uppercase">{categoryLabel}</span>
+            <span className="text-sm text-desat/50">•</span>
+            <span className="text-sm font-medium text-desat/60">{project.date}</span>
           </div>
           <div className="mt-3 flex flex-wrap gap-1.5">
             {project.technologies.map((tag) => (
-              <span key={tag} className="rounded-md border border-glass-border bg-glass-hover px-2 py-0.5 text-[11px] text-mist">{tag}</span>
+              <span key={tag} className="rounded-md border border-glass-border bg-glass-hover px-2 py-0.5 text-[12px] text-mist">{tag}</span>
             ))}
           </div>
-          <p className="mt-3 flex-1 text-xs leading-relaxed text-mist">{project.shortDescription}</p>
+          <p className="mt-3 flex-1 text-m leading-relaxed text-mist">{project.shortDescription}</p>
         </div>
       </div>
     </motion.div>

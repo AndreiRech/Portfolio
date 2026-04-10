@@ -9,6 +9,7 @@ export interface ProjectLinks {
   github?: string;
   appStore?: string;
   live?: string;
+  other?: [string, string];
 }
 
 export interface Contributor {
@@ -17,20 +18,28 @@ export interface Contributor {
   linkedinUrl?: string;
 }
 
+export interface Award {
+  long: string;
+  short: string;
+}
+
 export interface Project {
   id: string;
   name: string;
   category: ProjectCategory;
   roles: string[];
-  detailedRole: string;
+  detailedRole: string | ReactNode;
   technologies: string[];
-  description: string;
-  shortDescription: string;
+  description: string | ReactNode;
+  shortDescription: string | ReactNode;
   date: string;
   links: ProjectLinks;
   media: string[];
   logoUrl?: string;
+  cardImageUrl?: string;
+  orientation?: 'horizontal' | 'vertical';
   team: Contributor[];
+  awards?: Award[];
 }
 
 export interface IconConfig {
