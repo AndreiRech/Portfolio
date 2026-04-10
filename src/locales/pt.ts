@@ -16,7 +16,7 @@ export const pt: Translations = {
   hero_role: 'Desenvolvedor iOS & Fullstack',
   about_subtitle: 'Sobre',
   about_title: 'Quem Sou Eu',
-  about_photo: 'Foto de Perfil',
+  about_photo: '/others/me.jpg',
   about_edu_title: 'Formação',
   about_edu_degree: 'Bacharelado em Engenharia de Software',
   about_edu_uni: 'PUCRS — Pontifícia Universidade Católica do Rio Grande do Sul',

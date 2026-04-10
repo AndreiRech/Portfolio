@@ -14,7 +14,7 @@ export const en = {
   hero_role: 'iOS & Fullstack Developer',
   about_subtitle: 'About',
   about_title: 'Who I Am',
-  about_photo: 'Profile Photo',
+  about_photo: '/others/me.jpg',
   about_edu_title: 'Education',
   about_edu_degree: 'Bachelor of Software Engineering',
   about_edu_uni: 'PUCRS — Pontifícia Universidade Católica do Rio Grande do Sul',
