@@ -185,7 +185,185 @@ export const getProjects = (locale: 'en' | 'pt'): Project[] => {
       },
     ],
     pt: [
-      // Hearme
+      // HearMe
+      {
+        id: 'hearme',
+        name: 'HearMe',
+        category: 'iOS',
+        date: '2026',
+        awards: [{ long: 'Vencedor do Swift Student Challenge 2026', short: 'Vencedor SSC 26' }],
+        shortDescription: <>Conectando mundos através do som e do silêncio.</>,
+        description: 'Vencedor do Swift Student Challenge 2026, o HearMe é um aplicativo iOS desenvolvido para aumentar a conscientização sobre a perda auditiva. Inspirado em histórias reais e experiências pessoais, o aplicativo visa traduzir a luta invisível da deficiência auditiva em uma experiência visual e interativa.',
+        technologies: ['SwiftUI', 'AVFoundation', 'MVVM', 'ECS'],
+        roles: ['Desenvolvedor iOS', 'Designer UI/UX'],
+        detailedRole: 'Fui responsável por criar todo o aplicativo iOS do zero. Isso incluiu a ideia, a criação do design e dos recursos (assets) usados no aplicativo, e todo o processo de desenvolvimento. Como é baseado em histórias reais, tentei torná-lo o mais imersivo possível, buscando colocar o usuário no lugar de alguém com perda auditiva.',
+        links: { appStore: 'https://apps.apple.com/br/app/hearme-unheard/id6761224867', github: 'https://github.com/AndreiRech/HearMe' },
+        media: [
+          "/projects/hearme/screen1.png",
+          "/projects/hearme/screen2.png",
+          "/projects/hearme/screen3.png",
+          "/projects/hearme/screen4.png",
+        ],
+        logoUrl: "/projects/hearme/logo.png",
+        cardImageUrl: "/projects/hearme/card.png",
+        orientation: 'horizontal',
+        team: [{ name: 'Andrei Rech', role: 'Desenvolvedor iOS', linkedinUrl: 'https://linkedin.com/in/rechandrei' }]
+      },
+
+      // Cerne
+      {
+        id: 'cerne',
+        name: 'Cerne',
+        category: 'iOS',
+        date: '2025',
+        awards: [{ long: 'Projeto Destaque do 1º ano Apple Developer', short: 'Projeto Destaque' }],
+        shortDescription: <>Meça o carbono das árvores com AR e visualize o mapa de árvores escaneadas.</>,
+        description: <>O Cerne é um aplicativo iOS desenvolvido para aumentar a conscientização sobre a importância das árvores e seu papel no meio ambiente. Ele permite aos usuários medir o carbono das árvores e visualizar no mapa os marcadores das árvores escaneadas. O objetivo do aplicativo é mostrar quanto carbono uma árvore pode absorver e criar um banco de dados colaborativo para conhecer a capacidade total de absorção de CO2 das árvores em uma região.</>,
+        technologies: ['SwiftUI', 'RealityKit', 'CloudKit', 'NSCache'],
+        roles: ['Desenvolvedor iOS', 'Dono do Projeto', 'Líder Técnico'],
+        detailedRole: 
+        <>
+          Como PO, fui responsável por organizar a equipe e o projeto, definir as funcionalidades mais importantes, priorizar tarefas e garantir que o projeto fosse entregue no prazo. <br/>
+          Como Líder Técnico, fui responsável pelo desenvolvimento da arquitetura do aplicativo, utilizando os padrões MVVM e ECS, definindo o esquema do banco de dados e implementando as principais funcionalidades do aplicativo. <br/>
+          Criei uma pipeline de CI/CD para automatizar a compilação (build) e o deploy do aplicativo utilizando GitHub Actions e XCode Cloud. <br/>
+          Implementei a conexão com o CloudKit e otimizei o aplicativo com NSCache para permitir que o usuário tenha uma experiência fluida, mesmo em dispositivos de baixo desempenho. <br/>
+          Com a ajuda do RealityKit e ARKit, calculei a altura da árvore usando funções trigonométricas e identifiquei a espécie da árvore usando a API PlantNet. <br/>
+        </>, 
+        links: { appStore: 'https://apps.apple.com/br/app/cerne-captura-de-co/id6751984534', github: 'https://github.com/AndreiRech/Cerne' },
+        media: [
+          "/projects/cerne/screen1.png",
+          "/projects/cerne/screen2.png",
+          "/projects/cerne/screen3.png",
+          "/projects/cerne/screen4.png",
+          "/projects/cerne/screen5.png",
+          "/projects/cerne/screen6.png",
+        ],
+        logoUrl: "/projects/cerne/logo.png",
+        cardImageUrl: "/projects/cerne/card.png",
+        orientation: 'vertical',
+        team: [
+          { name: 'Vinicius Cadore', role: 'Designer UX/UI', linkedinUrl: 'https://www.linkedin.com/in/cadoreee/' },
+          { name: 'Richard Rodrigues', role: 'Desenvolvedor iOS', linkedinUrl: 'https://www.linkedin.com/in/richardsros/' },
+          { name: 'Maria Eduarda Santellano', role: 'Desenvolvedora iOS', linkedinUrl: 'https://www.linkedin.com/in/mariaeduardasantellano/' },
+          { name: 'Gabriel Kowaleski', role: 'Desenvolvedor iOS', linkedinUrl: 'https://www.linkedin.com/in/gabriel-kowaleski/' },
+          { name: 'Andrei Rech', role: 'Desenvolvedor iOS', linkedinUrl: 'https://linkedin.com/in/rechandrei' },
+        ]
+      },
+
+      // Dirty Dogs
+      {
+        id: 'dirtydogs',
+        name: 'Dirty Dogs',
+        category: 'iOS',
+        date: '2025',
+        awards: [],
+        shortDescription: <>O Duelo Mais Rápido e Peludo no Quintal</>,
+        description: <>Dirty Dogs é um jogo competitivo local em tempo real onde dois jogadores controlam cães escavadores competindo para encontrar um osso. O jogo permite aos jogadores lançar itens malucos para fora da tela do telefone para atrapalhar o outro jogador, exigindo o uso de diferentes métodos para interromper suas ações: sacudir o telefone, soprar o microfone e muito mais! Desafie seus amigos em duelos rápidos e seja o cão mais sujo de todos!</>,
+        technologies: ['SpriteKit', 'GameplayKit', 'GameCenter', 'ECS'],
+        roles: ['Desenvolvedor iOS', 'Dono do Projeto'],
+        detailedRole: <>
+          Contribuí para a fluidez do desenvolvimento atuando como PO, priorizando tarefas e ajudando a equipe com funcionalidades difíceis. <br/>
+          Defini a arquitetura do aplicativo, utilizando os padrões ECS + MVVM. Criei toda a comunicação entre dispositivos usando GameCenter, padrão factory e DTOs. <br/>
+          Implementei a física do jogo usando SpriteKit e GameplayKit, criando uma jogabilidade fluida e responsiva. <br/>
+          Criei o Documento de Design de Jogo (GDD), definindo as mecânicas do jogo, funcionalidades e visão geral. <br/>
+        </>,
+        links: { appStore: 'https://apps.apple.com/ch/app/dirty-dogs-duel-on-the-yard/id6756587971', github: 'https://github.com/AndreiRech/DirtyDogs', other: ['GDD', 'https://docs.google.com/document/d/1yqepSgL-H29Fz9zC_o1Q6KzFwwIlxHzSCJSqnD_Qc_o/edit?usp=sharing'] },
+        media: [
+          "/projects/dirtydogs/screen1.png",
+          "/projects/dirtydogs/screen2.png",
+          "/projects/dirtydogs/screen3.png",
+          "/projects/dirtydogs/screen4.png",
+          "/projects/dirtydogs/screen5.png",
+          "/projects/dirtydogs/screen6.png",
+        ],
+        logoUrl: "/projects/dirtydogs/logo.png",
+        cardImageUrl: "/projects/dirtydogs/card.png",
+        orientation: 'vertical',
+        team: [
+          { name: 'Pedro Kosciuk Lima', role: 'Designer UX/UI', linkedinUrl: 'https://www.linkedin.com/in/pedro-kosciuk-lima-a29855207/' },
+          { name: 'Julia Fazenda Ruiz', role: 'Desenvolvedora iOS', linkedinUrl: 'https://www.linkedin.com/in/julia-fazenda-ruiz/' },
+          { name: 'Isadora Ferreira Guerra', role: 'Desenvolvedora iOS', linkedinUrl: 'https://www.linkedin.com/in/isadoraferreiraguerra/' },
+          { name: 'Eduardo Ferrari', role: 'Desenvolvedor iOS', linkedinUrl: 'https://www.linkedin.com/in/edurferrari/' },
+          { name: 'Andrei Rech', role: 'Desenvolvedor iOS', linkedinUrl: 'https://linkedin.com/in/rechandrei' },
+        ]
+      },
+
+      // Tower of the Winds
+      {
+        id: 'totw',
+        name: 'Tower of the Winds',
+        category: 'iOS',
+        date: '2026',
+        awards: [],
+        shortDescription: <>Chegue ao topo da torre usando o poder dos ventos.</>,
+        description: <>
+          Tower of the Winds é um jogo de quebra-cabeça 2D e contra o tempo onde o jogador é um pequeno gato que precisa chegar ao topo de uma torre usando o poder dos Anemois. Chegue ao topo da torre o mais rápido possível, descubra os segredos dos ventos e qual é o desejo do gatinho para os seus últimos momentos! <br/>
+        </>,
+        technologies: ['GameplayKit', 'SpriteKit', 'SKTile', 'GameCenter'],
+        roles: ['Desenvolvedor iOS'],
+        detailedRole: <>
+          Defini a arquitetura do aplicativo, utilizando ECS + SKTiles para definir o mapa e as entidades. <br/>
+          Implementei a física do jogo usando SpriteKit e GameplayKit, criando uma jogabilidade fluida e responsiva. <br/>
+          Implementei a integração com o GameCenter, permitindo que os jogadores competissem entre si com um ranking global, conquistas e tabelas de classificação. <br/>
+        </>,
+        links: { github: 'https://github.com/camana98/WindSolveGame' },
+        logoUrl: "/projects/totw/logo.png",
+        cardImageUrl: "/projects/totw/card.png",
+        orientation: 'vertical',
+        media: [
+          "/projects/totw/screen1.png",
+          "/projects/totw/screen2.png",
+          "/projects/totw/screen3.png",
+          "/projects/totw/screen4.png",
+          "/projects/totw/screen5.png",
+        ],
+        team: [
+          { name: 'Rafael Julianotte', role: 'Designer UX/UI', linkedinUrl: 'https://www.linkedin.com/in/rafajulianotte/' },
+          { name: 'Eduardo Fensterseifer', role: 'Desenvolvedor iOS', linkedinUrl: 'https://www.linkedin.com/in/eduardo-fensterseifer/' },
+          { name: 'Eduardo Camana', role: 'Desenvolvedor iOS', linkedinUrl: 'https://www.linkedin.com/in/eduardocamana/' },
+          { name: 'Carolina Silva dos Santos', role: 'Desenvolvedora iOS', linkedinUrl: 'https://www.linkedin.com/in/carolina-silva-dos-santos-a320111a7/' },
+          { name: 'Andrei Rech', role: 'Desenvolvedor iOS', linkedinUrl: 'https://linkedin.com/in/rechandrei' },
+        ]
+      },
+
+      // Clairfy
+      {
+        id: 'clairfy',
+        name: 'Clairfy',
+        category: 'iOS',
+        date: '2025',
+        awards: [{ long: 'Finalista do Tecnopuc Garage 2025', short: 'Finalista Tecnopuc'}],
+        shortDescription: <>Foque no paciente. Nós cuidaremos do resto.</>,
+        description: <>
+        O Clairfy transforma a maneira como médicos e pacientes lidam com informações de consultas médicas. Com apenas um toque, o aplicativo grava a conversa da consulta médica, processa o conteúdo com inteligência artificial e gera um resumo estruturado e claro dos principais pontos discutidos, como sintomas, diagnósticos e condutas recomendadas. <br/>
+        Ideal para profissionais de saúde que desejam registrar melhor suas consultas e para pacientes que buscam entender e reter as informações recebidas.<br/>
+        </>,
+        technologies: ['UIKit', 'AI APIs', 'REST APIs', 'MVC'],
+        roles: ['Desenvolvedor iOS', 'Líder Técnico'],
+        detailedRole: <>
+          Defini a arquitetura do aplicativo, utilizando os padrões MVC. <br/>
+          Construí uma API para conectar com os modelos de IA, processando o áudio e retornando o resumo. Implementei criptografia para proteger os dados. <br/>
+          Ajudei a equipe no desenvolvimento do aplicativo, fornecendo orientação e suporte sobre tecnologias, arquitetura e GIT. <br/>
+        </>,
+        links: { appStore: 'https://apps.apple.com/br/app/clairfy/id6747406139', github: 'https://github.com/AndreiRech/Clairfy', live: 'https://clairfy.netlify.app/' },
+        logoUrl: "/projects/clairfy/logo.png",
+        cardImageUrl: "/projects/clairfy/card.png",
+        orientation: 'vertical',
+        media: [
+          "/projects/clairfy/screen1.png",
+          "/projects/clairfy/screen2.png",
+          "/projects/clairfy/screen3.png",
+          "/projects/clairfy/screen4.png",
+          "/projects/clairfy/screen5.png",
+        ],
+        team: [
+          { name: 'Leonardo Simon', role: 'Designer UX/UI', linkedinUrl: 'https://www.linkedin.com/in/leonardosimon/' },
+          { name: 'Bernardo Fensterseifer', role: 'Desenvolvedor iOS', linkedinUrl: 'https://www.linkedin.com/in/bernardofens/' },
+          { name: 'Pablo Garcia', role: 'Desenvolvedor iOS', linkedinUrl: 'https://www.linkedin.com/in/pablogarciadev/' },
+          { name: 'Eduardo Ferrari', role: 'Desenvolvedor iOS', linkedinUrl: 'https://www.linkedin.com/in/edurferrari/' },
+          { name: 'Andrei Rech', role: 'Desenvolvedor iOS', linkedinUrl: 'https://linkedin.com/in/rechandrei' },
+        ]
+      },
     ]
   };
 
