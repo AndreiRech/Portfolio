@@ -1,6 +1,7 @@
 'use client';
 
 import AnimatedSection from '@/components/AnimatedSection';
+import Image from 'next/image';
 import { User } from 'lucide-react';
 import { useSettings } from '@/context/SettingsContext';
 
@@ -34,10 +35,15 @@ export default function AboutSection() {
             <div className="flex flex-col items-center gap-8 md:items-start w-full">
               <div className="glass flex h-72 w-full items-center justify-center overflow-hidden rounded-2xl md:h-80">
                 <div className="flex flex-col items-center gap-3 text-desat/40">
-                  <User size={48} strokeWidth={1} />
-                  <span className="text-xs tracking-widest uppercase">
-                    {t('about_photo')}
-                  </span>
+                  <Image
+                    src={t('about_photo')}
+                    alt="Profile Photo"
+                    width={400}
+                    height={400}
+                    quality={100}
+                    draggable={false}
+                    className="h-full w-auto object-contain pointer-events-none rounded-xl"
+                  />
                 </div>
               </div>
 
