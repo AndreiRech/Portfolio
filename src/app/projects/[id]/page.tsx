@@ -10,6 +10,14 @@ import { GithubIcon, ExternalSquareIcon } from '@/components/icons';
 import { getProjects } from '@/data/projects';
 import { useSettings } from '@/context/SettingsContext';
 
+export async function generateStaticParams() {
+  const projects = getProjects('en'); 
+  
+  return projects.map((project) => ({
+    id: project.id,
+  }));
+}
+
 interface ProjectPageProps {
   params: Promise<{ id: string }>;
 }
