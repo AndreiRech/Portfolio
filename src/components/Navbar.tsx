@@ -3,7 +3,7 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, Settings, Sun, Moon } from 'lucide-react';
+import { Menu, X, Settings } from 'lucide-react';
 import { LinkedinIcon, GithubIcon } from '@/components/icons';
 import { navLinks } from '@/data/navigation';
 import { useSettings } from '@/context/SettingsContext';
@@ -15,7 +15,7 @@ const ICON_CONFIG: IconConfig[] = [
 ];
 
 export default function Navbar() {
-  const { theme, language, toggleTheme, toggleLanguage, t } = useSettings();
+  const { language, toggleLanguage, t } = useSettings();
   const [activeSection, setActiveSection] = useState('hero');
   const [mobileOpen, setMobileOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -139,26 +139,14 @@ export default function Navbar() {
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: 10, scale: 0.95 }}
                 transition={{ duration: 0.2, ease: "easeOut" }}
-                className={`absolute right-0 top-full mt-3 w-40 rounded-2xl border border-glass-border ${theme === 'light' ? 'bg-mist' : 'bg-base'} p-4 shadow-2xl`}
+                className="absolute right-0 top-full mt-3 w-40 rounded-2xl border border-glass-border bg-ink p-4 shadow-2xl"
                 style={{ zIndex: 100 }}
               >
-                <div className="mb-5">
-                  <span className="mb-2 block text-[10px] font-bold tracking-widest text-desat uppercase">{t('theme_label')}</span>
-                  <div className={`relative flex h-10 w-full items-center rounded-full ${theme === 'light' ? 'bg-mist' : 'bg-base'} p-1 shadow-inner border border-white/5`}>
-                    <motion.div
-                      className={`absolute top-1 bottom-1 w-[calc(50%-4px)] rounded-full ${theme === 'light' ? 'bg-accent' : 'bg-midnight'}`}
-                      animate={{ left: theme === 'dark' ? 'calc(50% + 2px)' : '4px' }}
-                      transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-                    />
-                    <button onClick={() => toggleTheme('light')} className={`relative z-10 flex flex-1 items-center justify-center transition-colors duration-200 ${theme === 'light' ? 'text-white' : 'text-desat'}`}><Sun size={14} /></button>
-                    <button onClick={() => toggleTheme('dark')} className={`relative z-10 flex flex-1 items-center justify-center transition-colors duration-200 ${theme === 'dark' ? 'text-white' : 'text-desat'}`}><Moon size={14} /></button>
-                  </div>
-                </div>
                 <div>
                   <span className="mb-2 block text-[10px] font-bold tracking-widest text-desat uppercase">{t('lang_label')}</span>
-                  <div className={`relative flex h-10 w-full items-center rounded-full ${theme === 'light' ? 'bg-mist' : 'bg-base'} p-1 shadow-inner border border-white/5`}>
+                  <div className="relative flex h-10 w-full items-center rounded-full bg-ink p-1 shadow-inner border border-white/5">
                     <motion.div
-                      className={`absolute top-1 bottom-1 w-[calc(50%-4px)] rounded-full ${theme === 'light' ? 'bg-accent' : 'bg-midnight'}`}
+                      className="absolute top-1 bottom-1 w-[calc(50%-4px)] rounded-full bg-plum"
                       animate={{ left: language === 'en' ? 'calc(50% + 2px)' : '4px' }}
                       transition={{ type: 'spring', stiffness: 400, damping: 25 }}
                     />

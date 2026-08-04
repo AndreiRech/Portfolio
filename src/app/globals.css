@@ -71,6 +71,31 @@ body {
   overflow-x: hidden;
 }
 
+/* ── Static noir backdrop ────────────────────────────────────
+   Replaces the animated shader canvas that used to sit here: a flat
+   ink surface plus a still, low-opacity film-grain overlay. The grain
+   is a self-contained SVG turbulence tile (no image asset, no JS), and
+   `background-size` is deliberately smaller than the tile's intrinsic
+   180px so the noise reads as fine specks rather than blotches. */
+.noir-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background-color: var(--color-ink);
+  pointer-events: none;
+}
+
+.noir-backdrop::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+  background-size: 140px 140px;
+  /* Sections layer a 72%-opaque ink overlay on top of this, so the grain
+     needs headroom here to stay perceptible through them. */
+  opacity: 0.18;
+}
+
 /* ── Custom cursor ───────────────────────────────────────── */
 .custom-cursor {
   position: fixed;

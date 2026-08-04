@@ -1,7 +1,6 @@
 // src/locales/en.ts
 export const en = {
   // Config & Navbar
-  theme_label: 'THEME',
   lang_label: 'LANGUAGE',
   nav_home: 'Home',
   nav_about: 'About',

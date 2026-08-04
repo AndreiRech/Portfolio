@@ -3,7 +3,6 @@ import { Translations } from './en';
 
 export const pt: Translations = {
   // Config & Navbar
-  theme_label: 'TEMA',
   lang_label: 'IDIOMA',
   nav_home: 'Início',
   nav_about: 'Sobre',
