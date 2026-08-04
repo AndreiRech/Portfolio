@@ -152,6 +152,49 @@ body {
   }
 }
 
+/* ── Category identity ───────────────────────────────────────
+   The four block colors reach the DOM through `--category-color` and
+   `--category-on`, both set inline from `getCategoryColor()` — one mapping,
+   two consumers, so a category's filter chip and its card badge agree.
+
+   The block color is used at full strength, as a fill on the active chip and
+   the badge and as the border otherwise, so the four categories stay
+   distinguishable at a glance. Their lightness range is too wide for a single
+   text color, which is why `--category-on` travels with the fill (see the
+   block-color token notes above): green/yellow take `ink`, red/blue `paper`.
+
+   `--category-line` states the fallback once. A custom property's `var()`s
+   are substituted where the property is *used*, so it inherits down and
+   resolves against each element's own `--category-color`. Unset means
+   "All Projects" — not a category — which lands on neutral `smoke`. */
+:root {
+  --category-line: var(--category-color, var(--color-smoke));
+}
+
+@utility filter-chip {
+  border: 2px solid var(--category-line);
+  border-radius: 2px;
+  background-color: transparent;
+  color: var(--color-paper);
+  transition: color 0.2s ease, background-color 0.2s ease;
+
+  &:hover {
+    background-color: color-mix(in srgb, var(--category-line) 25%, transparent);
+  }
+
+  &[data-active='true'] {
+    background-color: var(--category-line);
+    /* `ink` covers the `smoke` fallback that "All Projects" lands on. */
+    color: var(--category-on, var(--color-ink));
+  }
+}
+
+@utility category-badge {
+  border-radius: 2px;
+  background-color: var(--category-line);
+  color: var(--category-on, var(--color-ink));
+}
+
 /* Section readability overlay */
 .section-overlay {
   position: relative;

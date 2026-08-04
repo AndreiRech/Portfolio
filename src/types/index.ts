@@ -1,8 +1,12 @@
 // src/types/index.ts
 
-import { ReactNode } from "react";
+import type { ReactNode } from "react";
 
-export type ProjectCategory = 'iOS' | 'University' | 'Personal' | 'Others';
+/** Source of truth for the category union — a runtime value so callers can
+    iterate the categories (filter lists, exhaustiveness checks). */
+export const PROJECT_CATEGORIES = ['iOS', 'University', 'Personal', 'Others'] as const;
+
+export type ProjectCategory = (typeof PROJECT_CATEGORIES)[number];
 export type FilterType = 'All Projects' | ProjectCategory;
 
 export interface ProjectLinks {

@@ -1,12 +1,13 @@
 // src/components/sections/ProjectsSection.tsx
 'use client';
 
-import { useRef, useState, useEffect, useCallback, Suspense } from 'react';
+import { useRef, useState, useEffect, useCallback, Suspense, CSSProperties } from 'react';
 import { motion, useMotionValue, useSpring, useTransform, animate, PanInfo, MotionValue } from 'framer-motion';
 import AnimatedSection from '@/components/AnimatedSection';
 import { getProjects } from '@/data/projects';
+import { getCategoryColor } from '@/lib/categoryColors';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
-import { FilterType, Project } from '@/types';
+import { FilterType, Project, PROJECT_CATEGORIES } from '@/types';
 import { useSettings } from '@/context/SettingsContext';
 import Image from 'next/image';
 import { ImageIcon, Trophy } from 'lucide-react';
@@ -16,6 +17,16 @@ const CARD_HEIGHT = 460;
 const CARD_GAP = 28;
 const ITEM_WIDTH = CARD_WIDTH + CARD_GAP;
 
+/** Hands a category's colors to the `.filter-chip` / `.category-badge`
+    utilities, which style themselves off `--category-color`. Returns nothing
+    for 'All Projects' — it isn't a category, so those utilities fall back to
+    their neutral noir treatment. */
+function categoryColorStyle(filter: FilterType): CSSProperties | undefined {
+  if (filter === 'All Projects') return undefined;
+  const { block, on } = getCategoryColor(filter);
+  return { '--category-color': block, '--category-on': on } as CSSProperties;
+}
+
 function FilterButtons() {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -23,7 +34,7 @@ function FilterButtons() {
   const { t } = useSettings();
   const currentFilter = (searchParams.get('filter') as FilterType) || 'All Projects';
 
-  const filters: FilterType[] = ['All Projects', 'iOS', 'University', 'Personal', 'Others'];
+  const filters: FilterType[] = ['All Projects', ...PROJECT_CATEGORIES];
 
   // Mapeamos o valor do filtro para a label traduzida
   const filterLabels: Record<FilterType, string> = {
@@ -46,11 +57,9 @@ function FilterButtons() {
         <button
           key={filter}
           onClick={() => handleFilter(filter)}
-          className={`px-4 py-1.5 rounded-sm text-sm font-bold capitalize transition-colors border ${
-            currentFilter === filter
-              ? 'bg-accent text-mist border-accent'
-              : 'bg-transparent text-desat border-glass-border hover:border-accent hover:text-accent'
-          }`}
+          data-active={currentFilter === filter}
+          style={categoryColorStyle(filter)}
+          className="filter-chip px-4 py-1.5 text-sm font-bold capitalize"
         >
           {filterLabels[filter]}
         </button>
@@ -244,7 +253,12 @@ function CarouselCard({ project, origIndex, activeOrigIndex, dragX, totalWidth, 
 
           <h3 className="text-2xl font-bold leading-tight text-mist" style={{ fontFamily: 'var(--font-heading)' }}>{project.name}</h3>
           <div className="mt-1.5 flex items-center gap-2">
-            <span className="text-sm font-medium tracking-wider text-accent/80 uppercase">{categoryLabel}</span>
+            <span
+              className="category-badge px-2 py-0.5 text-xs font-bold tracking-wider uppercase"
+              style={categoryColorStyle(project.category)}
+            >
+              {categoryLabel}
+            </span>
             <span className="text-sm text-desat/50">•</span>
             <span className="text-sm font-medium text-desat/60">{project.date}</span>
           </div>
