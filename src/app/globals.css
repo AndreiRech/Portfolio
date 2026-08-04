@@ -1,39 +1,50 @@
 /* src/app/globals.css */
 @import "tailwindcss";
 
-@theme inline {
-  --color-midnight: #191970;
-  --color-mist: #ECEFF1;
-  --color-accent: #CC3766;
-  --color-base: #111517;
-  --color-desat: #8384B1;
-  --color-glass: rgba(17, 21, 23, 0.55);
-  --color-glass-border: rgba(236, 239, 241, 0.12);
-  --color-glass-hover: rgba(236, 239, 241, 0.08);
+/* `static` keeps every token in the emitted CSS even while nothing consumes
+   it yet, so `var(--color-block-*)` resolves from inline styles/JS too. */
+@theme static inline {
+  /* ── Noir palette ─────────────────────────────────────────
+     The site ships in a single dark noir mode. `ink` is the page
+     surface, `paper` the aged off-white type, `smoke` the muted
+     secondary type.
+     Accents: `mustard` is the legible one (8.8:1 on ink) — use it for
+     accent *text*; `blood` and `plum` are too dark to read on ink
+     (2.6:1 / 1.8:1), so use them as fills/stamps with paper on top. */
+  --color-ink: #0B0A0D;
+  --color-paper: #EDE6D6;
+  --color-smoke: #9C9287;
+  --color-plum: #4B2E6B;
+  --color-mustard: #E0A21C;
+  --color-blood: #A11D1B;
 
-  --font-heading: var(--font-archivo-black);
+  /* Poster/label panel surfaces (see the `.panel` utility below).
+     The offset shadow is plum, not black — a black shadow on a
+     near-black page is invisible, and the label needs a visible
+     mis-registered-print edge. */
+  --color-panel: #191521;
+  --color-panel-border: #5A4F3F;
+  --color-panel-shadow: var(--color-plum);
+
+  /* ── Block colors ─────────────────────────────────────────
+     RESERVED for project-category identity only (the four
+     `ProjectCategory` values). Do not use these as general-purpose
+     accents — the rest of the site stays on the noir palette above.
+     As fills: green/yellow take `ink` text, red/blue take `paper`. */
+  --color-block-green: #3E9B3B;
+  --color-block-red: #CC2222;
+  --color-block-blue: #2C63C4;
+  --color-block-yellow: #EFB01E;
+
+  --font-heading: var(--font-big-shoulders-stencil);
   --font-body: var(--font-literata);
 }
 
-/* Light Theme Variables Injection */
-:root.light {
-  --color-base: #ECEFF1;
-  --color-mist: #111517;
-  --color-midnight: #191970;
-  --color-accent: #CC3766;
-  --color-desat: #8384B1;
-  --color-glass: rgba(255, 255, 255, 0.65);
-  --color-glass-border: rgba(17, 21, 23, 0.15);
-  --color-glass-hover: rgba(17, 21, 23, 0.08);
-}
-
-:root.light .section-overlay::before {
-  background: rgba(240, 244, 248, 0.85);
-}
-
-:root.light .glass {
-  background: rgba(255, 255, 255, 0.55);
-  border: 1px solid rgba(17, 21, 23, 0.15);
+/* Animatable so `.panel-hover` can transition its offset shadow. */
+@property --panel-offset {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 6px;
 }
 
 /* Absolute suppression of system cursor globally. */
@@ -49,16 +60,15 @@ html {
 
 /* Custom selection */
 ::selection {
-  background-color: var(--color-accent);
-  color: #ECEFF1;
+  background-color: var(--color-mustard);
+  color: var(--color-ink);
 }
 
 body {
-  background: var(--color-base);
-  color: var(--color-mist);
+  background: var(--color-ink);
+  color: var(--color-paper);
   font-family: var(--font-body), Georgia, serif;
   overflow-x: hidden;
-  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* ── Custom cursor ───────────────────────────────────────── */
@@ -84,24 +94,37 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--color-desat);
+  background: var(--color-smoke);
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--color-accent);
+  background: var(--color-blood);
 }
 
-/* Glass utility */
-.glass {
-  background: var(--color-glass);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border: 1px solid var(--color-glass-border);
+/* ── Poster/label panel ──────────────────────────────────────
+   Solid printed-label surface: opaque fill, hard border, hard
+   offset shadow, near-square corners. No backdrop blur anywhere.
+   Declared with `@utility` so it lands in Tailwind's utilities layer
+   and per-element overrides (`rounded-none`, `border-mustard`, …)
+   still win. `panel-hover` belongs on the same element as `panel`. */
+@utility panel {
+  /* Restated (not just @property's initial-value) so the shadow still
+     resolves where @property is unsupported — it only loses the animation. */
+  --panel-offset: 6px;
+  background-color: var(--color-panel);
+  border: 2px solid var(--color-panel-border);
+  border-radius: 2px;
+  box-shadow: var(--panel-offset) var(--panel-offset) 0 0 var(--color-panel-shadow);
 }
 
-.glass-hover:hover {
-  background: var(--color-glass-hover);
+@utility panel-hover {
+  transition: --panel-offset 0.2s ease, border-color 0.2s ease;
+
+  &:hover {
+    --panel-offset: 10px;
+    border-color: var(--color-mustard);
+  }
 }
 
 /* Section readability overlay */
@@ -113,12 +136,11 @@ body {
   content: '';
   position: absolute;
   inset: 0;
-  background: rgba(11, 13, 15, 0.72);
+  background: color-mix(in srgb, var(--color-ink) 72%, transparent);
   backdrop-filter: blur(40px);
   -webkit-backdrop-filter: blur(40px);
   z-index: 0;
   pointer-events: none;
-  transition: background-color 0.3s ease;
 }
 
 .section-overlay > * {

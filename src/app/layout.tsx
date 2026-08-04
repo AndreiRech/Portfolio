@@ -1,15 +1,22 @@
 // src/app/layout.tsx
 import type { Metadata } from 'next';
-import { Archivo_Black, Literata } from 'next/font/google';
+import { Big_Shoulders_Stencil, Literata } from 'next/font/google';
 import './globals.css';
 import { SettingsProvider } from '@/context/SettingsContext';
 import CustomCursor from '@/components/CustomCursor';
 
-const archivoBlack = Archivo_Black({
-  weight: '400',
+const bigShouldersStencil = Big_Shoulders_Stencil({
+  // Pinned heavy: Archivo Black was intrinsically black at weight 400, so
+  // headings that only set `font-family` (e.g. Navbar) would otherwise
+  // render in this family's regular weight and read lighter, not bolder.
+  weight: '800',
   subsets: ['latin'],
-  variable: '--font-archivo-black',
+  variable: '--font-big-shoulders-stencil',
   display: 'swap',
+  // Next has no fallback metrics for this family, so pick condensed
+  // fallbacks by hand instead of letting it warn on every build.
+  adjustFontFallback: false,
+  fallback: ['Impact', 'Haettenschweiler', 'Arial Narrow', 'sans-serif'],
 });
 
 const literata = Literata({
@@ -41,7 +48,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${archivoBlack.variable} ${literata.variable} h-full antialiased`}
+      className={`${bigShouldersStencil.variable} ${literata.variable} h-full antialiased`}
     >
       <body className="min-h-full">
         <SettingsProvider>
@@ -50,7 +57,7 @@ export default function RootLayout({
           
           {/* Footer */}
           <footer className="section-overlay py-3">
-            <div className="section-container text-center text-sm text-desat">
+            <div className="section-container text-center text-sm text-smoke">
               <p>
                 © {new Date().getFullYear()} Andrei Rech
               </p>
