@@ -1,7 +1,7 @@
 // src/components/Navbar.tsx
 'use client';
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, CSSProperties } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, Settings } from 'lucide-react';
 import { LinkedinIcon, GithubIcon } from '@/components/icons';
@@ -13,6 +13,19 @@ const ICON_CONFIG: IconConfig[] = [
   { id: 'linkedin', component: LinkedinIcon, href: 'https://www.linkedin.com/in/rechandrei/', ariaLabel: 'LinkedIn' },
   { id: 'github', component: GithubIcon, href: 'https://github.com/AndreiRech', ariaLabel: 'GitHub' }
 ];
+
+/** The backing layers of a torn-poster panel: the offset print shadow and
+    the scrap itself. They paint the background of whatever `torn` container
+    they sit in, so they go *beside* that container's content — `clip-path`
+    clips descendants, and the settings dropdown has to be free to overflow. */
+function TornBacking() {
+  return (
+    <>
+      <span aria-hidden="true" className="torn-shadow" />
+      <span aria-hidden="true" className="torn-scrap" />
+    </>
+  );
+}
 
 export default function Navbar() {
   const { language, toggleLanguage, t } = useSettings();
@@ -73,12 +86,15 @@ export default function Navbar() {
       transition={{ duration: 0.6, delay: 0.8, ease: [0.16, 1, 0.3, 1] }}
       className="fixed top-0 left-0 right-0 z-50 px-4 py-3 md:px-6"
     >
-      <div
-        className={`mx-auto flex max-w-5xl items-center justify-between rounded-full px-5 py-2.5 transition-all duration-500 glass shadow-lg shadow-black/20`}
-      >
+      {/* `torn` isolates this box, so the settings dropdown's own z-index no
+          longer reaches past it — the bar has to outrank the mobile menu here
+          for the dropdown to stay on top of an open menu. */}
+      <div className="torn z-10 mx-auto flex max-w-5xl items-center justify-between px-7 py-4" data-scrolled={scrolled}>
+        <TornBacking />
+
         <button
           onClick={() => handleNavClick('#hero')}
-          className="text-base font-black tracking-tight text-mist transition-colors hover:text-accent"
+          className="text-base font-black tracking-wide uppercase text-paper transition-colors hover:text-mustard"
           style={{ fontFamily: 'var(--font-heading)' }}
         >
           Andrei Rech
@@ -89,47 +105,47 @@ export default function Navbar() {
             <button
               key={link.id}
               onClick={() => handleNavClick(link.href)}
-              className={`px-3 py-1.5 text-sm font-medium transition-colors duration-200 ${
-                activeSection === link.id ? 'text-accent' : 'text-mist hover:text-accent'
+              className={`relative px-3 py-1.5 text-sm font-medium transition-colors duration-200 ${
+                activeSection === link.id ? 'text-mustard' : 'text-paper hover:text-mustard'
               }`}
             >
               {t(link.id === 'hero' ? 'nav_home' : `nav_${link.id}`)}
+              {activeSection === link.id && (
+                <span aria-hidden="true" className="absolute inset-x-2 bottom-0.5 h-[2px] bg-mustard" />
+              )}
             </button>
           ))}
         </div>
 
         <div className="flex items-center gap-2 relative" ref={settingsRef}>
-          <div className="hidden sm:flex items-center gap-1 border-r border-glass-border pr-2 mr-1">
+          <div className="hidden sm:flex items-center gap-1 border-r border-panel-border pr-2 mr-1">
             {ICON_CONFIG.map((icon) => {
               const Icon = icon.component;
               return (
-                <motion.a
+                <a
                   key={icon.id}
                   href={icon.href}
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={icon.ariaLabel}
-                  className="flex items-center justify-center rounded-full p-2"
-                  initial={{ color: '#ECEFF1', backgroundColor: 'transparent' }}
-                  whileHover={{ color: '#CC3766', backgroundColor: 'rgba(236, 239, 241, 0.05)' }}
-                  transition={{ duration: 0.2 }}
+                  className="flex items-center justify-center p-2 text-paper transition-colors duration-200 hover:text-mustard"
                 >
                   <Icon size={16} />
-                </motion.a>
+                </a>
               );
             })}
           </div>
 
           <button
             onClick={() => setSettingsOpen(!settingsOpen)}
-            className={`flex h-8 w-8 items-center justify-center rounded-full border transition-all duration-200 ${
+            className={`flex h-8 w-8 items-center justify-center rounded-[2px] border-2 transition-colors duration-200 ${
               settingsOpen
-                ? 'border-mist/30 bg-mist/10 text-accent shadow-inner'
-                : 'border-glass-border bg-transparent text-mist hover:text-accent'
+                ? 'border-mustard bg-mustard text-ink'
+                : 'border-panel-border bg-transparent text-paper hover:border-mustard hover:text-mustard'
             }`}
             aria-label="Settings"
           >
-            <Settings size={14} className={settingsOpen ? 'animate-spin-slow' : ''} />
+            <Settings size={14} />
           </button>
 
           <AnimatePresence>
@@ -139,14 +155,14 @@ export default function Navbar() {
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: 10, scale: 0.95 }}
                 transition={{ duration: 0.2, ease: "easeOut" }}
-                className="absolute right-0 top-full mt-3 w-40 rounded-2xl border border-glass-border bg-ink p-4 shadow-2xl"
-                style={{ zIndex: 100 }}
+                className="panel absolute right-0 top-full mt-4 w-40 p-4"
+                style={{ zIndex: 100, '--panel-offset': '4px' } as CSSProperties}
               >
                 <div>
-                  <span className="mb-2 block text-[10px] font-bold tracking-widest text-desat uppercase">{t('lang_label')}</span>
-                  <div className="relative flex h-10 w-full items-center rounded-full bg-ink p-1 shadow-inner border border-white/5">
+                  <span className="mb-2 block text-[10px] font-bold tracking-widest text-smoke uppercase">{t('lang_label')}</span>
+                  <div className="relative flex h-10 w-full items-center rounded-[2px] border-2 border-panel-border bg-ink p-1">
                     <motion.div
-                      className="absolute top-1 bottom-1 w-[calc(50%-4px)] rounded-full bg-plum"
+                      className="absolute top-1 bottom-1 w-[calc(50%-4px)] rounded-[2px] bg-plum"
                       animate={{ left: language === 'en' ? 'calc(50% + 2px)' : '4px' }}
                       transition={{ type: 'spring', stiffness: 400, damping: 25 }}
                     />
@@ -160,7 +176,7 @@ export default function Navbar() {
 
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
-            className="ml-1 rounded-full p-2 text-desat transition-colors hover:text-mist md:hidden"
+            className="ml-1 p-2 text-smoke transition-colors hover:text-paper md:hidden"
             aria-label="Toggle menu"
           >
             {mobileOpen ? <X size={18} /> : <Menu size={18} />}
@@ -175,15 +191,19 @@ export default function Navbar() {
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.3 }}
-            className="glass mx-auto mt-2 max-w-5xl overflow-hidden rounded-2xl md:hidden"
+            className="torn torn-menu mx-auto mt-3 max-w-5xl overflow-hidden md:hidden"
           >
-            <div className="flex flex-col gap-1 p-3">
+            <TornBacking />
+
+            <div className="flex flex-col gap-1 p-4 pr-6 pb-6">
               {navLinks.map((link) => (
                 <button
                   key={link.id}
                   onClick={() => handleNavClick(link.href)}
-                  className={`rounded-lg px-4 py-2.5 text-left text-sm transition-colors ${
-                    activeSection === link.id ? 'text-accent' : 'text-desat hover:text-mist'
+                  className={`px-4 py-2.5 text-left text-sm transition-colors ${
+                    activeSection === link.id
+                      ? 'text-mustard border-l-2 border-mustard'
+                      : 'text-paper border-l-2 border-transparent hover:text-mustard'
                   }`}
                 >
                   {t(link.id === 'hero' ? 'nav_home' : `nav_${link.id}`)}
