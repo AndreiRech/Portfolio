@@ -21,7 +21,6 @@ signal, so an inactive card brightens to `smoke` on hover instead.
 The tech/skill chip repeated across all three panels became a `.tag-chip` utility in
 `globals.css`, following the `.filter-chip` / `.category-badge` precedent.
 
-**Not covered by this or any other ticket:** `src/components/ProjectDetails.tsx` still
-consumes `.glass` and the deleted `accent`/`mist`/`desat`/`base`/`midnight` tokens, so
-the project-detail page renders unstyled. `CustomCursor.tsx` has one dead `text-mist`.
-Both need a ticket of their own. (`HeroSection`'s dead tokens are ticket 06's job.)
+Left outside this ticket's scope, now tracked separately: `ProjectDetails.tsx` still
+consumes `.glass` and the deleted tokens (ticket 09), and `CustomCursor.tsx` is still on
+the pre-redesign palette (ticket 10). `HeroSection`'s dead tokens are ticket 06's job.
