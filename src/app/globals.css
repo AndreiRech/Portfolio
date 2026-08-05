@@ -418,6 +418,119 @@ body {
   }
 }
 
+/* ── Glitch flicker ──────────────────────────────────────────
+   The site's one signal glitch: a brief RGB-channel split, fired on hover and
+   once as a section title arrives. It is an accent, so it is built to be hard
+   to trigger by accident — nothing here loops, nothing runs on scroll alone,
+   and no keyframe touches the text's own color or opacity, so the string stays
+   readable through the flicker and is left exactly where it started after it.
+
+   The split rides `text-shadow` rather than two `::before`/`::after` copies of
+   the string. Shadows inherit, so a card can split its whole label off one
+   class; there is no duplicate of the text to fall out of sync with the other
+   locale or to reach a screen reader; and it costs no layout, which a stack of
+   absolutely positioned clones of live text does.
+
+   Both fringes are palette accents lifted toward `paper`. At full strength
+   `blood` and `plum` sit at 2.6:1 and 1.8:1 on ink (see the palette notes at
+   the top) — a fringe that dark on a near-black page is a fringe nobody sees.
+   Declared on `:root` for the same reason `--category-line` is: the keyframes
+   resolve them against whichever element is animating. */
+:root {
+  --glitch-shift: 2px;
+  --glitch-warm: color-mix(in srgb, var(--color-blood) 75%, var(--color-paper));
+  --glitch-cool: color-mix(in srgb, var(--color-plum) 60%, var(--color-paper));
+}
+
+/* Stepped, never eased — see the timing function on the rules below. The
+   channels swap sides, drop out for a clean beat, then land back at zero. */
+@keyframes glitch-flicker {
+  0% {
+    text-shadow: none;
+    translate: 0;
+  }
+  20% {
+    text-shadow:
+      calc(-1 * var(--glitch-shift)) 0 var(--glitch-warm),
+      var(--glitch-shift) 0 var(--glitch-cool);
+    translate: var(--glitch-shift);
+  }
+  40% {
+    text-shadow: none;
+    translate: 0;
+  }
+  55% {
+    text-shadow:
+      var(--glitch-shift) 0 var(--glitch-warm),
+      calc(-1 * var(--glitch-shift)) 0 var(--glitch-cool);
+    translate: calc(-1 * var(--glitch-shift));
+  }
+  70% {
+    text-shadow:
+      calc(-0.5 * var(--glitch-shift)) 0 var(--glitch-cool),
+      calc(0.5 * var(--glitch-shift)) 0 var(--glitch-warm);
+    translate: 0;
+  }
+  85%,
+  100% {
+    text-shadow: none;
+    translate: 0;
+  }
+}
+
+/* Two triggers, one animation.
+
+   `glitch-hover` goes on the interactive element itself, or on the text inside
+   one marked `group` — the contact tiles are a whole panel wide, and jolting
+   the entire card (border, offset shadow and all) reads as the layout breaking
+   rather than as the signal dropping.
+
+   `glitch-reveal` goes on anything inside an `AnimatedSection`, which
+   publishes its `useInView` state as `data-revealed`. The reveal therefore
+   rides the observer already watching that section instead of adding a second
+   one, and with `AnimatedSection`'s default `once`, the attribute flips false →
+   true exactly once, so the flicker cannot replay on scrolling back through.
+
+   Plain classes rather than `@utility`, on the same grounds as `.torn-scrap`:
+   these set `animation` and nothing else, and no Tailwind utility competing for
+   that property lands on any of their consumers.
+
+   `steps(1, end)` is what makes it read as a dropped signal — each keyframe is
+   held flat and then jumped out of, where an eased tween would smear the
+   fringes in and out and come off as a soft glow. */
+.glitch-hover:hover,
+.glitch-hover:focus-visible,
+.group:hover .glitch-hover,
+.group:focus-visible .glitch-hover {
+  animation: glitch-flicker 260ms steps(1, end);
+}
+
+/* Delayed into the section's own 0.7s entrance rather than fired at its start:
+   a split composited through type that is still fading up from zero opacity is
+   mostly invisible, and the point of the accent is the hit once the title is
+   legibly there. */
+[data-revealed='true'] .glitch-reveal {
+  /* The reveal lands on display type — 36–48px — where the 2px the hover
+     trigger uses on 14px chrome all but disappears. Checked against the real
+     titles at 2/3/4/5px: 3px is the last step that still splits cleanly, past
+     which the fringes start filling the counters of E and R. */
+  --glitch-shift: 3px;
+  animation: glitch-flicker 420ms steps(1, end) 180ms;
+}
+
+/* A hard chromatic stutter is exactly the kind of motion this setting is
+   asking about, and the effect carries no information, so it is dropped
+   outright rather than softened. */
+@media (prefers-reduced-motion: reduce) {
+  .glitch-hover:hover,
+  .glitch-hover:focus-visible,
+  .group:hover .glitch-hover,
+  .group:focus-visible .glitch-hover,
+  [data-revealed='true'] .glitch-reveal {
+    animation: none;
+  }
+}
+
 /* Section readability overlay */
 .section-overlay {
   position: relative;

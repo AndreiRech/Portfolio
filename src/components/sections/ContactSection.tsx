@@ -25,7 +25,7 @@ export default function ContactSection() {
           <span className="text-sm font-medium tracking-widest text-mustard uppercase">
             {t('contact_subtitle')}
           </span>
-          <h2 className="mt-3 text-4xl font-black text-paper md:text-5xl" style={{ fontFamily: 'var(--font-heading)' }}>
+          <h2 className="glitch-reveal mt-3 text-4xl font-black text-paper md:text-5xl" style={{ fontFamily: 'var(--font-heading)' }}>
             {t('contact_title')}
           </h2>
           <p className="mt-4 max-w-2xl text-base leading-relaxed text-smoke md:text-lg">
@@ -48,7 +48,12 @@ export default function ContactSection() {
                 <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[2px] bg-plum text-paper transition-colors duration-200 group-hover:bg-mustard group-hover:text-ink">
                   <Icon size={20} />
                 </div>
-                <div>
+                {/* The glitch sits on the text block, not on the `<a>`: the
+                    whole panel is the hit area, and splitting the card itself —
+                    border, offset shadow and all — would read as the layout
+                    breaking. `.group` on the anchor is what carries the hover
+                    down here. */}
+                <div className="glitch-hover">
                   <p className="text-sm font-bold text-paper">{label}</p>
                   <p className="mt-0.5 text-xs text-smoke">{value}</p>
                 </div>

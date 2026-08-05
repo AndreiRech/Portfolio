@@ -59,7 +59,7 @@ function FilterButtons() {
           onClick={() => handleFilter(filter)}
           data-active={currentFilter === filter}
           style={categoryColorStyle(filter)}
-          className="filter-chip px-4 py-1.5 text-sm font-bold capitalize"
+          className="filter-chip glitch-hover px-4 py-1.5 text-sm font-bold capitalize"
         >
           {filterLabels[filter]}
         </button>
@@ -293,7 +293,7 @@ export default function ProjectsSection() {
       <div className="section-container mb-12 flex flex-col md:flex-row md:items-end justify-between">
         <AnimatedSection direction="up" className="flex-1">
           <span className="text-sm font-medium tracking-widest text-mustard uppercase">{t('proj_subtitle')}</span>
-          <h2 className="mt-3 text-4xl font-black text-paper md:text-5xl" style={{ fontFamily: 'var(--font-heading)' }}>{t('proj_title')}</h2>
+          <h2 className="glitch-reveal mt-3 text-4xl font-black text-paper md:text-5xl" style={{ fontFamily: 'var(--font-heading)' }}>{t('proj_title')}</h2>
           <p className="mt-4 max-w-2xl text-base text-smoke md:text-lg">{t('proj_desc')}</p>
         </AnimatedSection>
         

@@ -208,7 +208,7 @@ export default function HeroSection() {
               href={href}
               target="_blank"
               rel="noopener noreferrer"
-              className="hero-label pointer-events-auto flex items-center gap-1.5 bg-ink px-3 py-1.5 text-xs font-bold tracking-widest text-paper uppercase transition-colors duration-200 hover:bg-mustard hover:text-ink"
+              className="hero-label glitch-hover pointer-events-auto flex items-center gap-1.5 bg-ink px-3 py-1.5 text-xs font-bold tracking-widest text-paper uppercase transition-colors duration-200 hover:bg-mustard hover:text-ink"
               style={{ '--hero-tilt': tilt } as CSSProperties}
             >
               <Icon size={13} /> {label}

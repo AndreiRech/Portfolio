@@ -16,7 +16,7 @@ export default function ExperienceSection() {
           <span className="text-sm font-medium tracking-widest text-mustard uppercase">
             {t('exp_subtitle')}
           </span>
-          <h2 className="mt-3 text-4xl font-black text-paper md:text-5xl" style={{ fontFamily: 'var(--font-heading)' }}>
+          <h2 className="glitch-reveal mt-3 text-4xl font-black text-paper md:text-5xl" style={{ fontFamily: 'var(--font-heading)' }}>
             {t('exp_title')}
           </h2>
         </AnimatedSection>

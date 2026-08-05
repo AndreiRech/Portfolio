@@ -22,7 +22,7 @@ export default function AboutSection() {
             {t('about_subtitle')}
           </span>
           <h2
-            className="mt-3 text-4xl font-black text-paper md:text-5xl"
+            className="glitch-reveal mt-3 text-4xl font-black text-paper md:text-5xl"
             style={{ fontFamily: 'var(--font-heading)' }}
           >
             {t('about_title')}

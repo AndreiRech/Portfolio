@@ -94,7 +94,7 @@ export default function Navbar() {
 
         <button
           onClick={() => handleNavClick('#hero')}
-          className="text-base font-black tracking-wide uppercase text-paper transition-colors hover:text-mustard"
+          className="glitch-hover text-base font-black tracking-wide uppercase text-paper transition-colors hover:text-mustard"
           style={{ fontFamily: 'var(--font-heading)' }}
         >
           Andrei Rech
@@ -105,7 +105,7 @@ export default function Navbar() {
             <button
               key={link.id}
               onClick={() => handleNavClick(link.href)}
-              className={`relative px-3 py-1.5 text-sm font-medium transition-colors duration-200 ${
+              className={`glitch-hover relative px-3 py-1.5 text-sm font-medium transition-colors duration-200 ${
                 activeSection === link.id ? 'text-mustard' : 'text-paper hover:text-mustard'
               }`}
             >
@@ -200,7 +200,7 @@ export default function Navbar() {
                 <button
                   key={link.id}
                   onClick={() => handleNavClick(link.href)}
-                  className={`px-4 py-2.5 text-left text-sm transition-colors ${
+                  className={`glitch-hover px-4 py-2.5 text-left text-sm transition-colors ${
                     activeSection === link.id
                       ? 'text-mustard border-l-2 border-mustard'
                       : 'text-paper border-l-2 border-transparent hover:text-mustard'

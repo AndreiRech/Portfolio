@@ -54,6 +54,11 @@ export default function AnimatedSection({
   return (
     <motion.div
       ref={ref}
+      /* The reveal state, published for CSS. It is what lets a descendant
+         marked `glitch-reveal` fire off this component's `useInView` instead of
+         a second observer of its own — and with `once`, it flips false → true a
+         single time, so anything keyed to it plays once and stays played. */
+      data-revealed={isInView}
       initial="hidden"
       animate={isInView ? 'visible' : 'hidden'}
       variants={{
