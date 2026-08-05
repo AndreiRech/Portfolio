@@ -53,6 +53,16 @@ export interface IconConfig {
   ariaLabel: string;
 }
 
+/** A contact card in `ContactSection`: `IconConfig`'s icon-plus-link shape,
+    but labelled for display rather than for a bare icon button. */
+export interface ContactLink {
+  id: string;
+  component: React.FC<{ size?: number; className?: string }>;
+  href: string;
+  label: string;
+  value: string;
+}
+
 export interface NavLink {
   id: string;
   label: string;

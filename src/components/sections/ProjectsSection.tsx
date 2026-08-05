@@ -133,7 +133,7 @@ function ProjectsCarousel() {
 
   if (filteredProjects.length === 0) {
     return (
-      <div className="flex items-center justify-center min-h-[500px] text-desat">
+      <div className="flex items-center justify-center min-h-[500px] text-smoke">
         {t('proj_empty')}
       </div>
     );
@@ -226,9 +226,14 @@ function CarouselCard({ project, origIndex, activeOrigIndex, dragX, totalWidth, 
       onPointerUp={handlePointerUp}
       onClick={(e) => e.preventDefault()}
     >
-      <div className={`glass flex flex-col overflow-hidden rounded-2xl transition-all duration-500 ${isActive ? 'border-accent/40 shadow-xl shadow-accent/10' : 'hover:border-mist/15'}`} style={{ height: CARD_HEIGHT }}>
-        <div className="relative flex h-56 items-center justify-center overflow-hidden bg-midnight/40 pointer-events-none">
-          <div className="flex flex-col items-center gap-2 text-desat/30">
+      {/* The active card is called out by a mustard border rather than a bloom
+          of colored shadow — `.panel`'s own hard offset shadow is the only one
+          a printed label gets. Deliberately *not* `.panel-hover`: mustard is
+          spoken for as this carousel's active-card signal, so an inactive card
+          brightens to `smoke` on hover instead of claiming the active look. */}
+      <div className={`panel flex flex-col overflow-hidden transition-colors duration-500 ${isActive ? 'border-mustard' : 'hover:border-smoke'}`} style={{ height: CARD_HEIGHT }}>
+        <div className="relative flex h-56 items-center justify-center overflow-hidden bg-ink pointer-events-none">
+          <div className="flex flex-col items-center gap-2 text-smoke/30">
             {project.cardImageUrl ? (
               <Image src={project.cardImageUrl} alt={`${project.name} card`} fill sizes="100vw" className="object-cover" />
             ) : (
@@ -238,12 +243,14 @@ function CarouselCard({ project, origIndex, activeOrigIndex, dragX, totalWidth, 
               </>
             )}
           </div>
-          <div className="absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-base/60 to-transparent" />
+          <div className="absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-ink/60 to-transparent" />
         </div>
 
         <div className="flex flex-1 flex-col p-5 pointer-events-none">
+          {/* `mustard`, not the reserved `block-yellow` — an award is site
+              chrome, not a project category. */}
           {project.awards && project.awards.length > 0 && (
-            <div className="mb-2 flex items-center gap-1.5 text-yellow-500">
+            <div className="mb-2 flex items-center gap-1.5 text-mustard">
               <Trophy size={14} />
               <span className="text-[10px] font-bold tracking-widest uppercase truncate">
                 {project.awards[0].long}
@@ -251,7 +258,7 @@ function CarouselCard({ project, origIndex, activeOrigIndex, dragX, totalWidth, 
             </div>
           )}
 
-          <h3 className="text-2xl font-bold leading-tight text-mist" style={{ fontFamily: 'var(--font-heading)' }}>{project.name}</h3>
+          <h3 className="text-2xl font-bold leading-tight text-paper" style={{ fontFamily: 'var(--font-heading)' }}>{project.name}</h3>
           <div className="mt-1.5 flex items-center gap-2">
             <span
               className="category-badge px-2 py-0.5 text-xs font-bold tracking-wider uppercase"
@@ -259,15 +266,15 @@ function CarouselCard({ project, origIndex, activeOrigIndex, dragX, totalWidth, 
             >
               {categoryLabel}
             </span>
-            <span className="text-sm text-desat/50">•</span>
-            <span className="text-sm font-medium text-desat/60">{project.date}</span>
+            <span className="text-sm text-smoke/50">•</span>
+            <span className="text-sm font-medium text-smoke/60">{project.date}</span>
           </div>
           <div className="mt-3 flex flex-wrap gap-1.5">
             {project.technologies.map((tag) => (
-              <span key={tag} className="rounded-md border border-glass-border bg-glass-hover px-2 py-0.5 text-[12px] text-mist">{tag}</span>
+              <span key={tag} className="tag-chip px-2 py-0.5 text-xs">{tag}</span>
             ))}
           </div>
-          <p className="mt-3 flex-1 text-m leading-relaxed text-mist">{project.shortDescription}</p>
+          <p className="mt-3 flex-1 text-base leading-relaxed text-paper">{project.shortDescription}</p>
         </div>
       </div>
     </motion.div>
@@ -281,9 +288,9 @@ export default function ProjectsSection() {
     <section id="projects" className="section-overlay py-28 md:py-36">
       <div className="section-container mb-12 flex flex-col md:flex-row md:items-end justify-between">
         <AnimatedSection direction="up" className="flex-1">
-          <span className="text-sm font-medium tracking-widest text-accent uppercase">{t('proj_subtitle')}</span>
-          <h2 className="mt-3 text-4xl font-black text-mist md:text-5xl" style={{ fontFamily: 'var(--font-heading)' }}>{t('proj_title')}</h2>
-          <p className="mt-4 max-w-2xl text-base text-desat md:text-lg">{t('proj_desc')}</p>
+          <span className="text-sm font-medium tracking-widest text-mustard uppercase">{t('proj_subtitle')}</span>
+          <h2 className="mt-3 text-4xl font-black text-paper md:text-5xl" style={{ fontFamily: 'var(--font-heading)' }}>{t('proj_title')}</h2>
+          <p className="mt-4 max-w-2xl text-base text-smoke md:text-lg">{t('proj_desc')}</p>
         </AnimatedSection>
         
         <Suspense fallback={<div className="h-10 w-full md:w-64" />}>

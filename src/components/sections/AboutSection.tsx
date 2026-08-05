@@ -2,7 +2,6 @@
 
 import AnimatedSection from '@/components/AnimatedSection';
 import Image from 'next/image';
-import { User } from 'lucide-react';
 import { useSettings } from '@/context/SettingsContext';
 
 const skills = [
@@ -19,11 +18,11 @@ export default function AboutSection() {
     <section id="about" className="section-overlay py-28 md:py-36">
       <div className="section-container">
         <AnimatedSection direction="left">
-          <span className="text-sm font-medium tracking-widest text-accent uppercase">
+          <span className="text-sm font-medium tracking-widest text-mustard uppercase">
             {t('about_subtitle')}
           </span>
           <h2
-            className="mt-3 text-4xl font-black text-mist md:text-5xl"
+            className="mt-3 text-4xl font-black text-paper md:text-5xl"
             style={{ fontFamily: 'var(--font-heading)' }}
           >
             {t('about_title')}
@@ -33,32 +32,30 @@ export default function AboutSection() {
         <div className="mt-12 grid gap-12 md:grid-cols-[280px_1fr]">
           <AnimatedSection direction="left" delay={0.15}>
             <div className="flex flex-col items-center gap-8 md:items-start w-full">
-              <div className="glass flex h-72 w-full items-center justify-center overflow-hidden rounded-2xl md:h-80">
-                <div className="flex flex-col items-center gap-3 text-desat/40">
-                  <Image
-                    src={t('about_photo')}
-                    alt="Profile Photo"
-                    width={400}
-                    height={400}
-                    quality={100}
-                    draggable={false}
-                    className="h-full w-auto object-contain pointer-events-none rounded-xl"
-                  />
-                </div>
+              <div className="panel flex h-72 w-full items-center justify-center overflow-hidden md:h-80">
+                <Image
+                  src={t('about_photo')}
+                  alt="Profile Photo"
+                  width={400}
+                  height={400}
+                  quality={100}
+                  draggable={false}
+                  className="h-full w-auto object-contain pointer-events-none"
+                />
               </div>
 
               <div className="flex flex-col gap-2 w-full">
-                <h2 className="text-md font-bold text-accent leading-tight" style={{ fontFamily: 'var(--font-heading)' }}>
+                <h2 className="text-base font-bold text-mustard leading-tight" style={{ fontFamily: 'var(--font-heading)' }}>
                   {t('about_edu_title')}
                 </h2>
-                <h3 className="text-lg font-bold text-mist leading-tight" style={{ fontFamily: 'var(--font-heading)' }}>
+                <h3 className="text-lg font-bold text-paper leading-tight" style={{ fontFamily: 'var(--font-heading)' }}>
                   {t('about_edu_degree')}
                 </h3>
                 <div className="flex flex-col gap-1">
-                  <p className="text-sm text-desat leading-relaxed" style={{ fontFamily: 'var(--font-body)' }}>
+                  <p className="text-sm text-smoke leading-relaxed" style={{ fontFamily: 'var(--font-body)' }}>
                     {t('about_edu_uni')}
                   </p>
-                  <span className="text-xs font-medium tracking-wider text-desat/60 uppercase">
+                  <span className="text-xs font-medium tracking-wider text-smoke/60 uppercase">
                     2023 — 2026
                   </span>
                 </div>
@@ -68,7 +65,7 @@ export default function AboutSection() {
 
           <div className="flex flex-col gap-10">
             <AnimatedSection direction="right" delay={0.2}>
-              <div className="space-y-5 text-base leading-relaxed text-desat md:text-lg">
+              <div className="space-y-5 text-base leading-relaxed text-smoke md:text-lg">
                 <p>{t('about_p1')}</p>
                 <p>{t('about_p2')}</p>
                 <p>{t('about_p3')}</p>
@@ -80,9 +77,9 @@ export default function AboutSection() {
                 {skills.map((group) => (
                   <div
                     key={group.category}
-                    className="glass rounded-xl p-5 transition-all duration-300 hover:border-accent/30"
+                    className="panel panel-hover p-5"
                   >
-                    <h3 className="mb-4 text-sm font-bold tracking-wider text-accent uppercase">
+                    <h3 className="mb-4 text-sm font-bold tracking-wider text-mustard uppercase">
                       {group.category}
                     </h3>
                     
@@ -90,7 +87,7 @@ export default function AboutSection() {
                       {group.items.map((item) => (
                         <li 
                           key={item} 
-                          className="rounded-md border border-glass-border bg-glass-hover px-2.5 py-1 text-xs text-mist transition-colors hover:text-accent"
+                          className="tag-chip px-2.5 py-1 text-xs"
                         >
                           {item}
                         </li>

@@ -303,6 +303,24 @@ body {
   color: var(--category-on, var(--color-ink));
 }
 
+/* ── Tag chip ────────────────────────────────────────────────
+   The little technology/skill tags that sit *inside* a `.panel` (About's
+   skill groups, Experience entries, project cards). `ink` is darker than
+   `panel`, so the chip reads as stamped into the label rather than raised
+   off it — the inverse of how `.panel` sits on the page.
+   Colors only: each site keeps its own padding and text size. */
+@utility tag-chip {
+  border: 1px solid var(--color-panel-border);
+  border-radius: 2px;
+  background-color: var(--color-ink);
+  color: var(--color-paper);
+  transition: color 0.2s ease;
+
+  &:hover {
+    color: var(--color-mustard);
+  }
+}
+
 /* Section readability overlay */
 .section-overlay {
   position: relative;
