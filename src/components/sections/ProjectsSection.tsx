@@ -233,16 +233,20 @@ function CarouselCard({ project, origIndex, activeOrigIndex, dragX, totalWidth, 
           brightens to `smoke` on hover instead of claiming the active look. */}
       <div className={`panel flex flex-col overflow-hidden transition-colors duration-500 ${isActive ? 'border-mustard' : 'hover:border-smoke'}`} style={{ height: CARD_HEIGHT }}>
         <div className="relative flex h-56 items-center justify-center overflow-hidden bg-ink pointer-events-none">
-          <div className="flex flex-col items-center gap-2 text-smoke/30">
-            {project.cardImageUrl ? (
+          {/* The screen belongs to the artwork, so it rides a wrapper around
+              the image itself — the placeholder branch is an icon, and an icon
+              printed through a halftone is just a chewed-up icon. That wrapper
+              is also what `fill` positions against. */}
+          {project.cardImageUrl ? (
+            <div className="halftone absolute inset-0">
               <Image src={project.cardImageUrl} alt={`${project.name} card`} fill sizes="100vw" className="object-cover" />
-            ) : (
-              <>
-                <ImageIcon size={32} strokeWidth={1} />
-                <span className="text-[10px] tracking-widest uppercase">{isActive ? t('proj_view_details') : t('proj_preview')}</span>
-              </>
-            )}
-          </div>
+            </div>
+          ) : (
+            <div className="flex flex-col items-center gap-2 text-smoke/30">
+              <ImageIcon size={32} strokeWidth={1} />
+              <span className="text-[10px] tracking-widest uppercase">{isActive ? t('proj_view_details') : t('proj_preview')}</span>
+            </div>
+          )}
           <div className="absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-ink/60 to-transparent" />
         </div>
 

@@ -33,15 +33,21 @@ export default function AboutSection() {
           <AnimatedSection direction="left" delay={0.15}>
             <div className="flex flex-col items-center gap-8 md:items-start w-full">
               <div className="panel flex h-72 w-full items-center justify-center overflow-hidden md:h-80">
-                <Image
-                  src={t('about_photo')}
-                  alt="Profile Photo"
-                  width={400}
-                  height={400}
-                  quality={100}
-                  draggable={false}
-                  className="h-full w-auto object-contain pointer-events-none"
-                />
+                {/* The screen wraps the photo, not the frame: the portrait is
+                    letterboxed inside the panel, and dots multiplied over the
+                    bare panel fill either side of it would read as a dirty
+                    label rather than a screened photograph. */}
+                <div className="halftone h-full">
+                  <Image
+                    src={t('about_photo')}
+                    alt="Profile Photo"
+                    width={400}
+                    height={400}
+                    quality={100}
+                    draggable={false}
+                    className="h-full w-auto object-contain pointer-events-none"
+                  />
+                </div>
               </div>
 
               <div className="flex flex-col gap-2 w-full">

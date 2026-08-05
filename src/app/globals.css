@@ -358,6 +358,66 @@ body {
   }
 }
 
+/* ── Halftone screen ─────────────────────────────────────────
+   Featured photography — the About portrait and the project card images —
+   is printed through a dot screen, so it comes off the same press as the
+   poster panels around it. Strictly local by design: it goes on those two
+   surfaces and nowhere else. Not the page, not icons, not logos, because a
+   halftone is something you shoot a *photograph* through; applied globally
+   it stops being a print process and becomes a filter over the site.
+
+   Mark the box that the image fills; the screen is painted over it by
+   `::after`. `isolation` keeps the blend inside that box so the dots
+   multiply into the image and nothing behind it.
+
+   `position` here is only a floor — `::after` needs *some* positioned box to
+   inset against, and `relative` is the one that costs a caller nothing. A
+   consumer that has to place the box itself overrides it with `absolute`,
+   which works for the same reason `.panel`'s overrides do: `@utility` lands
+   this in Tailwind's utilities layer, where a core utility still wins.
+
+   Two offset grids of the same dot, not one: the half-cell stagger lays the
+   dots on a diagonal lattice — the 45° angle a real screen is shot at, which
+   is what stops it reading as graph paper — and it costs one extra gradient
+   on a layer that was already being painted. No image asset, no request.
+
+   `multiply` is what sells it as ink rather than a gray veil laid on top:
+   the dots bite hardest into paper-white and midtones and disappear into the
+   shadows, the way a screen behaves on press. Solid blacks come out solid —
+   that's the effect being faithful, not the effect missing. */
+@utility halftone {
+  position: relative;
+  isolation: isolate;
+  /* One pitch for every surface that takes the screen, so the portrait and
+     the cards look shot through the same plate. Fine enough to stay texture
+     at card size, coarse enough to still read as dots rather than mush. */
+  --halftone-cell: 5px;
+
+  /* The screen costs the image roughly a tenth of its light; the contrast and
+     brightness pay that back on the way in, so what's under the dots keeps its
+     punch. The pinch of desaturation isn't owed to the dots at all — it's this
+     utility pulling photography a step toward the noir palette it now sits in,
+     and it lives here because these two images are the only photography on the
+     page. */
+  & img {
+    filter: contrast(1.12) brightness(1.06) saturate(0.92);
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image:
+      radial-gradient(circle at center, var(--color-ink) 0 1.1px, transparent 1.2px),
+      radial-gradient(circle at center, var(--color-ink) 0 1.1px, transparent 1.2px);
+    background-size: var(--halftone-cell) var(--halftone-cell);
+    background-position: 0 0, calc(var(--halftone-cell) / 2) calc(var(--halftone-cell) / 2);
+    opacity: 0.45;
+    mix-blend-mode: multiply;
+  }
+}
+
 /* Section readability overlay */
 .section-overlay {
   position: relative;
