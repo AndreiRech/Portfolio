@@ -24,11 +24,11 @@ type CursorState = 'default' | 'hover' | 'grab';
 // ─── Config ────────────────────────────────────────────────────────────────────
 const STATE_CONFIG: Record<
   CursorState,
-  { width: number; height: number; bg: string; border: string; opacity: number; scale: number }
+  { width: number; height: number; bg: string; border: string; color: string; opacity: number; scale: number }
 > = {
-  default: { width: 14, height: 14, bg: '#8384B1', border: 'rgba(0, 0, 0, 0)', opacity: 1, scale: 1 },
-  hover:   { width: 40, height: 40, bg: '#CC3766', border: 'rgba(0, 0, 0, 0)', opacity: 1, scale: 1 },
-  grab:    { width: 36, height: 36, bg: 'rgba(0, 0, 0, 0)', border: '#8384B1', opacity: 0.85, scale: 1 },
+  default: { width: 18, height: 18, bg: 'transparent', border: 'var(--color-paper)', color: 'var(--color-paper)', opacity: 1, scale: 1 },
+  hover:   { width: 40, height: 40, bg: 'transparent', border: 'var(--color-mustard)', color: 'var(--color-mustard)', opacity: 1, scale: 1 },
+  grab:    { width: 36, height: 36, bg: 'transparent', border: 'var(--color-paper)', color: 'var(--color-paper)', opacity: 0.9, scale: 1 },
 };
 
 const SPRING = { stiffness: 500, damping: 38, mass: 0.5 };
@@ -115,18 +115,20 @@ export default function CustomCursor() {
       ref={cursorRef}
       aria-hidden="true"
       className="custom-cursor"
+      data-state={state}
       style={{ 
         x, 
         y, 
         opacity: visible ? 1 : 0,
         borderWidth: '1.5px',
-        borderStyle: 'solid'
+        borderStyle: state === 'grab' ? 'dashed' : 'solid',
       }}
       animate={{
         width:           cfg.width,
         height:          cfg.height,
         backgroundColor: cfg.bg,
         borderColor:     cfg.border,
+        color:           cfg.color,
         scale:           cfg.scale,
       }}
       transition={{
@@ -134,10 +136,16 @@ export default function CustomCursor() {
         height:          SIZE_SPRING,
         backgroundColor: { duration: 0.18, ease: 'easeOut' },
         borderColor:     { duration: 0.18, ease: 'easeOut' },
+        color:           { duration: 0.18, ease: 'easeOut' },
         opacity:         { duration: 0.2 },
         scale:           SIZE_SPRING,
       }}
     >
+      {/* The animated ring stays open while these two token-colored hairlines
+          extend past it, turning the cursor into a true crosshair. */}
+      <span className="absolute left-1/2 top-1/2 h-[1.5px] w-[calc(100%+10px)] -translate-x-1/2 -translate-y-1/2 bg-current" />
+      <span className="absolute left-1/2 top-1/2 h-[calc(100%+10px)] w-[1.5px] -translate-x-1/2 -translate-y-1/2 bg-current" />
+
       {/* Grab-state label — "drag" hint */}
       <AnimatePresence>
         {state === 'grab' && (
@@ -147,7 +155,7 @@ export default function CustomCursor() {
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.6 }}
             transition={{ duration: 0.15 }}
-            className="text-[10px] font-bold tracking-widest text-mist"
+            className="relative z-10 text-[10px] font-bold tracking-widest text-mustard"
             style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}
           >
             ↔
