@@ -260,6 +260,43 @@ body {
   clip-path: var(--torn-edge);
 }
 
+/* ── Hero collage label ──────────────────────────────────────
+   The hero's name/role lockup is pasted up out of these: colored poster
+   scraps with an unprinted paper edge, each stuck down at its own slight
+   angle.
+
+   What separates it from `.panel` is which layer carries the color. A panel
+   is a dark printed card and its border is a printed rule; a hero label is a
+   *color field* and its border is the raw cream stock it was cut from — the
+   way the reference lockup's labels sit on their torn backing. So the fill
+   stays per-instance (`bg-plum`, `bg-blood`, `bg-paper`, `bg-ink`) and this
+   utility owns only the edge, the print shadow, and the paste angle.
+
+   The tilt rides the standalone `rotate` property rather than `transform`,
+   which lets a label be a `motion` element and animate its entrance without
+   the two fighting over one declaration — the browser composes the
+   individual `rotate` with `transform` on its own.
+
+   All three knobs are custom properties rather than Tailwind overrides: the
+   edge is set with the `border` shorthand, so a `border-*` utility landing on
+   the same element would win or lose on cascade order alone. */
+@utility hero-label {
+  --hero-tilt: 0deg;
+  /* Cream by default — but a cream *fill* would swallow a cream edge, so a
+     paper scrap re-points this at `ink` to keep its keyline. */
+  --hero-edge: var(--color-paper);
+  --hero-shadow: var(--color-panel-shadow);
+  position: relative;
+  border: 3px solid var(--hero-edge);
+  border-radius: 2px;
+  /* Prints at the same offset as `.panel`: `--panel-offset` doesn't inherit,
+     so this resolves to its `@property` initial value and the two surfaces
+     stay registered to one press. Not re-stated the way `.panel` re-states it
+     — nothing animates a hero label's shadow, so there's no fallback to lose. */
+  box-shadow: var(--panel-offset) var(--panel-offset) 0 0 var(--hero-shadow);
+  rotate: var(--hero-tilt);
+}
+
 /* ── Category identity ───────────────────────────────────────
    The four block colors reach the DOM through `--category-color` and
    `--category-on`, both set inline from `getCategoryColor()` — one mapping,

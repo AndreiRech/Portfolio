@@ -63,6 +63,18 @@ export interface ContactLink {
   value: string;
 }
 
+/** A link scrap in the hero collage. Distinct from `IconConfig` on both
+    counts: `label` is visible type on the sticker rather than an aria-label
+    standing in for a bare icon, and each scrap is pasted down at its own
+    angle. */
+export interface HeroLink {
+  id: string;
+  component: React.FC<{ size?: number; className?: string }>;
+  href: string;
+  label: string;
+  tilt: string;
+}
+
 export interface NavLink {
   id: string;
   label: string;

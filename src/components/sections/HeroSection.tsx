@@ -1,12 +1,43 @@
+// src/components/sections/HeroSection.tsx
 'use client';
 
-import { useRef, useCallback, useEffect, useState } from 'react';
+import { useRef, useCallback, useEffect, useState, CSSProperties, Fragment } from 'react';
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import { LinkedinIcon, GithubIcon } from '@/components/icons';
 import { useSettings } from '@/context/SettingsContext';
+import { HeroLink } from '@/types';
 
-const DRIFT_RADIUS = 200; 
+const DRIFT_RADIUS = 200;
 const SPRING_CONFIG = { stiffness: 220, damping: 24, mass: 0.6 };
+
+/** Split per word, not as one string: the plate rewraps between words at
+    narrow widths instead of overflowing, and the entrance stagger keeps
+    counting across the break via `startIndex`. */
+const NAME_WORDS = ['ANDREI', 'RECH'];
+
+/** Where each word's first letter falls in the one continuous stagger.
+    Derived rather than written out so renaming or resplitting `NAME_WORDS`
+    can't silently desynchronise the entrance. */
+const LETTER_START_INDEX = NAME_WORDS.map((_, w) =>
+  NAME_WORDS.slice(0, w).reduce((n, word) => n + word.length, 0)
+);
+
+/** One clock for the whole entrance. The first letter starts to rise at
+    `LETTER_LEAD` and each one after it falls `LETTER_STAGGER` further behind;
+    the plate underneath is given exactly `LETTER_LEAD` to finish its own fade,
+    so the per-letter stagger is never composited through a fading parent. */
+const LETTER_LEAD = 0.3;
+const LETTER_STAGGER = 0.04;
+
+/** Carried over from the pre-redesign meta row, which came in on the same two
+    beats — the collage re-cuts what those beats reveal, not when. */
+const ROLE_DELAY = 0.9;
+const LINKS_DELAY = 1.05;
+
+const HERO_LINKS: HeroLink[] = [
+  { id: 'linkedin', component: LinkedinIcon, href: 'https://www.linkedin.com/in/rechandrei/', label: 'LinkedIn', tilt: '-1.5deg' },
+  { id: 'github', component: GithubIcon, href: 'https://github.com/AndreiRech', label: 'GitHub', tilt: '2deg' },
+];
 
 interface DriftCharProps { char: string; index: number; }
 
@@ -37,7 +68,7 @@ function DriftChar({ char, index }: DriftCharProps) {
     targetY.set(0);
   }, [targetX, targetY]);
 
-  const entranceDelay = 0.3 + index * 0.04;
+  const entranceDelay = LETTER_LEAD + index * LETTER_STAGGER;
 
   return (
     <motion.span
@@ -45,9 +76,9 @@ function DriftChar({ char, index }: DriftCharProps) {
       data-cursor-hover
       className="inline-block cursor-none"
       style={{ x, y, rotate, display: 'inline-block' }}
-      initial={{ opacity: 0, y: 40, color: 'var(--color-mist)' }}
-      animate={{ opacity: 1, y: 0, color: 'var(--color-mist)' }}
-      whileHover={{ color: '#CC3766' }}
+      initial={{ opacity: 0, y: 40, color: 'var(--color-paper)' }}
+      animate={{ opacity: 1, y: 0, color: 'var(--color-paper)' }}
+      whileHover={{ color: 'var(--color-mustard)' }}
       transition={{
         opacity: { duration: 0.5, delay: entranceDelay },
         y: { duration: 0.9, delay: entranceDelay, ease: [0.16, 1, 0.3, 1] },
@@ -65,13 +96,9 @@ function DriftChar({ char, index }: DriftCharProps) {
 function SplitText({ text, startIndex = 0 }: { text: string; startIndex?: number; }) {
   return (
     <>
-      {text.split('').map((char, i) =>
-        char === ' ' ? (
-          <span key={i} className="inline-block" style={{ width: '0.25em' }} />
-        ) : (
-          <DriftChar key={i} char={char} index={startIndex + i} />
-        )
-      )}
+      {text.split('').map((char, i) => (
+        <DriftChar key={i} char={char} index={startIndex + i} />
+      ))}
     </>
   );
 }
@@ -91,44 +118,104 @@ export default function HeroSection() {
     );
   }, [t]);
 
-  const line1 = 'Andrei';
-  const line2 = 'Rech';
-
   return (
-    <section id="hero" className="relative flex min-h-screen flex-col justify-end overflow-hidden px-6 pb-10 md:px-10 md:pb-14">
+    <section id="hero" className="relative flex min-h-screen flex-col justify-center overflow-hidden px-6 py-28 md:px-10">
       <h1 className="sr-only">Andrei Rech</h1>
 
-      <div className="absolute inset-0 flex items-center justify-center px-4" aria-hidden="true">
-        <p className="select-none text-center text-[15vw] font-black leading-[0.85] text-mist md:text-[13vw]" style={{ fontFamily: 'var(--font-heading)', letterSpacing: '-0.04em' }}>
-          <span className="block"><SplitText text={line1} startIndex={0} /></span>
-          <span className="block"><SplitText text={line2} startIndex={line1.length + 1} /></span>
-        </p>
+      {/* Each piece is pasted a little further right and lapping the one above
+          it, so the lockup reads as scraps stuck down in passes rather than as
+          a stack of centered rows. */}
+      <div className="mx-auto w-full max-w-5xl">
+        <motion.div
+          className="hero-label w-fit bg-plum px-5 py-3 md:px-8 md:py-5"
+          style={{ '--hero-tilt': '-1.8deg', '--hero-shadow': 'var(--color-blood)' } as CSSProperties}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: LETTER_LEAD, ease: 'easeOut' }}
+          aria-hidden="true"
+        >
+          {/* The inset rule the reference's labels are printed with. */}
+          <span className="pointer-events-none absolute inset-1.5 border-2 border-paper/25 md:inset-2.5" />
+
+          <p
+            className="relative select-none text-[15vw] leading-[0.9] font-black uppercase md:text-[min(9vw,8rem)]"
+            style={{ fontFamily: 'var(--font-heading)', letterSpacing: '0.01em' }}
+          >
+            {NAME_WORDS.map((word, w) => (
+              <Fragment key={word}>
+                {/* A plain space between two inline-blocks: collapsible, so it
+                    is the only place the plate is allowed to break. */}
+                {w > 0 && ' '}
+                <span className="inline-block whitespace-nowrap">
+                  <SplitText text={word} startIndex={LETTER_START_INDEX[w]} />
+                </span>
+              </Fragment>
+            ))}
+          </p>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: ROLE_DELAY, ease: [0.16, 1, 0.3, 1] }}
+          /* The row's own box spans the full width, but only the scraps in it
+             are physically on top of the plate — so the box lets the pointer
+             through and each scrap takes it back. Without this, the strip the
+             row laps over would swallow hover on the `DriftChar` letters
+             underneath it. */
+          className="pointer-events-none relative z-10 -mt-3 flex flex-wrap items-start gap-y-3 pl-4 md:-mt-5 md:pl-20"
+        >
+          <div
+            className="hero-label pointer-events-auto bg-blood px-4 py-2 md:px-6 md:py-2.5"
+            style={{ '--hero-tilt': '2.2deg' } as CSSProperties}
+          >
+            <span
+              className="text-lg font-black tracking-wide text-paper uppercase md:text-2xl"
+              style={{ fontFamily: 'var(--font-heading)' }}
+            >
+              {t('hero_role')}
+            </span>
+          </div>
+
+          {/* Held back until the locale-formatted date exists rather than
+              reserving a width for it: an empty bordered scrap that then grows
+              to fit reads as a glitch, and the effect resolves long before this
+              row animates in anyway. */}
+          {formattedDate && (
+            <div
+              /* Laps the role label rather than sitting beside it — later in
+                 the row, so it paints over. `--hero-edge` flips to ink because
+                 the default cream edge would vanish into this scrap's fill. */
+              className="hero-label pointer-events-auto -ml-3 mt-4 bg-paper px-3 py-1.5 md:-ml-6 md:mt-6"
+              style={{ '--hero-tilt': '-3deg', '--hero-edge': 'var(--color-ink)' } as CSSProperties}
+            >
+              <span className="text-[10px] font-bold tracking-[0.2em] text-ink uppercase md:text-xs">
+                {formattedDate}
+              </span>
+            </div>
+          )}
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: LINKS_DELAY, ease: [0.16, 1, 0.3, 1] }}
+          className="pointer-events-none relative z-20 -mt-3 flex flex-wrap items-center gap-3 pl-4 md:-mt-4 md:pl-36"
+        >
+          {HERO_LINKS.map(({ id, component: Icon, href, label, tilt }) => (
+            <a
+              key={id}
+              href={href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hero-label pointer-events-auto flex items-center gap-1.5 bg-ink px-3 py-1.5 text-xs font-bold tracking-widest text-paper uppercase transition-colors duration-200 hover:bg-mustard hover:text-ink"
+              style={{ '--hero-tilt': tilt } as CSSProperties}
+            >
+              <Icon size={13} /> {label}
+            </a>
+          ))}
+        </motion.div>
       </div>
-
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, delay: 0.9, ease: [0.16, 1, 0.3, 1] }}
-        className="relative z-10 flex items-end justify-between"
-      >
-        <div className="flex flex-col gap-1">
-          <span className="text-[11px] font-medium tracking-wider text-accent uppercase min-h-[16px]">
-            {formattedDate}
-          </span>
-          <span className="text-sm font-medium text-mist">
-            {t('hero_role')}
-          </span>
-        </div>
-
-        <div className="flex items-center gap-4">
-          <a href="https://www.linkedin.com/in/rechandrei/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 text-xs font-bold tracking-widest text-mist/80 uppercase transition-colors hover:text-accent">
-            <LinkedinIcon size={13} /> LinkedIn
-          </a>
-          <a href="https://github.com/AndreiRech" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 text-xs font-bold tracking-widest text-mist/80 uppercase transition-colors hover:text-accent">
-            <GithubIcon size={13} /> GitHub
-          </a>
-        </div>
-      </motion.div>
     </section>
   );
 }
