@@ -115,7 +115,6 @@ export default function CustomCursor() {
       ref={cursorRef}
       aria-hidden="true"
       className="custom-cursor"
-      data-state={state}
       style={{ 
         x, 
         y, 

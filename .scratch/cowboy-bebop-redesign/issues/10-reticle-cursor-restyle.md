@@ -1,3 +1,5 @@
+Status: ready-for-human
+
 # 10 — Reticle/crosshair custom cursor
 
 **What to build:** `CustomCursor.tsx` is restyled from a filled circle into a reticle/crosshair, per `spec.md` user stories 10 and 11. This is the one implementation decision in the spec that never got a ticket in the original 01–08 breakdown, so the cursor is still wearing the pre-redesign palette: `STATE_CONFIG` hardcodes `#8384B1` and `#CC3766` — the old mist and rose accent — and the grab-state label still carries a dead `text-mist` class.

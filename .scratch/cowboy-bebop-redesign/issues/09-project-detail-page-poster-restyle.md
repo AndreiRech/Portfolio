@@ -1,3 +1,5 @@
+Status: ready-for-human
+
 # 09 — Poster restyle for the project detail page
 
 **What to build:** `ProjectDetails.tsx` — the `/projects/[id]` page — gets the same poster/noir treatment the home page already has. It was missed at spec level: `spec.md`'s panel-utility decision lists only "Navbar, About skill cards + photo frame, Experience timeline cards, Projects carousel cards, Contact cards", and ticket 05's fourth criterion scoped itself to `src/components/sections/`, which this file sits outside of. It is currently the largest broken surface in the redesign: ~67 class references to utilities and tokens that ticket 01 deleted (`glass`, `border-glass-border`, `accent`, `mist`, `desat`, `base`, `midnight`). Tailwind emits nothing for any of them, so the page renders as transparent boxes with inherited text color.
