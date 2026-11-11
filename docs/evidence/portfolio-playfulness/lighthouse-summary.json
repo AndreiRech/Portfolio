@@ -1,0 +1,35 @@
+{
+  "tool": "Lighthouse",
+  "version": "13.6.0",
+  "url": "http://127.0.0.1:3002/",
+  "mode": "mobile, simulated throttling, isolated browser, local Python HTTP server",
+  "scores": {
+    "performance": 78,
+    "accessibility": 100,
+    "best-practices": 100,
+    "seo": 100
+  },
+  "metrics": {
+    "first-contentful-paint": {
+      "displayValue": "1.4 s",
+      "numericValue": 1356.9548
+    },
+    "largest-contentful-paint": {
+      "displayValue": "6.1 s",
+      "numericValue": 6145.432199999999
+    },
+    "cumulative-layout-shift": {
+      "displayValue": "0",
+      "numericValue": 0
+    },
+    "total-blocking-time": {
+      "displayValue": "80 ms",
+      "numericValue": 76.5
+    }
+  },
+  "limitations": [
+    "Local static server does not enable compression or persistent caching.",
+    "This run does not establish production performance.",
+    "Mobile simulated LCP remains above 2.5 seconds."
+  ]
+}
