@@ -1,28 +1,20 @@
-// src/components/ClientApp.tsx
-'use client';
-
-import Navbar from '@/components/Navbar';
-import HeroSection from '@/components/sections/HeroSection';
-import AboutSection from '@/components/sections/AboutSection';
-import ProjectsSection from '@/components/sections/ProjectsSection';
-import ExperienceSection from '@/components/sections/ExperienceSection';
-import ContactSection from '@/components/sections/ContactSection';
-
+import HeroSection from "@/components/sections/HeroSection";
+import AboutSection from "@/components/sections/AboutSection";
+import ProjectsSection from "@/components/sections/ProjectsSection";
+import ExperienceSection from "@/components/sections/ExperienceSection";
+import ContactSection from "@/components/sections/ContactSection";
+import ContributionsSection from "@/components/sections/ContributionsSection";
+import ExploreSection from "@/components/sections/ExploreSection";
 export default function ClientApp() {
   return (
-    <>
-      {/* Static noir backdrop — sits where the animated shader canvas used to,
-          but renders on the first paint with no client-side work. */}
-      <div className="noir-backdrop" aria-hidden="true" />
-      <Navbar />
-      <main>
-        <HeroSection />
-        <AboutSection />
-        <ProjectsSection />
-        <ExperienceSection />
-        <ContactSection />
-      </main>
-
-    </>
+    <main id="main">
+      <HeroSection />
+      <ProjectsSection />
+      <AboutSection />
+      <ExperienceSection />
+      <ContributionsSection />
+      <ExploreSection />
+      <ContactSection />
+    </main>
   );
 }

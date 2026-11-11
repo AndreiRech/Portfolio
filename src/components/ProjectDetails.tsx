@@ -1,262 +1,144 @@
-// src/components/ProjectDetails.tsx
-'use client';
-
-import { CSSProperties, useRef, useState } from 'react';
-import { notFound } from 'next/navigation';
-import Image from 'next/image';
-import Link from 'next/link';
-import { ArrowLeft, ExternalLink, Smartphone, Image as ImageIcon, Trophy } from 'lucide-react';
-import { GithubIcon, ExternalSquareIcon } from '@/components/icons';
-import { getProjects } from '@/data/projects';
-import { getCategoryColor } from '@/lib/categoryColors';
-import { useSettings } from '@/context/SettingsContext';
-
-interface ProjectDetailsProps {
-  projectId: string;
-}
-
-export default function ProjectDetails({ projectId }: ProjectDetailsProps) {
-  const { language, t } = useSettings();
-  const project = getProjects(language).find((p) => p.id === projectId);
-
-  // ─── LÓGICA DE DRAG (ARRASTAR) PARA A GALERIA ───
-  const carouselRef = useRef<HTMLDivElement>(null);
-  const [isDragging, setIsDragging] = useState(false);
-  const [startX, setStartX] = useState(0);
-  const [scrollLeft, setScrollLeft] = useState(0);
-
-  const handleMouseDown = (e: React.MouseEvent) => {
-    if (!carouselRef.current) return;
-    setIsDragging(true);
-    setStartX(e.pageX - carouselRef.current.offsetLeft);
-    setScrollLeft(carouselRef.current.scrollLeft);
-  };
-
-  const handleMouseLeave = () => {
-    setIsDragging(false);
-  };
-
-  const handleMouseUp = () => {
-    setIsDragging(false);
-  };
-
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (!isDragging || !carouselRef.current) return;
-    e.preventDefault();
-    const x = e.pageX - carouselRef.current.offsetLeft;
-    const walk = (x - startX) * 1.5; // Velocidade do arrasto
-    carouselRef.current.scrollLeft = scrollLeft - walk;
-  };
-  // ────────────────────────────────────────────────
-
+"use client";
+import { useState } from "react";
+import { notFound } from "next/navigation";
+import Image from "next/image";
+import Link from "next/link";
+import { ArrowLeft, ArrowUpRight, Trophy } from "lucide-react";
+import { getProjects } from "@/data/projects";
+import { useSettings } from "@/context/SettingsContext";
+import ImageLightbox from "@/components/ImageLightbox";
+export default function ProjectDetails({ projectId }: { projectId: string }) {
+  const { language, copy: c, t } = useSettings();
+  const project = getProjects(language).find((item) => item.id === projectId);
+  const [expanded, setExpanded] = useState<string | null>(null);
   if (!project) notFound();
-
-  const categoryLabel = t(`cat_${project.category.toLowerCase()}`) || project.category;
-  const { block: categoryColor, on: categoryTextColor } = getCategoryColor(project.category);
-  const categoryStyle = {
-    '--category-color': categoryColor,
-    '--category-on': categoryTextColor,
-  } as CSSProperties;
-
+  const links = [
+    { href: project.links.appStore, label: "App Store" },
+    { href: project.links.github, label: "GitHub" },
+    { href: project.links.live, label: "Website" },
+    { href: project.links.other?.[1], label: project.links.other?.[0] },
+  ].filter((link) => link.href);
   return (
-    <main className="min-h-screen bg-ink px-6 pb-8 pt-16 text-paper selection:bg-mustard selection:text-ink md:px-10">
-      <div className="max-w-5xl mx-auto">
-        
-        <Link 
-          href="/#projects" 
-          className="inline-flex items-center gap-2 text-sm font-medium text-smoke transition-colors hover:text-mustard mb-10"
-        >
-          <ArrowLeft size={16} />
-          {t('proj_back')}
-        </Link>
-
-        {/* Header Block */}
-        <header className="relative flex flex-row justify-between border-b-2 border-panel-border pb-8">
-          <div className="flex flex-row gap-6">
-            {project.logoUrl ? (
-                <div className="panel flex h-28 w-28 shrink-0 items-center justify-center overflow-hidden bg-ink">
-                  <Image src={project.logoUrl} alt={`${project.name} Logo`} width={300} height={300} className="object-cover" />
-                </div>
-              ) : (
-                <div className="panel flex h-28 w-28 shrink-0 items-center justify-center overflow-hidden bg-ink">
-                  <ImageIcon size={32} className="text-smoke/50" strokeWidth={1.5} />
-                </div>
-              )}
-            <div className="flex flex-col gap-3 max-w-[3xl] justify-center">
-              <div className="flex items-center gap-4">
-                <h1 className="text-4xl md:text-6xl font-black text-mustard" style={{ fontFamily: 'var(--font-heading)' }}>
-                  {project.name}
-                </h1>
-              </div>
-              <div className="text-lg md:text-xl text-paper leading-relaxed" style={{ fontFamily: 'var(--font-body)' }}>
-                {project.shortDescription}
-              </div>
-            </div>
-          </div>
-
-          <div className="flex flex-col items-end justify-center gap-2 ml-10 pt-8 mt-4 shrink-0">
-            <span className="text-paper font-medium tracking-wide">
-              {project.date}
-            </span>
-            <div className="flex flex-row items-center gap-2">
-              {project.awards && project.awards.length > 0 && (
-                <div className="flex flex-wrap gap-2 mb-1">
-                  {project.awards.map(award => (
-                    <span key={award.short} className="inline-flex items-center gap-1.5 border-2 border-mustard bg-mustard px-3 py-1 text-xs font-bold tracking-widest text-ink uppercase">
-                      <Trophy size={14} />
-                      {award.short}
-                    </span>
-                  ))}
-                </div>
-              )}
-              <span className="category-badge inline-block px-4 py-1.5 text-xs font-bold tracking-widest uppercase" style={categoryStyle}>
-                {categoryLabel}
-              </span>
-            </div>
-          </div>
-        </header>
-        
-        <section className="w-full mt-8 mb-12 border-b-2 border-panel-border pb-8">
-          <h2 className="text-2xl font-bold text-mustard tracking-wide mb-8" style={{ fontFamily: 'var(--font-heading)' }}>
-            {t('proj_gallery')}
-          </h2>
-          
-          <div 
-            ref={carouselRef}
-            onMouseDown={handleMouseDown}
-            onMouseLeave={handleMouseLeave}
-            onMouseUp={handleMouseUp}
-            onMouseMove={handleMouseMove}
-            className={`flex items-center overflow-x-auto gap-6 pb-6 no-scrollbar transition-all ${
-              isDragging ? 'cursor-grabbing snap-none select-none' : 'cursor-grab snap-x'
-            }`}
-          >
-            {project.media && project.media.length > 0 ? (
-              project.media.map((media, idx) => {
-                const isVertical = project.orientation === 'vertical';
-                
-                return (
-                  <div 
-                    key={idx} 
-                    className={`panel panel-hover relative flex shrink-0 snap-center items-center justify-center bg-ink ${
-                      isVertical 
-                        ? 'h-[400px] md:h-[500px]' 
-                        : 'h-[250px] md:h-[350px]'
-                    }`}
-                  >
-                    <Image 
-                      src={media} 
-                      alt={`${project.name} screenshot ${idx + 1}`} 
-                      width={0}
-                      height={0}
-                      sizes="100vw"
-                      quality={100}
-                      draggable={false}
-                      className="h-full w-auto object-contain pointer-events-none"
-                    />
-                  </div>
-                );
-              })
-            ) : (
-              [1, 2, 3].map((_, idx) => (
-                <div key={idx} className="panel panel-hover relative flex h-[300px] min-w-[280px] shrink-0 snap-center flex-col items-center justify-center overflow-hidden bg-ink md:h-[300px] md:min-w-[500px]">
-                  <div className="flex flex-col items-center gap-3 text-smoke/40">
-                    <ImageIcon size={48} strokeWidth={1} />
-                    <span className="text-sm font-bold tracking-widest uppercase">
-                      Media Placeholder {idx + 1}
-                    </span>
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
-        </section>
-
-        {/* Block 2: Information Split Layout */}
-        <div className={`grid grid-cols-1 lg:grid-cols-12 ${project.team && project.team.length > 0 ? 'border-b-2 border-panel-border pb-12' : 'pb-4 mt-12'}`}>
-          <div className="lg:col-span-7 flex flex-col gap-12">
-            <section className="flex flex-col gap-5">
-              <h2 className="text-2xl font-bold text-mustard tracking-wide" style={{ fontFamily: 'var(--font-heading)' }}>{t('proj_about')}</h2>
-              <div className="text-base md:text-lg text-paper leading-relaxed space-y-5" style={{ fontFamily: 'var(--font-body)' }}>
-                {project.description}
-              </div>
-            </section>
-            <section className="flex flex-col gap-5">
-              <h2 className="text-2xl font-bold text-mustard tracking-wide" style={{ fontFamily: 'var(--font-heading)' }}>{t('proj_role')}</h2>
-              <div className="text-base md:text-lg text-paper leading-relaxed space-y-5" style={{ fontFamily: 'var(--font-body)' }}>
-                {project.detailedRole}
-              </div>
-            </section>
-          </div>
-
-          <div className="lg:col-span-5 flex flex-col lg:items-end pt-12 lg:pt-0">
-            <div className="flex flex-col gap-10 w-full lg:max-w-sm">
-              {(project.links.github || project.links.appStore || project.links.live || project.links.other) && (
-                <section className="flex flex-col gap-4">
-                  <h3 className="text-xs font-bold tracking-widest text-paper uppercase">{t('proj_links')}</h3>
-                  <div className="flex flex-wrap gap-3">
-                    {project.links.github && (
-                      <a href={project.links.github} target="_blank" rel="noopener noreferrer" className="panel panel-hover flex w-fit items-center gap-3 px-5 py-3 text-sm font-medium text-paper transition-colors hover:text-mustard">
-                        <GithubIcon size={18} /> GitHub
-                      </a>
-                    )}
-                    {project.links.appStore && (
-                      <a href={project.links.appStore} target="_blank" rel="noopener noreferrer" className="panel panel-hover flex w-fit items-center gap-3 px-5 py-3 text-sm font-medium text-paper transition-colors hover:text-mustard">
-                        <Smartphone size={18} /> App Store
-                      </a>
-                    )}
-                    {project.links.live && (
-                      <a href={project.links.live} target="_blank" rel="noopener noreferrer" className="panel panel-hover flex w-fit items-center gap-3 px-5 py-3 text-sm font-medium text-paper transition-colors hover:text-mustard">
-                        <ExternalLink size={18} /> Website
-                      </a>
-                    )}
-                    {project.links.other && (
-                      <a href={project.links.other[1]} target="_blank" rel="noopener noreferrer" className="panel panel-hover flex w-fit items-center gap-3 px-5 py-3 text-sm font-medium text-paper transition-colors hover:text-mustard">
-                        <ExternalLink size={18} /> {project.links.other[0]}
-                      </a>
-                    )}
-                  </div>
-                </section>
-              )}
-              <section className="flex flex-col gap-4">
-                <h3 className="text-xs font-bold tracking-widest text-paper uppercase">{t('proj_techs')}</h3>
-                <div className="flex flex-wrap items-center gap-2">
-                  {project.technologies.map((tech) => (
-                    <span key={tech} className="tag-chip px-4 py-2 text-sm font-medium">{tech}</span>
-                  ))}
-                </div>
-              </section>
-              <section className="flex flex-col gap-4">
-                <h3 className="text-xs font-bold tracking-widest text-paper uppercase">{t('proj_roles')}</h3>
-                <div className="flex flex-wrap items-center gap-2">
-                  {project.roles.map((role) => (
-                    <span key={role} className="tag-chip px-4 py-2 text-sm font-medium">{role}</span>
-                  ))}
-                </div>
-              </section>
-            </div>
-          </div>
+    <main id="main" className="inner-page container">
+      <Link href="/#projects" className="back-link">
+        <ArrowLeft size={15} />
+        {t("proj_back")}
+      </Link>
+      <header className="detail-heading">
+        {project.logoUrl ? (
+          <Image src={project.logoUrl} alt="" width={80} height={80} />
+        ) : null}
+        <div>
+          <p className="project-category">
+            {project.category} / {project.date}
+          </p>
+          <h1>{project.name}</h1>
+          <p>{project.shortDescription}</p>
         </div>
-
-        {/* Block 3: Credits / Team Section */}
-        {project.team && project.team.length > 0 && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 mt-12 gap-6">
-              {project.team.map((member, idx) => (
-                <div key={idx} className="panel panel-hover flex flex-col gap-2 p-6">
-                  <div className="flex items-center justify-between gap-3">
-                    <span className="font-bold text-paper text-lg">{member.name}</span>
-                    {member.linkedinUrl && (
-                      <a href={member.linkedinUrl} target="_blank" rel="noopener noreferrer" className="text-paper transition-colors hover:text-mustard" aria-label={`${member.name}'s LinkedIn`}>
-                        <ExternalSquareIcon size={18} />
-                      </a>
-                    )}
-                  </div>
-                  <span className="text-sm text-mustard font-medium leading-relaxed" style={{ fontFamily: 'var(--font-body)' }}>{member.role}</span>
-                </div>
+      </header>
+      {project.awards?.map((award) => (
+        <p key={award.short} className="detail-award">
+          <Trophy size={16} />
+          {award.long}
+        </p>
+      ))}
+      <section aria-label={t("proj_gallery")}>
+        <div className="detail-gallery">
+          {project.media.map((media, index) => (
+            <button
+              key={media}
+              aria-label={`${c.enlarge}: ${project.name} ${index + 1}`}
+              onClick={() => setExpanded(media)}
+            >
+              <Image
+                src={media}
+                width={960}
+                height={600}
+                alt={`${project.name} ${c.image.toLowerCase()} ${index + 1}`}
+              />
+            </button>
+          ))}
+        </div>
+      </section>
+      <div className="detail-body">
+        <div>
+          <section>
+            <h2>{t("proj_about")}</h2>
+            <div className="detail-prose">{project.description}</div>
+          </section>
+          <section>
+            <h2>{t("proj_role")}</h2>
+            <div className="detail-prose">{project.detailedRole}</div>
+          </section>
+        </div>
+        <aside>
+          <section>
+            <h2>{t("proj_links")}</h2>
+            <div className="detail-links">
+              {links.map((link) => (
+                <a
+                  className="button"
+                  key={link.href}
+                  href={link.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {link.label}
+                  <ArrowUpRight size={15} />
+                </a>
               ))}
             </div>
-        )}
+          </section>
+          <section>
+            <h2>{t("proj_techs")}</h2>
+            <div className="tags">
+              {project.technologies.map((tech) => (
+                <span key={tech}>{tech}</span>
+              ))}
+            </div>
+          </section>
+          <section>
+            <h2>{t("proj_roles")}</h2>
+            <div className="tags">
+              {project.roles.map((role) => (
+                <span key={role}>{role}</span>
+              ))}
+            </div>
+          </section>
+        </aside>
       </div>
+      {project.team.length ? (
+        <section>
+          <h2 className="detail-team-title">{c.team}</h2>
+          <div className="detail-team">
+            {project.team.map((member) => (
+              <article key={member.name}>
+                <strong>{member.name}</strong>
+                <p>{member.role}</p>
+                {member.linkedinUrl ? (
+                  <a
+                    href={member.linkedinUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-link"
+                    aria-label={`${member.name} / LinkedIn`}
+                  >
+                    LinkedIn
+                    <ArrowUpRight size={13} />
+                  </a>
+                ) : null}
+              </article>
+            ))}
+          </div>
+        </section>
+      ) : null}
+      {expanded ? (
+        <ImageLightbox
+          src={expanded}
+          alt={project.name}
+          close={() => setExpanded(null)}
+        />
+      ) : null}
     </main>
   );
 }

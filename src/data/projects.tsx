@@ -152,7 +152,7 @@ export const getProjects = (locale: 'en' | 'pt'): Project[] => {
         category: 'iOS',
         date: '2025',
         awards: [{ long: 'Tecnopuc Garage 2025 Finalist', short: 'Tecnopuc Finalist'}],
-        shortDescription: <>Focus on the patient. We'll take care of the rest.</>,
+        shortDescription: <>Focus on the patient. We&apos;ll take care of the rest.</>,
         description: <>
         Clairfy transform the way doctors and patients deal with medical consultation information. With just one tap, the app records the medical consultation conversation, processes the content with artificial intelligence and generates a structured and clear summary of the main points discussed, such as symptoms, diagnoses and recommended conducts. <br/>
         Ideal for health professionals who want to better record their consultations and for patients who seek to understand and retain the information received.<br/>

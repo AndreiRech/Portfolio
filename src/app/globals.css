@@ -1,569 +1,1836 @@
-/* src/app/globals.css */
 @import "tailwindcss";
-
-/* `static` keeps every token in the emitted CSS even while nothing consumes
-   it yet, so `var(--color-block-*)` resolves from inline styles/JS too. */
-@theme static inline {
-  /* ── Noir palette ─────────────────────────────────────────
-     The site ships in a single dark noir mode. `ink` is the page
-     surface, `paper` the aged off-white type, `smoke` the muted
-     secondary type.
-     Accents: `mustard` is the legible one (8.8:1 on ink) — use it for
-     accent *text*; `blood` and `plum` are too dark to read on ink
-     (2.6:1 / 1.8:1), so use them as fills/stamps with paper on top. */
-  --color-ink: #0B0A0D;
-  --color-paper: #EDE6D6;
-  --color-smoke: #9C9287;
-  --color-plum: #4B2E6B;
-  --color-mustard: #E0A21C;
-  --color-blood: #A11D1B;
-
-  /* Poster/label panel surfaces (see the `.panel` utility below).
-     The offset shadow is plum, not black — a black shadow on a
-     near-black page is invisible, and the label needs a visible
-     mis-registered-print edge. */
-  --color-panel: #191521;
-  --color-panel-border: #5A4F3F;
-  --color-panel-shadow: var(--color-plum);
-
-  /* ── Block colors ─────────────────────────────────────────
-     RESERVED for project-category identity only (the four
-     `ProjectCategory` values). Do not use these as general-purpose
-     accents — the rest of the site stays on the noir palette above.
-     As fills: green/yellow take `ink` text, red/blue take `paper`. */
-  --color-block-green: #3E9B3B;
-  --color-block-red: #CC2222;
-  --color-block-blue: #2C63C4;
-  --color-block-yellow: #EFB01E;
-
-  --font-heading: var(--font-big-shoulders-stencil);
-  --font-body: var(--font-literata);
+@theme inline {
+  --color-ink: var(--bg);
+  --color-paper: var(--fg);
+  --color-smoke: var(--muted);
+  --color-mustard: var(--accent);
+  --color-panel: var(--surface);
+  --color-panel-border: var(--line);
+  --color-plum: var(--blue);
+  --color-blood: var(--accent);
+  --color-block-blue: #4455c3;
+  --color-block-green: #99c28a;
+  --color-block-red: #ad393b;
+  --color-block-yellow: #e4bd6a;
+  --font-heading: var(--font-pixel);
+  --font-body: var(--font-dm);
 }
-
-/* Animatable so `.panel-hover` can transition its offset shadow. */
-@property --panel-offset {
-  syntax: '<length>';
-  inherits: false;
-  initial-value: 6px;
+:root {
+  color-scheme: dark;
+  --bg: #1c1d1f;
+  --surface: #25272a;
+  --raised: #2c2e32;
+  --fg: #e6e7eb;
+  --muted: #b2b5bd;
+  --accent: #e56d68;
+  --blue: #5967ff;
+  --line: #3c3e44;
+  --font-heading: var(--font-pixel);
+  --font-body: var(--font-dm);
 }
-
-/* Absolute suppression of system cursor globally. */
-html body,
-html body *,
-html body [data-cursor="grab"] {
-  cursor: none !important;
+:root[data-palette="forest"] {
+  --bg: #18231e;
+  --surface: #213028;
+  --raised: #2a3930;
+  --fg: #edf2df;
+  --muted: #bccab9;
+  --accent: #a2d692;
+  --blue: #629f85;
+  --line: #415345;
 }
-
+:root[data-palette="violet"] {
+  --bg: #211d2c;
+  --surface: #2b2538;
+  --raised: #362c46;
+  --fg: #eee6f8;
+  --muted: #c1b6ce;
+  --accent: #c8a1ed;
+  --blue: #9587e9;
+  --line: #4a3e59;
+}
+:root[data-palette="campfire"] {
+  --bg: #26201c;
+  --surface: #302821;
+  --raised: #3d3025;
+  --fg: #f4e9dc;
+  --muted: #cbbbaf;
+  --accent: #efb569;
+  --blue: #d6906c;
+  --line: #564338;
+}
+:root[data-palette="aurora"] {
+  --bg: #18252e;
+  --surface: #20313b;
+  --raised: #293c46;
+  --fg: #e1eff2;
+  --muted: #b5c7cc;
+  --accent: #70d8d4;
+  --blue: #9b67a8;
+  --line: #405361;
+}
+* {
+  box-sizing: border-box;
+}
 html {
   scroll-behavior: smooth;
+  scroll-padding-top: 100px;
 }
-
-/* Custom selection */
-::selection {
-  background-color: var(--color-mustard);
-  color: var(--color-ink);
-}
-
 body {
-  background: var(--color-ink);
-  color: var(--color-paper);
-  font-family: var(--font-body), Georgia, serif;
-  overflow-x: hidden;
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-body), sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
 }
-
-/* ── Static noir backdrop ────────────────────────────────────
-   Replaces the animated shader canvas that used to sit here: a flat
-   ink surface plus a still, low-opacity film-grain overlay. The grain
-   is a self-contained SVG turbulence tile (no image asset, no JS), and
-   `background-size` is deliberately smaller than the tile's intrinsic
-   180px so the noise reads as fine specks rather than blotches. */
-.noir-backdrop {
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+button {
+  font: inherit;
+  cursor: pointer;
+}
+a {
+  color: inherit;
+  text-decoration: none;
+}
+button:not(:disabled),
+a {
+  touch-action: manipulation;
+}
+button:disabled {
+  cursor: wait;
+  opacity: 0.55;
+}
+:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 5px;
+}
+::selection {
+  background: var(--accent);
+  color: var(--bg);
+}
+h1,
+h2,
+h3,
+p,
+figure {
+  margin: 0;
+}
+h1,
+h2 {
+  font-family: var(--font-heading), monospace;
+  font-weight: 400;
+  line-height: 1.05;
+  text-wrap: balance;
+}
+h2 {
+  font-size: clamp(36px, 4.6vw, 62px);
+  color: var(--accent);
+  letter-spacing: -0.025em;
+}
+h3 {
+  line-height: 1.25;
+}
+svg {
+  flex-shrink: 0;
+}
+.container {
+  width: min(1200px, calc(100% - 80px));
+  margin-inline: auto;
+}
+.section {
+  padding-block: 72px;
+}
+.section-heading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 32px;
+}
+.section-heading p {
+  color: var(--muted);
+  margin-top: 12px;
+  font-size: 17px;
+}
+.section-count {
+  color: var(--muted);
+  font-size: 13px;
+  white-space: nowrap;
+  padding-bottom: 4px;
+}
+.heading-dot {
+  color: var(--fg);
+}
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  min-height: 48px;
+  padding: 12px 20px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--fg);
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 1.4;
+  transition:
+    background 0.16s,
+    transform 0.16s;
+}
+.button:hover {
+  background: var(--raised);
+  transform: translateY(-2px);
+}
+.button.primary {
+  color: var(--bg);
+  background: var(--fg);
+  border-color: var(--fg);
+}
+.button.primary:hover {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+.text-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  font-weight: 500;
+}
+.text-link:hover {
+  color: var(--accent);
+}
+.icon-button {
+  border: 1px solid var(--line);
+  width: 42px;
+  height: 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--fg);
+  background: var(--surface);
+}
+.icon-button:hover {
+  background: var(--raised);
+}
+.skip-link {
   position: fixed;
-  inset: 0;
-  z-index: -1;
-  background-color: var(--color-ink);
-  pointer-events: none;
+  top: 8px;
+  left: 20px;
+  z-index: 200;
+  padding: 12px 20px;
+  background: var(--fg);
+  color: var(--bg);
+  transform: translateY(-150%);
 }
-
-.noir-backdrop::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
-  background-size: 140px 140px;
-  /* Sections layer a 72%-opaque ink overlay on top of this, so the grain
-     needs headroom here to stay perceptible through them. */
-  opacity: 0.18;
+.skip-link:focus {
+  transform: translateY(0);
 }
-
-/* ── Custom cursor ───────────────────────────────────────── */
-.custom-cursor {
-  position: fixed;
+.site-header {
+  position: sticky;
   top: 0;
-  left: 0;
-  border-radius: 50%;
-  pointer-events: none;
-  z-index: 9999;
-  transform: translate(-50%, -50%);
-  will-change: transform, width, height, background-color;
-  mix-blend-mode: normal;
+  z-index: 50;
+  background: var(--bg);
+  border-bottom: 1px solid var(--line);
 }
-
-/* Scrollbar styling */
-::-webkit-scrollbar {
-  width: 6px;
+.header-inner {
+  width: min(1360px, calc(100% - 64px));
+  margin: auto;
+  min-height: 78px;
+  display: flex;
+  align-items: center;
+  gap: 40px;
 }
-
-::-webkit-scrollbar-track {
-  background: transparent;
+.wordmark {
+  font-family: var(--font-heading), monospace;
+  font-size: 26px;
+  white-space: nowrap;
+  letter-spacing: -1px;
 }
-
-::-webkit-scrollbar-thumb {
-  background: var(--color-smoke);
-  border-radius: 3px;
+.wordmark span {
+  color: var(--accent);
 }
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--color-blood);
+.main-nav {
+  display: flex;
+  align-items: center;
+  gap: 25px;
+  margin-inline: auto;
+  font-size: 14px;
 }
-
-/* ── Poster/label panel ──────────────────────────────────────
-   Solid printed-label surface: opaque fill, hard border, hard
-   offset shadow, near-square corners. No backdrop blur anywhere.
-   Declared with `@utility` so it lands in Tailwind's utilities layer
-   and per-element overrides (`rounded-none`, `border-mustard`, …)
-   still win. `panel-hover` belongs on the same element as `panel`. */
-@utility panel {
-  /* Restated (not just @property's initial-value) so the shadow still
-     resolves where @property is unsupported — it only loses the animation. */
-  --panel-offset: 6px;
-  background-color: var(--color-panel);
-  border: 2px solid var(--color-panel-border);
-  border-radius: 2px;
-  box-shadow: var(--panel-offset) var(--panel-offset) 0 0 var(--color-panel-shadow);
+.main-nav a:hover,
+.main-nav a[aria-current] {
+  color: var(--accent);
 }
-
-@utility panel-hover {
-  transition: --panel-offset 0.2s ease, border-color 0.2s ease;
-
-  &:hover {
-    --panel-offset: 10px;
-    border-color: var(--color-mustard);
-  }
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 25px;
 }
-
-/* ── Torn poster fragment ────────────────────────────────────
-   The ragged-edged counterpart to `.panel`: the same solid printed-label
-   colors, but with the silhouette of a poster scrap torn out by hand and
-   glued down instead of a clean rectangle.
-
-   `torn` marks the container; the scrap itself is painted by two empty,
-   aria-hidden layers *beside* the content (`.torn-shadow` + `.torn-scrap`,
-   in that order), never wrapped around it — `clip-path` clips descendants,
-   so a wrapper would eat anything that overflows the box, the Navbar's
-   settings dropdown first among them.
-
-   The offset print shadow is a whole second clipped layer rather than
-   `.panel`'s `box-shadow`, because a box-shadow traces the un-torn
-   rectangle underneath the clip and would give the tear away.
-
-   `@utility` for the same reason `.panel` uses it — `torn` gets mixed into
-   a className alongside Tailwind utilities, so it has to lose to per-element
-   overrides. The two layer classes below stay plain: they're a fixed part of
-   the component, never composed with utilities. */
-@utility torn {
-  position: relative;
-  /* Traps the layers' negative z-index inside this box, so they can't slide
-     behind whatever the container sits on. It also walls the container's
-     descendants off from the page's z-order — see the Navbar's settings
-     dropdown, which has to be lifted as part of this whole box. */
-  isolation: isolate;
-  --torn-offset: 6px;
-  --torn-trim: 0px;
-  /* Percentage x, pixel y: the teeth keep the same bite depth at every
-     viewport width instead of stretching out into shallow waves. Depths
-     and spacing are both uneven on purpose — evenly pitched teeth read as a
-     decorative border, not as paper someone tore by hand — and the short
-     sides get a tear of their own so it reads as a fragment, not a ribbon. */
-  --torn-edge: polygon(
-    3px 7px, 5% 0px, 8% 8px, 11% 3px, 17% 9px, 19% 1px, 26% 6px, 33% 0px,
-    36% 7px, 44% 2px, 47% 9px, 55% 1px, 58% 6px, 66% 0px, 69% 8px, 77% 3px,
-    80% 7px, 88% 1px, 91% 9px, 96% 2px, 100% 6px,
-    calc(100% - 4px) 35%, 100% 62%,
-    calc(100% - 2px) calc(100% - 5px), 94% 100%, 90% calc(100% - 7px), 84% calc(100% - 1px),
-    81% calc(100% - 9px), 73% calc(100% - 3px), 70% calc(100% - 8px), 63% 100%,
-    59% calc(100% - 6px), 52% calc(100% - 1px), 48% calc(100% - 9px), 41% calc(100% - 4px),
-    37% calc(100% - 8px), 30% calc(100% - 1px), 26% calc(100% - 7px), 18% calc(100% - 2px),
-    14% calc(100% - 9px), 7% calc(100% - 3px), 4% calc(100% - 8px), 0px calc(100% - 2px),
-    4px 58%, 0px 30%
-  );
-
-  /* Past the top of the page the scrap presses flat against the surface. */
-  &[data-scrolled='true'] {
-    --torn-offset: 3px;
-  }
+.language-switch {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
 }
-
-/* Second scrap off the same sheet: a different tear, so a menu doesn't mirror
-   the bar it drops out of, and a trim inset for the fact that a menu clips its
-   own overflow (it animates open by height) — without it the shadow layer
-   would be shaved off the right and bottom edges. Plain, not `@utility`,
-   because it only overrides `torn`'s custom properties, which no Tailwind
-   utility sets: nothing here can outrank a utility that doesn't exist. */
-.torn-menu {
-  --torn-trim: 0.5rem;
-  --torn-edge: polygon(
-    0px 3px, 6% 9px, 9% 1px, 16% 7px, 23% 0px, 27% 8px, 34% 2px, 38% 9px,
-    46% 3px, 49% 8px, 57% 0px, 61% 7px, 68% 1px, 72% 9px, 79% 2px,
-    83% 8px, 90% 0px, 94% 6px, 100% 2px,
-    calc(100% - 3px) calc(100% - 7px), 92% calc(100% - 1px), 88% calc(100% - 8px), 81% calc(100% - 2px),
-    77% calc(100% - 9px), 70% calc(100% - 3px), 66% 100%, 58% calc(100% - 5px),
-    54% calc(100% - 9px), 47% calc(100% - 1px), 43% calc(100% - 7px), 35% calc(100% - 2px),
-    31% calc(100% - 9px), 24% 100%, 20% calc(100% - 6px), 12% calc(100% - 1px),
-    8% calc(100% - 8px), 3px calc(100% - 3px)
-  );
+.language-switch button {
+  border: 0;
+  padding: 10px 3px;
+  background: none;
+  color: var(--muted);
 }
-
-.torn-scrap,
-.torn-shadow {
-  position: absolute;
-  inset: 0 var(--torn-trim) var(--torn-trim) 0;
-  clip-path: var(--torn-edge);
-  pointer-events: none;
+.language-switch button[aria-pressed="true"] {
+  color: var(--fg);
+  font-weight: 800;
 }
-
-.torn-shadow {
-  z-index: -2;
-  background-color: var(--color-panel-shadow);
-  translate: var(--torn-offset) var(--torn-offset);
-  transition: translate 0.3s ease;
+.header-contact {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
 }
-
-.torn-scrap {
-  z-index: -1;
-  /* Exposed paper fibre along the tear — light, like the raw edge of a torn
-     sheet, which is why this is `smoke` and not `.panel`'s much darker
-     `panel-border`: the tear is unprinted paper, not a printed rule. The fill
-     below sits 3px inside it. */
-  background-color: var(--color-smoke);
-}
-
-.torn-scrap::after {
-  content: '';
-  position: absolute;
-  inset: 3px;
-  background-color: var(--color-panel);
-  /* Re-clipping the same polygon on a box 6px smaller drops every vertex a
-     full 3px inward on the pixel axis, which is the one the teeth are cut on
-     — enough to hold a roughly even fibre band. (The percentage axis shifts
-     by less: +3px at one end of a run to -3px at the other.) */
-  clip-path: var(--torn-edge);
-}
-
-/* ── Hero collage label ──────────────────────────────────────
-   The hero's name/role lockup is pasted up out of these: colored poster
-   scraps with an unprinted paper edge, each stuck down at its own slight
-   angle.
-
-   What separates it from `.panel` is which layer carries the color. A panel
-   is a dark printed card and its border is a printed rule; a hero label is a
-   *color field* and its border is the raw cream stock it was cut from — the
-   way the reference lockup's labels sit on their torn backing. So the fill
-   stays per-instance (`bg-plum`, `bg-blood`, `bg-paper`, `bg-ink`) and this
-   utility owns only the edge, the print shadow, and the paste angle.
-
-   The tilt rides the standalone `rotate` property rather than `transform`,
-   which lets a label be a `motion` element and animate its entrance without
-   the two fighting over one declaration — the browser composes the
-   individual `rotate` with `transform` on its own.
-
-   All three knobs are custom properties rather than Tailwind overrides: the
-   edge is set with the `border` shorthand, so a `border-*` utility landing on
-   the same element would win or lose on cascade order alone. */
-@utility hero-label {
-  --hero-tilt: 0deg;
-  /* Cream by default — but a cream *fill* would swallow a cream edge, so a
-     paper scrap re-points this at `ink` to keep its keyline. */
-  --hero-edge: var(--color-paper);
-  --hero-shadow: var(--color-panel-shadow);
-  position: relative;
-  border: 3px solid var(--hero-edge);
-  border-radius: 2px;
-  /* Prints at the same offset as `.panel`: `--panel-offset` doesn't inherit,
-     so this resolves to its `@property` initial value and the two surfaces
-     stay registered to one press. Not re-stated the way `.panel` re-states it
-     — nothing animates a hero label's shadow, so there's no fallback to lose. */
-  box-shadow: var(--panel-offset) var(--panel-offset) 0 0 var(--hero-shadow);
-  rotate: var(--hero-tilt);
-}
-
-/* ── Category identity ───────────────────────────────────────
-   The four block colors reach the DOM through `--category-color` and
-   `--category-on`, both set inline from `getCategoryColor()` — one mapping,
-   two consumers, so a category's filter chip and its card badge agree.
-
-   The block color is used at full strength, as a fill on the active chip and
-   the badge and as the border otherwise, so the four categories stay
-   distinguishable at a glance. Their lightness range is too wide for a single
-   text color, which is why `--category-on` travels with the fill (see the
-   block-color token notes above): green/yellow take `ink`, red/blue `paper`.
-
-   `--category-line` states the fallback once. A custom property's `var()`s
-   are substituted where the property is *used*, so it inherits down and
-   resolves against each element's own `--category-color`. Unset means
-   "All Projects" — not a category — which lands on neutral `smoke`. */
-:root {
-  --category-line: var(--category-color, var(--color-smoke));
-}
-
-@utility filter-chip {
-  border: 2px solid var(--category-line);
-  border-radius: 2px;
-  background-color: transparent;
-  color: var(--color-paper);
-  transition: color 0.2s ease, background-color 0.2s ease;
-
-  &:hover {
-    background-color: color-mix(in srgb, var(--category-line) 25%, transparent);
-  }
-
-  &[data-active='true'] {
-    background-color: var(--category-line);
-    /* `ink` covers the `smoke` fallback that "All Projects" lands on. */
-    color: var(--category-on, var(--color-ink));
-  }
-}
-
-@utility category-badge {
-  border-radius: 2px;
-  background-color: var(--category-line);
-  color: var(--category-on, var(--color-ink));
-}
-
-/* ── Tag chip ────────────────────────────────────────────────
-   The little technology/skill tags that sit *inside* a `.panel` (About's
-   skill groups, Experience entries, project cards). `ink` is darker than
-   `panel`, so the chip reads as stamped into the label rather than raised
-   off it — the inverse of how `.panel` sits on the page.
-   Colors only: each site keeps its own padding and text size. */
-@utility tag-chip {
-  border: 1px solid var(--color-panel-border);
-  border-radius: 2px;
-  background-color: var(--color-ink);
-  color: var(--color-paper);
-  transition: color 0.2s ease;
-
-  &:hover {
-    color: var(--color-mustard);
-  }
-}
-
-/* ── Halftone screen ─────────────────────────────────────────
-   Featured photography — the About portrait and the project card images —
-   is printed through a dot screen, so it comes off the same press as the
-   poster panels around it. Strictly local by design: it goes on those two
-   surfaces and nowhere else. Not the page, not icons, not logos, because a
-   halftone is something you shoot a *photograph* through; applied globally
-   it stops being a print process and becomes a filter over the site.
-
-   Mark the box that the image fills; the screen is painted over it by
-   `::after`. `isolation` keeps the blend inside that box so the dots
-   multiply into the image and nothing behind it.
-
-   `position` here is only a floor — `::after` needs *some* positioned box to
-   inset against, and `relative` is the one that costs a caller nothing. A
-   consumer that has to place the box itself overrides it with `absolute`,
-   which works for the same reason `.panel`'s overrides do: `@utility` lands
-   this in Tailwind's utilities layer, where a core utility still wins.
-
-   Two offset grids of the same dot, not one: the half-cell stagger lays the
-   dots on a diagonal lattice — the 45° angle a real screen is shot at, which
-   is what stops it reading as graph paper — and it costs one extra gradient
-   on a layer that was already being painted. No image asset, no request.
-
-   `multiply` is what sells it as ink rather than a gray veil laid on top:
-   the dots bite hardest into paper-white and midtones and disappear into the
-   shadows, the way a screen behaves on press. Solid blacks come out solid —
-   that's the effect being faithful, not the effect missing. */
-@utility halftone {
-  position: relative;
-  isolation: isolate;
-  /* One pitch for every surface that takes the screen, so the portrait and
-     the cards look shot through the same plate. Fine enough to stay texture
-     at card size, coarse enough to still read as dots rather than mush. */
-  --halftone-cell: 5px;
-
-  /* The screen costs the image roughly a tenth of its light; the contrast and
-     brightness pay that back on the way in, so what's under the dots keeps its
-     punch. The pinch of desaturation isn't owed to the dots at all — it's this
-     utility pulling photography a step toward the noir palette it now sits in,
-     and it lives here because these two images are the only photography on the
-     page. */
-  & img {
-    filter: contrast(1.12) brightness(1.06) saturate(0.92);
-  }
-
-  &::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    background-image:
-      radial-gradient(circle at center, var(--color-ink) 0 1.1px, transparent 1.2px),
-      radial-gradient(circle at center, var(--color-ink) 0 1.1px, transparent 1.2px);
-    background-size: var(--halftone-cell) var(--halftone-cell);
-    background-position: 0 0, calc(var(--halftone-cell) / 2) calc(var(--halftone-cell) / 2);
-    opacity: 0.45;
-    mix-blend-mode: multiply;
-  }
-}
-
-/* ── Glitch flicker ──────────────────────────────────────────
-   The site's one signal glitch: a brief RGB-channel split, fired on hover and
-   once as a section title arrives. It is an accent, so it is built to be hard
-   to trigger by accident — nothing here loops, nothing runs on scroll alone,
-   and no keyframe touches the text's own color or opacity, so the string stays
-   readable through the flicker and is left exactly where it started after it.
-
-   The split rides `text-shadow` rather than two `::before`/`::after` copies of
-   the string. Shadows inherit, so a card can split its whole label off one
-   class; there is no duplicate of the text to fall out of sync with the other
-   locale or to reach a screen reader; and it costs no layout, which a stack of
-   absolutely positioned clones of live text does.
-
-   Both fringes are palette accents lifted toward `paper`. At full strength
-   `blood` and `plum` sit at 2.6:1 and 1.8:1 on ink (see the palette notes at
-   the top) — a fringe that dark on a near-black page is a fringe nobody sees.
-   Declared on `:root` for the same reason `--category-line` is: the keyframes
-   resolve them against whichever element is animating. */
-:root {
-  --glitch-shift: 2px;
-  --glitch-warm: color-mix(in srgb, var(--color-blood) 75%, var(--color-paper));
-  --glitch-cool: color-mix(in srgb, var(--color-plum) 60%, var(--color-paper));
-}
-
-/* Stepped, never eased — see the timing function on the rules below. The
-   channels swap sides, drop out for a clean beat, then land back at zero. */
-@keyframes glitch-flicker {
-  0% {
-    text-shadow: none;
-    translate: 0;
-  }
-  20% {
-    text-shadow:
-      calc(-1 * var(--glitch-shift)) 0 var(--glitch-warm),
-      var(--glitch-shift) 0 var(--glitch-cool);
-    translate: var(--glitch-shift);
-  }
-  40% {
-    text-shadow: none;
-    translate: 0;
-  }
-  55% {
-    text-shadow:
-      var(--glitch-shift) 0 var(--glitch-warm),
-      calc(-1 * var(--glitch-shift)) 0 var(--glitch-cool);
-    translate: calc(-1 * var(--glitch-shift));
-  }
-  70% {
-    text-shadow:
-      calc(-0.5 * var(--glitch-shift)) 0 var(--glitch-cool),
-      calc(0.5 * var(--glitch-shift)) 0 var(--glitch-warm);
-    translate: 0;
-  }
-  85%,
-  100% {
-    text-shadow: none;
-    translate: 0;
-  }
-}
-
-/* Two triggers, one animation.
-
-   `glitch-hover` goes on the interactive element itself, or on the text inside
-   one marked `group` — the contact tiles are a whole panel wide, and jolting
-   the entire card (border, offset shadow and all) reads as the layout breaking
-   rather than as the signal dropping.
-
-   `glitch-reveal` goes on anything inside an `AnimatedSection`, which
-   publishes its `useInView` state as `data-revealed`. The reveal therefore
-   rides the observer already watching that section instead of adding a second
-   one, and with `AnimatedSection`'s default `once`, the attribute flips false →
-   true exactly once, so the flicker cannot replay on scrolling back through.
-
-   Plain classes rather than `@utility`, on the same grounds as `.torn-scrap`:
-   these set `animation` and nothing else, and no Tailwind utility competing for
-   that property lands on any of their consumers.
-
-   `steps(1, end)` is what makes it read as a dropped signal — each keyframe is
-   held flat and then jumped out of, where an eased tween would smear the
-   fringes in and out and come off as a soft glow. */
-.glitch-hover:hover,
-.glitch-hover:focus-visible,
-.group:hover .glitch-hover,
-.group:focus-visible .glitch-hover {
-  animation: glitch-flicker 260ms steps(1, end);
-}
-
-/* Delayed into the section's own 0.7s entrance rather than fired at its start:
-   a split composited through type that is still fading up from zero opacity is
-   mostly invisible, and the point of the accent is the hit once the title is
-   legibly there. */
-[data-revealed='true'] .glitch-reveal {
-  /* The reveal lands on display type — 36–48px — where the 2px the hover
-     trigger uses on 14px chrome all but disappears. Checked against the real
-     titles at 2/3/4/5px: 3px is the last step that still splits cleanly, past
-     which the fringes start filling the counters of E and R. */
-  --glitch-shift: 3px;
-  animation: glitch-flicker 420ms steps(1, end) 180ms;
-}
-
-/* A hard chromatic stutter is exactly the kind of motion this setting is
-   asking about, and the effect carries no information, so it is dropped
-   outright rather than softened. */
-@media (prefers-reduced-motion: reduce) {
-  .glitch-hover:hover,
-  .glitch-hover:focus-visible,
-  .group:hover .glitch-hover,
-  .group:focus-visible .glitch-hover,
-  [data-revealed='true'] .glitch-reveal {
-    animation: none;
-  }
-}
-
-/* Section readability overlay */
-.section-overlay {
-  position: relative;
-}
-
-.section-overlay::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: color-mix(in srgb, var(--color-ink) 72%, transparent);
-  backdrop-filter: blur(40px);
-  -webkit-backdrop-filter: blur(40px);
-  z-index: 0;
-  pointer-events: none;
-}
-
-.section-overlay > * {
-  position: relative;
-  z-index: 1;
-}
-
-/* Section padding utility */
-.section-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 1.5rem;
-}
-
-/* Hide scrollbar for carousel */
-.no-scrollbar::-webkit-scrollbar {
+.menu-toggle {
   display: none;
 }
-.no-scrollbar {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
+.hero {
+  padding-block: 76px 84px;
+  display: grid;
+  grid-template-columns: 1fr 330px;
+  gap: 80px;
+  align-items: center;
+}
+.hero-role {
+  color: var(--muted);
+  font-size: 19px;
+  margin-bottom: 20px;
+}
+.hero h1 {
+  font-size: clamp(86px, 10.2vw, 146px);
+  letter-spacing: -0.045em;
+  line-height: 0.86;
+  margin-left: -5px;
+}
+.hero h1 > span {
+  color: var(--accent);
+}
+.hero-period {
+  color: var(--fg);
+}
+.hero-description {
+  margin-top: 28px;
+  font-size: 21px;
+  color: var(--muted);
+  max-width: 440px;
+}
+.hero-links {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  margin-top: 30px;
+  flex-wrap: wrap;
+}
+.hero-links .text-link {
+  font-size: 14px;
+}
+.award-note {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 28px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.award-note svg {
+  color: var(--accent);
+}
+.hero-portrait {
+  padding-top: 12px;
+}
+.portrait-frame {
+  position: relative;
+  padding: 12px 12px 24px;
+  background: var(--surface);
+}
+.portrait-photo {
+  width: 100%;
+  height: 340px;
+  object-fit: cover;
+  object-position: center 40%;
+}
+.portrait-pixel {
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  background: var(--blue);
+}
+.pixel-one {
+  top: -12px;
+  right: -12px;
+  box-shadow:
+    -24px 0 0 var(--blue),
+    0 24px 0 var(--blue);
+}
+.pixel-two {
+  bottom: 0;
+  left: -12px;
+  background: var(--accent);
+  box-shadow:
+    24px 12px 0 var(--accent),
+    48px 12px 0 var(--accent);
+}
+.hero-portrait figcaption {
+  margin-top: 24px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  font-size: 12px;
+  color: var(--muted);
+}
+.hero-portrait figcaption a {
+  margin-left: auto;
+}
+.project-inspector {
+  display: grid;
+  grid-template-columns: 245px minmax(0, 1fr);
+  background: var(--surface);
+  border: 1px solid var(--line);
+}
+.project-list {
+  display: flex;
+  flex-direction: column;
+  padding: 12px;
+  gap: 6px;
+  border-right: 1px solid var(--line);
+}
+.project-choice {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border: 1px solid transparent;
+  border-left: 3px solid transparent;
+  background: transparent;
+  color: var(--fg);
+  padding: 15px 10px;
+  text-align: left;
+  min-height: 85px;
+}
+.project-choice img {
+  border-radius: 9px;
+  width: 42px;
+  height: 42px;
+}
+.project-choice span {
+  flex: 1;
+}
+.project-choice strong {
+  display: block;
+  font-size: 14px;
+}
+.project-choice small {
+  color: var(--muted);
+  font-size: 11px;
+}
+.project-choice > svg {
+  opacity: 0;
+}
+.project-choice:hover {
+  background: var(--raised);
+}
+.project-choice.selected {
+  background: var(--raised);
+  border-left-color: var(--accent);
+}
+.project-choice.selected > svg {
+  opacity: 1;
+  color: var(--accent);
+}
+.project-stage {
+  min-width: 0;
+  animation: project-in 0.22s ease-out;
+}
+.project-preview {
+  aspect-ratio: 1.82;
+  position: relative;
+  overflow: hidden;
+  margin: 18px 18px 0;
+  background: #111317;
+}
+.preview-image-button {
+  position: absolute;
+  inset: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  width: 100%;
+}
+.project-cover {
+  object-fit: cover;
+}
+.project-screen {
+  object-fit: contain;
+  padding: 16px;
+}
+.project-award {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  background: #1c1d1feb;
+  padding: 7px 10px;
+  color: #f3db9c;
+  font-size: 10px;
+  pointer-events: none;
+}
+.expand-button {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: #1c1d1fe6;
+  color: #fff;
+}
+.preview-controls {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  display: flex;
+  align-items: center;
+  background: #1c1d1ff0;
+  color: #fff;
+}
+.preview-controls .icon-button {
+  border: 0;
+  background: none;
+  color: inherit;
+}
+.preview-controls span {
+  padding-inline: 10px;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+.project-summary {
+  display: flex;
+  gap: 22px;
+  justify-content: space-between;
+  align-items: center;
+  padding: 22px 24px 18px;
+}
+.project-summary h3 {
+  font-size: 25px;
+  margin-block: 4px 8px;
+}
+.project-summary p:not(.project-category) {
+  color: var(--muted);
+  font-size: 14px;
+}
+.project-category {
+  color: var(--accent);
+  font-size: 11px;
+}
+.project-summary .button {
+  flex-shrink: 0;
+}
+.project-technologies {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 0 24px 22px;
+  font-size: 10px;
+  color: var(--muted);
+}
+.project-role {
+  flex-basis: 100%;
+}
+.about-layout {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  gap: 90px;
+}
+.about-prose > p {
+  color: var(--muted);
+  margin-bottom: 20px;
+  line-height: 1.85;
+}
+.education {
+  margin-top: 32px;
+  padding-left: 20px;
+  border-left: 3px solid var(--blue);
+}
+.education > span {
+  font-size: 12px;
+  color: var(--muted);
+}
+.education h3 {
+  font-size: 17px;
+  margin-block: 10px;
+}
+.education p {
+  color: var(--muted);
+  font-size: 13px;
+}
+.skills-list {
+  display: grid;
+  align-content: start;
+  gap: 28px;
+  padding-top: 5px;
+}
+.skills-list h3 {
+  font-size: 14px;
+  color: var(--fg);
+  margin-bottom: 12px;
+}
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.tags span {
+  display: inline-block;
+  background: var(--surface);
+  padding: 5px 10px;
+  color: var(--muted);
+  font-size: 12px;
+}
+.experience-list {
+  display: grid;
+  gap: 42px;
+}
+.experience-row {
+  display: grid;
+  grid-template-columns: 245px 1fr;
+  gap: 40px;
+}
+.experience-meta p {
+  color: var(--muted);
+  font-size: 12px;
+  margin-bottom: 10px;
+}
+.experience-meta h3 {
+  color: var(--accent);
+  font-size: 17px;
+}
+.experience-role {
+  font-size: 20px;
+  margin-bottom: 16px;
+}
+.experience-description {
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.8;
+  max-width: 75ch;
+  margin-bottom: 18px;
+}
+.contribution-panel {
+  padding: 28px;
+  background: var(--surface);
+}
+.contribution-stats {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  margin-bottom: 24px;
+}
+.contribution-stats strong {
+  color: var(--fg);
+  font-size: 24px;
+  font-weight: 500;
+}
+.contribution-stats span {
+  color: var(--muted);
+  font-size: 12px;
+  margin-left: 7px;
+}
+.contribution-stats .period-label {
+  margin-left: auto;
+}
+.calendar-scroll {
+  overflow-x: auto;
+  padding: 6px 0 14px;
+}
+.calendar {
+  display: grid;
+  grid-auto-flow: column;
+  grid-template-rows: repeat(7, 12px);
+  grid-auto-columns: 12px;
+  gap: 5px;
+  justify-content: space-between;
+  min-width: 895px;
+}
+.calendar-day {
+  display: block;
+  border: 0;
+  padding: 0;
+  background: var(--raised);
+  height: 12px;
+  width: 12px;
+}
+.calendar-day[data-level="1"] {
+  background: color-mix(in srgb, var(--blue) 30%, var(--surface));
+}
+.calendar-day[data-level="2"] {
+  background: color-mix(in srgb, var(--blue) 55%, var(--surface));
+}
+.calendar-day[data-level="3"] {
+  background: color-mix(in srgb, var(--blue) 78%, var(--surface));
+}
+.calendar-day[data-level="4"] {
+  background: var(--blue);
+}
+.calendar-day:hover {
+  outline: 2px solid var(--fg);
+  outline-offset: 1px;
+}
+.calendar-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 15px;
+  min-height: 25px;
+  color: var(--muted);
+  font-size: 11px;
+}
+.calendar-legend {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.calendar-legend span {
+  margin-inline: 3px;
+}
+.contribution-bottom {
+  display: flex;
+  gap: 15px;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 16px;
+  font-size: 13px;
+}
+.contribution-bottom small {
+  color: var(--muted);
+  font-size: 11px;
+}
+.explore-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 22px;
+}
+.explore-card {
+  background: var(--surface);
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+.explore-card h3 {
+  font-family: var(--font-heading);
+  font-size: 30px;
+  font-weight: 400;
+  margin-block: 14px 10px;
+}
+.explore-card p {
+  color: var(--muted);
+  max-width: 40ch;
+  font-size: 14px;
+}
+.explore-card .text-link {
+  margin-top: 24px;
+  font-size: 14px;
+}
+.explore-art {
+  height: 155px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.explore-art .crate-image {
+  width: 180px;
+  height: auto;
+  transform: rotate(-7deg);
+}
+.inventory-preview {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+.mini-slot {
+  width: 110px;
+  height: 115px;
+  background: var(--raised);
+  border-bottom: 3px solid var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.contact-section {
+  margin-top: 24px;
+  padding-block: 70px;
+  border-top: 1px solid var(--line);
+}
+.contact-section > p {
+  max-width: 66ch;
+  margin-top: 22px;
+  color: var(--muted);
+  font-size: 15px;
+}
+.contact-links {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  margin-top: 36px;
+}
+.contact-links > a {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  font-size: 14px;
+  min-width: 0;
+}
+.contact-links strong {
+  font-weight: 500;
+  display: block;
+}
+.contact-links span {
+  color: var(--muted);
+  font-size: 12px;
+}
+.contact-links > a > svg:last-child {
+  color: var(--accent);
+}
+.site-footer {
+  padding-block: 28px;
+  border-top: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  gap: 25px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.site-footer .wordmark {
+  color: var(--fg);
+  margin-right: auto;
+  font-size: 22px;
+}
+.inner-page {
+  padding-block: 40px 90px;
+  min-height: 80dvh;
+}
+.back-link {
+  color: var(--muted);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  margin-bottom: 36px;
+}
+.page-heading {
+  margin-bottom: 36px;
+}
+.page-heading h1 {
+  font-size: clamp(46px, 6vw, 78px);
+  color: var(--accent);
+}
+.page-heading p {
+  color: var(--muted);
+  margin-top: 15px;
+}
+.page-heading-row {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 25px;
+}
+.arcade-tabs {
+  display: flex;
+  gap: 24px;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 32px;
+  font-size: 14px;
+}
+.arcade-tabs a {
+  padding: 12px 0;
+  border-bottom: 2px solid transparent;
+}
+.arcade-tabs a[aria-current] {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+.roulette-panel {
+  background: var(--surface);
+  padding: 35px 28px 28px;
+  text-align: center;
+}
+.roulette-window {
+  overflow: hidden;
+  position: relative;
+  padding-block: 20px;
+  background: var(--bg);
+}
+.roulette-window:before,
+.roulette-window:after {
+  content: "";
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  position: absolute;
+  left: calc(50% - 8px);
+  z-index: 2;
+}
+.roulette-window:before {
+  top: 0;
+  border-top: 12px solid var(--accent);
+}
+.roulette-window:after {
+  bottom: 0;
+  border-bottom: 12px solid var(--accent);
+}
+.roulette-track {
+  display: flex;
+  width: max-content;
+  gap: 12px;
+  margin-left: 50%;
+  transform: translateX(-72px);
+}
+.roulette-track.spinning {
+  animation: reel-roll 3600ms cubic-bezier(0.12, 0.65, 0.13, 1) both;
+}
+.roulette-track.finished {
+  transform: translateX(-4128px);
+}
+.roulette-tile {
+  width: 144px;
+  height: 160px;
+  flex-shrink: 0;
+  background: var(--surface);
+  border-bottom: 4px solid var(--rarity);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+.roulette-tile span {
+  font-size: 11px;
+}
+.roulette-actions {
+  margin-top: 25px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.roulette-idle {
+  min-height: 220px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.crate-image {
+  width: 220px;
+  height: auto;
+  aspect-ratio: 4/3;
+  image-rendering: pixelated;
+}
+.free-note {
+  color: var(--muted);
+  font-size: 12px;
+  margin-top: 14px;
+}
+.reward-result {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 22px 0 0;
+  animation: project-in 0.2s ease-out;
+  text-align: left;
+  flex-wrap: wrap;
+}
+.reward-result strong {
+  font-family: var(--font-heading);
+  font-size: 28px;
+  font-weight: 400;
+}
+.reward-result p {
+  color: var(--muted);
+  font-size: 12px;
+}
+.reward-result .button {
+  margin-left: 20px;
+}
+.subheading {
+  margin-block: 36px 22px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+}
+.subheading h2 {
+  color: var(--fg);
+  font-size: 30px;
+}
+.collection-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+.item-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-bottom: 3px solid var(--rarity);
+  padding: 18px;
+  min-width: 0;
+}
+.item-card.is-equipped {
+  border-top-color: var(--accent);
+}
+.item-art {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 115px;
+  position: relative;
+}
+.item-card h3 {
+  font-size: 15px;
+  margin-bottom: 5px;
+}
+.rarity-label {
+  color: color-mix(in srgb, var(--rarity) 65%, white);
+  font-size: 10px;
+}
+.item-kind {
+  color: var(--muted);
+  font-size: 11px;
+}
+.item-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  align-items: center;
+  margin-top: 9px;
+}
+.item-quantity {
+  color: var(--muted);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+.item-card .button {
+  width: 100%;
+  margin-top: 18px;
+  min-height: 40px;
+  padding: 8px 10px;
+  font-size: 12px;
+}
+.palette-art {
+  width: 80px;
+  height: 66px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  align-items: stretch;
+  transform: rotate(-7deg);
+}
+.palette-art span:nth-child(2) {
+  transform: translateY(-8px);
+}
+.palette-art span:nth-child(4) {
+  transform: translateY(8px);
+}
+.cursor-art {
+  width: 65px;
+  height: 65px;
+  image-rendering: pixelated;
+}
+.companion-art {
+  width: 100px;
+  height: 100px;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+.odds-list {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-top: 16px;
+}
+.odds-item {
+  padding-left: 12px;
+  border-left: 3px solid var(--rarity);
+}
+.odds-item span {
+  display: block;
+  font-size: 11px;
+  color: var(--muted);
+}
+.odds-item strong {
+  font-family: var(--font-heading);
+  font-size: 24px;
+  font-weight: 400;
+}
+.inventory-toolbar {
+  display: flex;
+  gap: 16px;
+  justify-content: space-between;
+  align-items: center;
+  margin: 28px 0;
+  flex-wrap: wrap;
+}
+.filter-buttons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.filter-buttons button {
+  background: none;
+  color: var(--muted);
+  border: 1px solid var(--line);
+  padding: 8px 14px;
+  font-size: 12px;
+  min-height: 40px;
+}
+.filter-buttons button[aria-pressed="true"] {
+  background: var(--fg);
+  color: var(--bg);
+  border-color: var(--fg);
+}
+.show-locked {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.show-locked input {
+  accent-color: var(--accent);
+  width: 16px;
+  height: 16px;
+}
+.equipped-slots {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 26px;
+}
+.equipped-slot {
+  background: var(--surface);
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.equipped-slot .item-art {
+  height: 60px;
+  width: 65px;
+  flex-shrink: 0;
+}
+.equipped-slot .companion-art,
+.equipped-slot .cursor-art {
+  width: 60px;
+  height: 60px;
+}
+.equipped-slot .palette-art {
+  width: 42px;
+  height: 35px;
+}
+.equipped-slot small {
+  color: var(--muted);
+  font-size: 11px;
+}
+.equipped-slot strong {
+  font-size: 13px;
+  display: block;
+}
+.equipped-slot button {
+  background: none;
+  border: 0;
+  color: var(--muted);
+  font-size: 11px;
+  padding: 6px 0;
+  text-decoration: underline;
+}
+.locked-item .item-art {
+  opacity: 0.3;
+  filter: grayscale(1);
+}
+.empty-collection {
+  padding: 48px 20px;
+  text-align: center;
+  background: var(--surface);
+}
+.empty-collection h2 {
+  font-size: 32px;
+  color: var(--fg);
+  margin-top: 12px;
+}
+.empty-collection p {
+  color: var(--muted);
+  margin: 14px 0 24px;
+  font-size: 14px;
+}
+.storage-note {
+  color: var(--muted);
+  font-size: 12px;
+  margin-top: 28px;
+}
+.storage-warning {
+  color: var(--fg);
+  background: var(--surface);
+  border-left: 3px solid var(--accent);
+  padding: 14px 18px;
+  margin-bottom: 24px;
+  font-size: 13px;
+}
+.companion-dock {
+  position: fixed;
+  bottom: 18px;
+  right: 20px;
+  z-index: 40;
+  display: flex;
+  align-items: start;
+}
+.companion-play {
+  padding: 0;
+  border: 0;
+  background: none;
+  width: 100px;
+  height: 100px;
+}
+.companion-play .companion-art {
+  filter: drop-shadow(0 4px 0 #0005);
+}
+.companion-play.reacting {
+  animation: companion-hop 0.55s ease-in-out;
+}
+.companion-dismiss {
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--muted);
+  display: grid;
+  place-items: center;
+}
+.lightbox {
+  border: 1px solid var(--line);
+  padding: 48px 12px 12px;
+  color: var(--fg);
+  background: var(--bg);
+  width: min(1300px, 96vw);
+  max-width: 96vw;
+  height: 90dvh;
+  max-height: 90dvh;
+}
+.lightbox::backdrop {
+  background: #000d;
+}
+.lightbox-image {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+.lightbox-close {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  z-index: 2;
+}
+.detail-heading {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  margin-bottom: 32px;
+}
+.detail-heading img {
+  width: 80px;
+  height: 80px;
+  border-radius: 16px;
+}
+.detail-heading h1 {
+  color: var(--accent);
+  font-size: clamp(48px, 6vw, 80px);
+}
+.detail-heading p {
+  color: var(--muted);
+  margin-top: 10px;
+}
+.detail-gallery {
+  display: flex;
+  overflow-x: auto;
+  gap: 16px;
+  padding-bottom: 15px;
+  scroll-snap-type: x proximity;
+}
+.detail-gallery button {
+  border: 1px solid var(--line);
+  background: var(--surface);
+  padding: 12px;
+  flex-shrink: 0;
+  scroll-snap-align: start;
+}
+.detail-gallery img {
+  height: 340px;
+  width: auto;
+  object-fit: contain;
+}
+.detail-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(240px, 1fr);
+  gap: 80px;
+  margin-top: 44px;
+}
+.detail-body h2 {
+  font-size: 30px;
+  color: var(--fg);
+  margin-bottom: 20px;
+}
+.detail-body section {
+  margin-bottom: 36px;
+}
+.detail-prose {
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1.85;
+}
+.detail-links {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.detail-team {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+  margin-top: 35px;
+}
+.detail-team article {
+  padding: 20px;
+  background: var(--surface);
+}
+.detail-team strong {
+  font-size: 14px;
+}
+.detail-team p {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 5px;
+}
+@keyframes project-in {
+  from {
+    opacity: 0.5;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes reel-roll {
+  from {
+    transform: translateX(-72px);
+  }
+  to {
+    transform: translateX(-4128px);
+  }
+}
+@keyframes companion-hop {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0);
+  }
+  35% {
+    transform: translateY(-25px) rotate(-12deg);
+  }
+  65% {
+    transform: translateY(-10px) rotate(10deg);
+  }
+}
+@media (pointer: fine) {
+  html[data-cursor="arrow"] body,
+  html[data-cursor="arrow"] a,
+  html[data-cursor="arrow"] button {
+    cursor:
+      url("/collectibles/cursors/arrow.svg") 4 2,
+      auto;
+  }
+  html[data-cursor="crosshair"] body,
+  html[data-cursor="crosshair"] a,
+  html[data-cursor="crosshair"] button {
+    cursor:
+      url("/collectibles/cursors/crosshair.svg") 12 12,
+      crosshair;
+  }
+  html[data-cursor="sword"] body,
+  html[data-cursor="sword"] a,
+  html[data-cursor="sword"] button {
+    cursor:
+      url("/collectibles/cursors/sword.svg") 3 3,
+      auto;
+  }
+  html[data-cursor="knife"] body,
+  html[data-cursor="knife"] a,
+  html[data-cursor="knife"] button {
+    cursor:
+      url("/collectibles/cursors/knife.svg") 3 3,
+      auto;
+  }
+}
+@media (min-width: 1500px) {
+  .hero {
+    padding-block: 90px;
+  }
+}
+@media (max-width: 1100px) {
+  .header-inner {
+    gap: 22px;
+  }
+  .main-nav {
+    gap: 17px;
+  }
+  .header-contact {
+    display: none;
+  }
+  .hero {
+    gap: 45px;
+    grid-template-columns: 1fr 300px;
+  }
+  .project-summary {
+    flex-wrap: wrap;
+  }
+  .project-inspector {
+    grid-template-columns: 215px minmax(0, 1fr);
+  }
+  .about-layout {
+    gap: 50px;
+  }
+  .calendar {
+    justify-content: start;
+  }
+}
+@media (max-width: 800px) {
+  .container {
+    width: calc(100% - 40px);
+  }
+  .section {
+    padding-block: 46px;
+  }
+  .header-inner {
+    width: calc(100% - 36px);
+    min-height: 68px;
+  }
+  .header-actions {
+    margin-left: auto;
+    gap: 14px;
+  }
+  .menu-toggle {
+    display: flex;
+  }
+  .main-nav {
+    display: none;
+    position: absolute;
+    top: 68px;
+    left: 0;
+    right: 0;
+    background: var(--surface);
+    border-bottom: 1px solid var(--line);
+    padding: 20px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+  }
+  .main-nav.is-open {
+    display: flex;
+  }
+  .main-nav a {
+    padding: 12px 10px;
+  }
+  .hero {
+    grid-template-columns: 1fr 220px;
+    gap: 25px;
+    padding-block: 50px;
+  }
+  .hero h1 {
+    font-size: 94px;
+  }
+  .hero-role {
+    font-size: 15px;
+  }
+  .hero-description {
+    font-size: 18px;
+  }
+  .hero-links {
+    gap: 20px;
+  }
+  .hero-portrait .portrait-photo {
+    height: 275px;
+  }
+  .award-note {
+    max-width: 270px;
+  }
+  .project-inspector {
+    grid-template-columns: 1fr;
+  }
+  .project-list {
+    flex-direction: row;
+    overflow-x: auto;
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .project-choice {
+    min-width: 170px;
+    border-left: 0;
+    border-bottom: 3px solid transparent;
+  }
+  .project-choice.selected {
+    border-bottom-color: var(--accent);
+  }
+  .project-choice > svg {
+    display: none;
+  }
+  .about-layout {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+  .skills-list {
+    grid-template-columns: 1fr 1fr;
+    gap: 25px;
+  }
+  .experience-row {
+    grid-template-columns: 180px 1fr;
+    gap: 25px;
+  }
+  .collection-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .explore-card {
+    padding: 24px;
+  }
+  .mini-slot {
+    width: 75px;
+    height: 95px;
+  }
+  .mini-slot .companion-art {
+    width: 80px;
+    height: 80px;
+  }
+  .mini-slot .palette-art {
+    width: 50px;
+    height: 50px;
+  }
+  .mini-slot .cursor-art {
+    width: 45px;
+    height: 45px;
+  }
+  .contact-links {
+    flex-wrap: wrap;
+    gap: 25px 40px;
+  }
+  .equipped-slot {
+    flex-direction: column;
+    align-items: start;
+  }
+  .equipped-slot .item-art {
+    align-self: center;
+  }
+  .detail-body {
+    gap: 35px;
+    grid-template-columns: minmax(0, 1fr) 230px;
+  }
+}
+@media (max-width: 560px) {
+  .hero {
+    grid-template-columns: 1fr;
+    gap: 35px;
+  }
+  .hero h1 {
+    font-size: 104px;
+  }
+  .hero-portrait {
+    width: 230px;
+    justify-self: end;
+    margin-right: 12px;
+  }
+  .hero-portrait .portrait-photo {
+    height: 230px;
+  }
+  .hero-description {
+    max-width: 30ch;
+  }
+  .hero-copy {
+    padding-top: 8px;
+  }
+  .hero-role {
+    margin-bottom: 24px;
+  }
+  .hero-links {
+    gap: 25px;
+  }
+  .award-note {
+    max-width: none;
+    font-size: 11px;
+  }
+  .section-count {
+    display: none;
+  }
+  .section-heading {
+    gap: 16px;
+    margin-bottom: 25px;
+  }
+  .section-heading p {
+    font-size: 14px;
+  }
+  .project-preview {
+    margin: 10px 10px 0;
+    aspect-ratio: 1.38;
+  }
+  .project-summary {
+    padding: 18px;
+    gap: 18px;
+  }
+  .project-summary .button {
+    width: 100%;
+  }
+  .project-technologies {
+    padding-inline: 18px;
+  }
+  .project-award {
+    font-size: 8px;
+    top: 8px;
+    left: 8px;
+  }
+  .expand-button {
+    width: 34px;
+    height: 34px;
+    top: 8px;
+    right: 8px;
+  }
+  .project-choice {
+    min-width: 155px;
+    padding: 8px;
+    min-height: 70px;
+  }
+  .project-choice img {
+    width: 35px;
+    height: 35px;
+  }
+  .experience-row {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+  .experience-meta {
+    padding-left: 13px;
+    border-left: 3px solid var(--blue);
+  }
+  .skills-list {
+    grid-template-columns: 1fr;
+  }
+  .experience-description {
+    font-size: 14px;
+  }
+  .contribution-panel {
+    padding: 18px;
+  }
+  .contribution-stats {
+    gap: 18px;
+    flex-wrap: wrap;
+  }
+  .contribution-stats .period-label {
+    width: 100%;
+    margin: 0;
+  }
+  .calendar-footer {
+    flex-direction: column;
+    align-items: start;
+    gap: 12px;
+  }
+  .contribution-bottom {
+    align-items: start;
+    flex-direction: column;
+  }
+  .explore-grid {
+    grid-template-columns: 1fr;
+  }
+  .explore-art {
+    height: 150px;
+  }
+  .explore-card h3 {
+    font-size: 29px;
+  }
+  .mini-slot {
+    width: 90px;
+    height: 105px;
+  }
+  .contact-links {
+    flex-direction: column;
+    gap: 24px;
+  }
+  .contact-links > a > svg:last-child {
+    margin-left: auto;
+  }
+  .site-footer {
+    flex-wrap: wrap;
+    gap: 18px;
+  }
+  .site-footer .wordmark {
+    width: 100%;
+  }
+  .site-footer > a {
+    margin-left: auto;
+  }
+  .collection-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+  .item-card {
+    padding: 12px;
+  }
+  .item-card h3 {
+    font-size: 13px;
+  }
+  .item-art {
+    height: 105px;
+  }
+  .rarity-label {
+    font-size: 9px;
+  }
+  .roulette-panel {
+    padding: 20px 12px;
+  }
+  .roulette-actions {
+    gap: 10px;
+  }
+  .roulette-actions .button {
+    flex: 1;
+  }
+  .reward-result {
+    gap: 12px;
+  }
+  .reward-result .button {
+    margin-left: 0;
+  }
+  .reward-result strong {
+    font-size: 24px;
+  }
+  .page-heading-row {
+    flex-direction: column;
+    align-items: start;
+  }
+  .equipped-slots {
+    gap: 8px;
+  }
+  .equipped-slot {
+    padding: 12px 8px;
+  }
+  .equipped-slot strong {
+    font-size: 11px;
+  }
+  .equipped-slot small {
+    font-size: 10px;
+  }
+  .companion-dock {
+    right: 12px;
+    bottom: 12px;
+  }
+  .companion-play,
+  .companion-play .companion-art {
+    width: 75px;
+    height: 75px;
+  }
+  .detail-heading {
+    gap: 16px;
+    align-items: start;
+  }
+  .detail-heading img {
+    width: 58px;
+    height: 58px;
+  }
+  .detail-heading p {
+    font-size: 13px;
+  }
+  .detail-body {
+    grid-template-columns: 1fr;
+    gap: 5px;
+  }
+  .detail-gallery img {
+    height: 240px;
+    max-width: 80vw;
+  }
+  .detail-team {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .detail-team article {
+    padding: 15px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .button:hover {
+    transform: none;
+  }
+}
+
+.default-slot {
+  font-family: var(--font-heading);
+  font-size: 38px;
+  color: var(--muted);
+}
+.explore-collection-count {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 12px;
+}
+.detail-award {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  color: var(--accent);
+  font-size: 13px;
+  margin-bottom: 24px;
+}
+.detail-team-title {
+  font-size: 32px;
+  color: var(--fg);
+}
+.detail-team .text-link {
+  font-size: 11px;
+  margin-top: 12px;
+}
+button:disabled {
+  cursor: default;
+}
+
+@media (max-width: 560px), (pointer: coarse) {
+  .calendar {
+    grid-template-rows: repeat(7, 20px);
+    grid-auto-columns: 20px;
+    gap: 6px;
+    min-width: 1372px;
+  }
+  .calendar-day {
+    width: 20px;
+    height: 20px;
+  }
+  .calendar-legend .calendar-day {
+    width: 12px;
+    height: 12px;
+  }
+}
+.lightbox {
+  overscroll-behavior: contain;
 }
