@@ -6,11 +6,11 @@ import Link from "next/link";
 import { ArrowLeft, ArrowUpRight, Trophy } from "lucide-react";
 import { getProjects } from "@/data/projects";
 import { useSettings } from "@/context/SettingsContext";
-import ImageLightbox from "@/components/ImageLightbox";
+import ImageLightbox, { type ImagePreview } from "@/components/ImageLightbox";
 export default function ProjectDetails({ projectId }: { projectId: string }) {
   const { language, copy: c, t } = useSettings();
   const project = getProjects(language).find((item) => item.id === projectId);
-  const [expanded, setExpanded] = useState<string | null>(null);
+  const [expanded, setExpanded] = useState<ImagePreview | null>(null);
   if (!project) notFound();
   const links = [
     { href: project.links.appStore, label: "App Store" },
@@ -48,7 +48,9 @@ export default function ProjectDetails({ projectId }: { projectId: string }) {
             <button
               key={media}
               aria-label={`${c.enlarge}: ${project.name} ${index + 1}`}
-              onClick={() => setExpanded(media)}
+              onClick={(event) =>
+                setExpanded({ src: media, opener: event.currentTarget })
+              }
             >
               <Image
                 src={media}
@@ -134,7 +136,7 @@ export default function ProjectDetails({ projectId }: { projectId: string }) {
       ) : null}
       {expanded ? (
         <ImageLightbox
-          src={expanded}
+          preview={expanded}
           alt={project.name}
           close={() => setExpanded(null)}
         />

@@ -5,7 +5,6 @@ import { SettingsProvider } from "@/context/SettingsContext";
 import { CollectionProvider } from "@/context/CollectionContext";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import CompanionDock from "@/components/collectibles/CompanionDock";
 const pixel = Pixelify_Sans({
   subsets: ["latin"],
   variable: "--font-pixel",
@@ -40,7 +39,6 @@ export default function RootLayout({
             <Navbar />
             {children}
             <Footer />
-            <CompanionDock />
           </CollectionProvider>
         </SettingsProvider>
       </body>

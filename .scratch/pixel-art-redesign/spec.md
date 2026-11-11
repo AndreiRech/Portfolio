@@ -1,6 +1,6 @@
 # Redesign do portfólio com pixel art
 
-Status: ready-for-agent
+Status: ready-for-human
 
 ## Objetivo informado
 
@@ -170,3 +170,5 @@ O usuário respondeu "Sim" à confirmação do conjunto, incluindo as regras com
 - A especificação foi consolidada para revisão final. Nenhum arquivo de implementação foi alterado durante a entrevista.
 
 - O usuário confirmou o entendimento compartilhado do conjunto e pediu a execução com `issue-to-pr`, incluindo as skills de design.
+
+- Primeira entrega implementada e revisada, com evidências em `docs/evidence/pixel-art/validation.md`. Minijogos posteriores permanecem fora desta entrega.

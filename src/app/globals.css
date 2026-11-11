@@ -237,6 +237,7 @@ svg {
   border-bottom: 1px solid var(--line);
 }
 .header-inner {
+  flex-wrap: wrap;
   width: min(1360px, calc(100% - 64px));
   margin: auto;
   min-height: 78px;
@@ -1188,25 +1189,26 @@ svg {
   font-size: 13px;
 }
 .companion-dock {
-  position: fixed;
-  bottom: 18px;
-  right: 20px;
-  z-index: 40;
+  position: static;
   display: flex;
   align-items: start;
+  gap: 4px;
+  flex-shrink: 0;
 }
 .companion-play {
   padding: 0;
   border: 0;
   background: none;
-  width: 100px;
-  height: 100px;
+  width: 56px;
+  height: 56px;
 }
 .companion-play .companion-art {
+  width: 56px;
+  height: 56px;
   filter: drop-shadow(0 4px 0 #0005);
 }
 .companion-play.reacting {
-  animation: companion-hop 0.55s ease-in-out;
+  animation: companion-reaction 0.55s ease-in-out;
 }
 .companion-dismiss {
   width: 28px;
@@ -1339,16 +1341,16 @@ svg {
     transform: translateX(-4128px);
   }
 }
-@keyframes companion-hop {
+@keyframes companion-reaction {
   0%,
   100% {
-    transform: translateY(0) rotate(0);
+    transform: scale(1);
   }
   35% {
-    transform: translateY(-25px) rotate(-12deg);
+    transform: scale(0.82, 0.88);
   }
   65% {
-    transform: translateY(-10px) rotate(10deg);
+    transform: scale(0.94);
   }
 }
 @media (pointer: fine) {
@@ -1434,7 +1436,7 @@ svg {
   .main-nav {
     display: none;
     position: absolute;
-    top: 68px;
+    top: 100%;
     left: 0;
     right: 0;
     background: var(--surface);
@@ -1734,13 +1736,21 @@ svg {
     font-size: 10px;
   }
   .companion-dock {
-    right: 12px;
-    bottom: 12px;
+    flex-basis: 100%;
+    height: 58px;
+    justify-content: flex-end;
   }
   .companion-play,
   .companion-play .companion-art {
-    width: 75px;
-    height: 75px;
+    width: 56px;
+    height: 56px;
+  }
+  .header-inner:has(.companion-dock) {
+    padding-block: 10px;
+    gap: 6px 16px;
+  }
+  html:has(.companion-dock) {
+    scroll-padding-top: 154px;
   }
   .detail-heading {
     gap: 16px;

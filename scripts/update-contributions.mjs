@@ -1,11 +1,6 @@
 import { readFile, writeFile, mkdir, rename } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
-import {
-  parseCalendar,
-  validSnapshot,
-  dateRange,
-  PROFILE,
-} from "./contributions.mjs";
+import { parseCalendar, validSnapshot, PROFILE } from "./contributions.mjs";
 const root = new URL("../", import.meta.url);
 const target = new URL("src/data/contributions.json", root);
 const cache = new URL(".cache/contributions.json", root);
@@ -28,9 +23,8 @@ try {
   if (input >= 0 && process.argv[input + 1])
     html = await readFile(process.argv[input + 1], "utf8");
   else {
-    const { from, to } = dateRange();
     const response = await fetch(
-      `https://github.com/users/${PROFILE}/contributions?from=${from}&to=${to}`,
+      `https://github.com/users/${PROFILE}/contributions`,
       {
         headers: {
           "Accept-Language": "en-US",

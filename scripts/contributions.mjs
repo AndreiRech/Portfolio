@@ -3,7 +3,9 @@ export const PROFILE = "AndreiRech";
 export function dateRange(now = new Date()) {
   const end = now.toISOString().slice(0, 10);
   const start = new Date(`${end}T00:00:00Z`);
+  const month = start.getUTCMonth();
   start.setUTCFullYear(start.getUTCFullYear() - 1);
+  if (start.getUTCMonth() !== month) start.setUTCDate(0);
   start.setUTCDate(start.getUTCDate() + 1);
   return { from: start.toISOString().slice(0, 10), to: end };
 }
@@ -14,6 +16,7 @@ export function validSnapshot(value) {
   if (
     !value ||
     value.profile !== PROFILE ||
+    typeof value.updatedAt !== "string" ||
     !Number.isFinite(Date.parse(value.updatedAt)) ||
     !Array.isArray(value.days) ||
     value.days.length < 350 ||

@@ -1,6 +1,6 @@
 # Implementar o redesign pixel aprovado
 
-Status: ready-for-agent
+Status: ready-for-human
 Type: task
 Base: main, `4d9403efecc80adf6392d69e96e70f059e1e9ccc`
 Branch: feature/pixel-art-redesign
@@ -19,4 +19,6 @@ Registrar resultados e capturas em `docs/evidence/pixel-art/` e comparar a imple
 ## Comments
 
 - O usuário confirmou a especificação e solicitou a execução com `issue-to-pr` e suas skills de design.
-- Implementação em andamento no repositório `AndreiRech/Portfolio`. Não há issue remota associada; este ticket segue o tracker Markdown do projeto.
+- Implementação concluída no repositório `AndreiRech/Portfolio`. Não há issue remota associada; este ticket segue o tracker Markdown do projeto.
+
+- Validação e revisão registradas em `docs/evidence/pixel-art/validation.md`. PR em preparação para revisão humana.

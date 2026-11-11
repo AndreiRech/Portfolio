@@ -11,13 +11,13 @@ import {
 } from "lucide-react";
 import { getProjects } from "@/data/projects";
 import { useSettings } from "@/context/SettingsContext";
-import ImageLightbox from "@/components/ImageLightbox";
+import ImageLightbox, { type ImagePreview } from "@/components/ImageLightbox";
 export default function ProjectsSection() {
   const { language, copy: c } = useSettings();
   const projects = getProjects(language);
   const [selectedId, setSelectedId] = useState(projects[0].id);
   const [imageIndex, setImageIndex] = useState(0);
-  const [expanded, setExpanded] = useState(false);
+  const [expanded, setExpanded] = useState<ImagePreview | null>(null);
   const selected =
     projects.find((project) => project.id === selectedId) ?? projects[0];
   const media =
@@ -71,7 +71,9 @@ export default function ProjectsSection() {
           <div className="project-preview">
             <button
               className="preview-image-button"
-              onClick={() => setExpanded(true)}
+              onClick={(event) =>
+                setExpanded({ src: media, opener: event.currentTarget })
+              }
               aria-label={`${c.enlarge}: ${selected.name}`}
             >
               <Image
@@ -92,7 +94,9 @@ export default function ProjectsSection() {
             ) : null}
             <button
               className="icon-button expand-button"
-              onClick={() => setExpanded(true)}
+              onClick={(event) =>
+                setExpanded({ src: media, opener: event.currentTarget })
+              }
               aria-label={c.enlarge}
             >
               <Maximize2 size={18} />
@@ -139,9 +143,9 @@ export default function ProjectsSection() {
       </div>
       {expanded ? (
         <ImageLightbox
-          src={media}
+          preview={expanded}
           alt={selected.name}
-          close={() => setExpanded(false)}
+          close={() => setExpanded(null)}
         />
       ) : null}
     </section>

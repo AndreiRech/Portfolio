@@ -6,6 +6,12 @@ import {
   validSnapshot,
 } from "../../scripts/contributions.mjs";
 const now = new Date("2026-11-11T12:00:00Z");
+test("a rolling year ending on leap day retains March 1 of the previous year", () => {
+  assert.deepEqual(dateRange(new Date("2024-02-29T12:00:00Z")), {
+    from: "2023-03-01",
+    to: "2024-02-29",
+  });
+});
 function fixture() {
   const { from, to } = dateRange(now);
   const current = new Date(`${from}T00:00:00Z`);

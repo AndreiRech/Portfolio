@@ -37,9 +37,7 @@ export default function CasesView() {
     const id = crypto.randomUUID();
     activeOpening.current = id;
     const reel = Array.from({ length: 32 }, (_, index) =>
-      index === 26
-        ? reward
-        : REWARDS[Math.floor(Math.random() * REWARDS.length)],
+      index === 26 ? reward : drawReward(),
     );
     grant(id, reward.id);
     setOpening({

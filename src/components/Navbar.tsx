@@ -4,10 +4,11 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { Menu, X, ArrowUpRight } from "lucide-react";
 import { useSettings } from "@/context/SettingsContext";
+import CompanionDock from "@/components/collectibles/CompanionDock";
 export default function Navbar() {
   const { language, toggleLanguage, copy: c } = useSettings();
   const [open, setOpen] = useState(false);
-  const path = usePathname();
+  const path = usePathname().replace(/\/$/, "") || "/";
   const links = [
     { href: "/#projects", label: c.projects },
     { href: "/#about", label: c.about },
@@ -75,6 +76,7 @@ export default function Navbar() {
               {open ? <X size={22} /> : <Menu size={22} />}
             </button>
           </div>
+          <CompanionDock />
         </div>
       </header>
     </>
