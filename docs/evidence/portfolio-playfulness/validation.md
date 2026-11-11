@@ -1,5 +1,7 @@
 # Validação do portfólio e das interações
 
+O Hero vigente foi atualizado para uma cena aberta com D20. Consulte a [validação do Hero atual](../hero-dice/validation.md). As capturas e descrições de seleção de projetos neste documento registram a versão anterior da abertura.
+
 Data: 11/11/2026. Branch `feature/portfolio-playfulness`, base de revisão `e446f2afede28d1bd7dac408a1812c8d9c7a69c1`, dependente do PR #2 com base `feature/pixel-interactions`. [Especificação](../../../.scratch/portfolio-playfulness/spec.md).
 
 ## Resultado
