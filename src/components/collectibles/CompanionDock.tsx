@@ -421,11 +421,13 @@ function ActiveCompanion({
           </div>
           <div className="companion-readout">
             <p role="status">
-              {c[message]}
+              {reduced && (message === "walking" || message === "following")
+                ? c.resting
+                : c[message]}
               {roll !== null && message === "rolled" ? `: ${roll} / 20` : ""}
             </p>
             <span>
-              {pixels} {c.pixels}
+              {pixels} {pixels === 1 ? c.pixel : c.pixels}
             </span>
             {reduced && <small>{c.reduced}</small>}
           </div>
