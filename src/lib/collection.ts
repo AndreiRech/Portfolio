@@ -14,6 +14,12 @@ export const emptyCollection = (): Collection => ({
   lastOpening: null,
 });
 
+const validCount = (count: unknown): count is number =>
+  typeof count === "number" &&
+  Number.isSafeInteger(count) &&
+  count > 0 &&
+  count <= 1_000_000;
+
 export function parseCollection(raw: string | null): Collection {
   const clean = emptyCollection();
   if (!raw || raw.length > 16000) return clean;
@@ -29,14 +35,22 @@ export function parseCollection(raw: string | null): Collection {
     const candidate = value as Partial<Collection>;
     if (candidate.counts && typeof candidate.counts === "object") {
       for (const item of REWARDS) {
-        const count = candidate.counts[item.id];
+        const current = candidate.counts[item.id];
+        const legacy =
+          item.id === "medallion" ? candidate.counts.wolf : undefined;
+        const count = Math.min(
+          (validCount(current) ? current : 0) +
+            (validCount(legacy) ? legacy : 0),
+          1_000_000,
+        );
         if (Number.isSafeInteger(count) && count > 0 && count <= 1_000_000)
           clean.counts[item.id] = count;
       }
     }
     if (candidate.equipped && typeof candidate.equipped === "object") {
       for (const kind of ["palette", "cursor", "companion"] as const) {
-        const id = candidate.equipped[kind];
+        const stored: unknown = candidate.equipped[kind];
+        const id = stored === "wolf" ? "medallion" : stored;
         if (
           typeof id === "string" &&
           getReward(id)?.kind === kind &&

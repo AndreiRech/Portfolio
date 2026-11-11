@@ -11,7 +11,7 @@ export default function RewardArt({ reward }: { reward: Reward }) {
     );
   return (
     <Image
-      src={`/collectibles/${reward.kind === "cursor" ? "cursors" : "companions"}/${reward.id}.${reward.kind === "cursor" ? "svg" : "webp"}`}
+      src={`/collectibles/${reward.kind === "cursor" ? "cursors" : "companions"}/${reward.id}.${reward.kind === "cursor" || reward.id === "medallion" ? "svg" : "webp"}`}
       width={100}
       height={100}
       alt=""

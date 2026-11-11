@@ -1,0 +1,943 @@
+/* The optional playground shares the portfolio's palette and square geometry. */
+.pixel-eyebrow,
+.pixel-label {
+  font-family: var(--font-heading), monospace;
+  letter-spacing: 0.08em;
+  font-size: 12px;
+  color: var(--muted);
+}
+.pixel-eyebrow {
+  color: var(--accent);
+  margin-bottom: 12px;
+}
+.pixel-cross {
+  width: 32px;
+  height: 32px;
+  color: var(--accent);
+  background: currentColor;
+  clip-path: polygon(
+    33% 0,
+    66% 0,
+    66% 33%,
+    100% 33%,
+    100% 66%,
+    66% 66%,
+    66% 100%,
+    33% 100%,
+    33% 66%,
+    0 66%,
+    0 33%,
+    33% 33%
+  );
+}
+.playground {
+  padding-top: 44px;
+}
+.playground .section-heading {
+  align-items: center;
+}
+.playground-grid {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  border: 1px solid var(--line);
+  box-shadow: 6px 6px 0 var(--surface);
+}
+.sign-lab,
+.pet-lab {
+  padding: 28px;
+  min-width: 0;
+}
+.sign-lab {
+  border-right: 1px solid var(--line);
+  background: var(--surface);
+}
+.play-panel-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+.playground h3 {
+  font-family: var(--font-heading);
+  font-weight: 400;
+  font-size: clamp(24px, 2.5vw, 32px);
+  line-height: 1.2;
+  margin: 0 0 12px;
+}
+.sign-stage {
+  height: 256px;
+  position: relative;
+  display: grid;
+  place-items: center;
+  isolation: isolate;
+  overflow: hidden;
+  border-block: 1px solid var(--line);
+  margin-block: 24px 20px;
+  background-color: var(--bg);
+  background-image:
+    linear-gradient(var(--line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--line) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+.sign-stage:before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center, transparent, var(--bg) 85%);
+  z-index: -1;
+}
+.lab-medallion {
+  width: 120px;
+  height: 120px;
+  image-rendering: pixelated;
+  filter: drop-shadow(0 8px 0 #0005);
+  z-index: 1;
+}
+.rune-orbit {
+  position: absolute;
+  width: 270px;
+  height: 210px;
+  color: var(--sign-color);
+  opacity: 0.5;
+}
+.rune-orbit span {
+  position: absolute;
+  width: 30px;
+  height: 30px;
+}
+.rune-orbit span:nth-child(1) {
+  left: 0;
+  top: 40%;
+}
+.rune-orbit span:nth-child(2) {
+  right: 0;
+  top: 40%;
+}
+.rune-orbit span:nth-child(3) {
+  left: 44%;
+  top: 0;
+}
+.rune-orbit span:nth-child(4) {
+  left: 16%;
+  bottom: 0;
+}
+.rune-orbit span:nth-child(5) {
+  right: 16%;
+  bottom: 0;
+}
+.stage-coordinates {
+  position: absolute;
+  bottom: 10px;
+  left: 12px;
+  font: 10px var(--font-heading);
+  letter-spacing: 0.1em;
+  color: var(--muted);
+}
+.sign-picker {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+}
+.sign-picker button {
+  background: var(--bg);
+  border: 1px solid var(--line);
+  color: var(--muted);
+  min-height: 76px;
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  gap: 2px;
+  font-family: var(--font-heading);
+  font-size: 15px;
+  transition:
+    border-color 0.15s,
+    background 0.15s;
+}
+.sign-picker svg {
+  width: 32px;
+  height: 32px;
+  color: var(--glyph-color);
+}
+.sign-picker button[aria-pressed="true"] {
+  border-color: var(--glyph-color);
+  color: var(--fg);
+  box-shadow: inset 0 -3px 0 var(--glyph-color);
+  background: var(--raised);
+}
+.sign-picker button:hover {
+  border-color: var(--glyph-color);
+}
+.sign-description {
+  display: flex;
+  gap: 12px;
+  align-items: baseline;
+  margin-block: 20px;
+  min-height: 28px;
+  font-size: 14px;
+}
+.sign-description strong {
+  color: var(--sign-color);
+  font-family: var(--font-heading);
+  font-size: 21px;
+  font-weight: 400;
+}
+.sign-description p {
+  margin: 0;
+  color: var(--muted);
+}
+.cast-button {
+  width: 100%;
+}
+.cast-button svg {
+  width: 24px;
+  height: 24px;
+}
+.play-status {
+  font-size: 12px;
+  color: var(--muted);
+  min-height: 20px;
+  margin: 14px 0 0;
+}
+.pet-lab {
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+}
+.pet-lab-intro {
+  font-size: 14px;
+  max-width: 37ch;
+  color: var(--muted);
+  margin: 0;
+}
+.pixel-dot {
+  width: 7px;
+  height: 7px;
+  background: #9aca8b;
+  box-shadow: 0 0 0 3px #9aca8b18;
+}
+.pet-preview-stage {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: 275px;
+  flex: 1;
+  margin-top: 20px;
+  overflow: hidden;
+}
+.pet-preview-stage > .companion-art {
+  width: 142px;
+  height: 142px;
+  image-rendering: pixelated;
+  z-index: 1;
+  filter: drop-shadow(5px 7px 0 #0004);
+  transition: transform 0.18s;
+}
+.pet-preview-stage:hover > .companion-art {
+  transform: translateY(-8px) rotate(-4deg);
+}
+.pixel-ground {
+  position: absolute;
+  bottom: 38px;
+  width: 85%;
+  height: 50px;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--raised) 0 20px,
+    transparent 20px 24px
+  );
+  border-top: 4px solid var(--line);
+  clip-path: polygon(
+    0 0,
+    100% 0,
+    100% 25%,
+    95% 25%,
+    95% 60%,
+    85% 60%,
+    85% 85%,
+    15% 85%,
+    15% 60%,
+    5% 60%,
+    5% 25%,
+    0 25%
+  );
+}
+.preview-caption {
+  position: absolute;
+  bottom: 10px;
+  color: var(--fg);
+  text-align: center;
+}
+.pixel-stars {
+  position: absolute;
+  inset: 30px 40px;
+  color: var(--accent);
+  font-size: 25px;
+}
+.pixel-stars span:nth-child(1) {
+  position: absolute;
+  right: 0;
+  top: 50px;
+  color: var(--blue);
+}
+.pixel-stars span:nth-child(2) {
+  position: absolute;
+  left: 15%;
+  bottom: 60px;
+  color: var(--muted);
+  font-size: 16px;
+}
+.companion-picker {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin: 22px 0;
+}
+.companion-picker button {
+  display: grid;
+  place-items: center;
+  min-height: 72px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+}
+.companion-picker .companion-art {
+  width: 54px;
+  height: 54px;
+}
+.companion-picker button[aria-pressed="true"] {
+  border-color: var(--accent);
+  box-shadow: inset 0 -3px 0 var(--accent);
+}
+.companion-picker button:hover {
+  background: var(--raised);
+}
+.pet-lab > .button {
+  width: 100%;
+  justify-content: center;
+}
+.pet-lab > .text-link {
+  font-size: 12px;
+  align-self: center;
+  margin-top: 14px;
+}
+.spell-effect {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: var(--sign-color);
+  z-index: 2;
+  pointer-events: none;
+}
+.spell-effect i {
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  background: currentColor;
+  animation: spell-pixels 0.85s steps(10, end) both;
+  animation-delay: calc(var(--i) * 8ms);
+}
+.spell-ring {
+  position: absolute;
+  width: 120px;
+  height: 120px;
+  border: 4px solid currentColor;
+  clip-path: polygon(
+    25% 0,
+    75% 0,
+    75% 8%,
+    92% 8%,
+    92% 25%,
+    100% 25%,
+    100% 75%,
+    92% 75%,
+    92% 92%,
+    75% 92%,
+    75% 100%,
+    25% 100%,
+    25% 92%,
+    8% 92%,
+    8% 75%,
+    0 75%,
+    0 25%,
+    8% 25%,
+    8% 8%,
+    25% 8%
+  );
+  animation: spell-wave 0.85s steps(10, end) both;
+}
+.spell-glyph {
+  position: absolute;
+  width: 90px;
+  height: 90px;
+  animation: spell-emblem 1.1s steps(10, end) both;
+}
+.sign-igni .spell-effect i {
+  animation-name: spell-fire;
+  width: 9px;
+  height: 13px;
+}
+.sign-yrden .spell-ring {
+  transform: rotateX(55deg);
+  animation-name: spell-trap;
+  border-width: 8px;
+}
+.sign-quen .spell-ring {
+  animation-name: spell-shield;
+  background: color-mix(in srgb, var(--sign-color) 12%, transparent);
+  width: 160px;
+  height: 160px;
+}
+.sign-axii .spell-ring {
+  animation-name: spell-mind;
+  border-style: dashed;
+}
+@keyframes spell-pixels {
+  0% {
+    transform: translate(0, 0);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(var(--dx), var(--dy));
+    opacity: 0;
+  }
+}
+@keyframes spell-fire {
+  0% {
+    transform: translate(calc(var(--dx) * 0.2), 40px);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(var(--dx), calc(var(--dy) - 100px)) scale(0.3);
+    opacity: 0;
+  }
+}
+@keyframes spell-wave {
+  from {
+    transform: scale(0.4);
+    opacity: 1;
+  }
+  to {
+    transform: scale(2.5);
+    opacity: 0;
+  }
+}
+@keyframes spell-trap {
+  0% {
+    transform: translateY(40px) rotateX(55deg) scale(0.2);
+    opacity: 0;
+  }
+  35% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(40px) rotateX(55deg) scale(1.8);
+    opacity: 0;
+  }
+}
+@keyframes spell-shield {
+  0% {
+    transform: scale(0.6);
+    opacity: 0;
+  }
+  25%,
+  70% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.1);
+    opacity: 0;
+  }
+}
+@keyframes spell-mind {
+  0% {
+    transform: rotate(0) scale(0.5);
+    opacity: 1;
+  }
+  100% {
+    transform: rotate(100deg) scale(2);
+    opacity: 0;
+  }
+}
+@keyframes spell-emblem {
+  0% {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+  35% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-35px);
+    opacity: 0;
+  }
+}
+/* Space beneath the document lets every link scroll clear of companion controls. */
+html[data-companion="active"] body {
+  padding-bottom: var(--companion-floor, 240px);
+}
+html[data-companion="active"] {
+  scroll-padding-bottom: var(--companion-floor, 240px);
+}
+.companion-world {
+  position: fixed;
+  inset: 0;
+  z-index: 45;
+  pointer-events: none;
+  overflow: hidden;
+}
+.world-pet {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 68px;
+  height: 68px;
+  border: 0;
+  background: none;
+  padding: 0;
+  pointer-events: auto;
+  will-change: transform;
+  isolation: isolate;
+}
+.world-pet .companion-art {
+  width: 68px;
+  height: 68px;
+  image-rendering: pixelated;
+  filter: drop-shadow(0 3px 0 #0004);
+}
+.pet-sprite {
+  display: block;
+  transform: scaleX(var(--facing, 1));
+}
+.world-pet[data-moving="true"] .pet-sprite {
+  animation: pet-walk 0.32s steps(2, end) infinite;
+}
+.pet-d20 .world-pet[data-moving="true"] .pet-sprite,
+.pet-gold-d20 .world-pet[data-moving="true"] .pet-sprite {
+  animation: pet-roll 0.85s steps(8, end) infinite;
+}
+.pet-medallion .world-pet[data-moving="true"] .pet-sprite {
+  animation: pet-hover 0.9s steps(8, end) infinite;
+}
+.companion-world[data-motion="off"] .pet-sprite {
+  animation: none;
+}
+.pet-shadow {
+  position: absolute;
+  width: 38px;
+  height: 6px;
+  bottom: 1px;
+  left: 15px;
+  background: #0005;
+  z-index: -1;
+}
+.pet-reaction {
+  position: absolute;
+  top: -18px;
+  left: 20px;
+  color: var(--accent);
+  font: 24px var(--font-heading);
+  animation: pet-heart 1.3s steps(10, end) both;
+  pointer-events: none;
+}
+.reaction-roll {
+  background: var(--surface);
+  border: 1px solid var(--accent);
+  padding: 1px 9px;
+  left: 12px;
+  animation-name: pet-result;
+  min-width: 44px;
+}
+.reaction-magic {
+  color: #efca75;
+  left: -11px;
+  top: -11px;
+  width: 90px;
+  height: 90px;
+}
+.reaction-magic svg {
+  width: 100%;
+  height: 100%;
+}
+.fetch-pixel {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 12px;
+  height: 12px;
+  background: var(--accent);
+  box-shadow: 4px 4px 0 #0004;
+  animation: fetch-pulse 0.6s steps(2, end) infinite;
+}
+.companion-hud {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 46;
+  background: var(--bg);
+  border-top: 2px solid var(--accent);
+  box-shadow: 0 -6px 0 #0002;
+  padding: 12px 52px 12px 20px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  min-height: 86px;
+}
+.companion-identity {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: 220px;
+  flex-shrink: 0;
+}
+.companion-identity > .companion-art {
+  width: 46px;
+  height: 46px;
+}
+.companion-identity strong {
+  display: block;
+  font: 17px/1.2 var(--font-heading);
+  margin-top: 4px;
+}
+.companion-identity .pixel-label {
+  font-size: 10px;
+}
+.companion-commands {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+.companion-commands button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 40px;
+  padding: 7px 10px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  color: var(--fg);
+  font-size: 12px;
+  white-space: nowrap;
+}
+.companion-commands button[aria-pressed="true"] {
+  border-color: var(--accent);
+  color: var(--fg);
+}
+.companion-commands button:hover {
+  background: var(--raised);
+}
+.companion-commands button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+.companion-readout {
+  margin-left: auto;
+  min-width: 100px;
+  max-width: 220px;
+  font-size: 11px;
+}
+.companion-readout p {
+  margin: 0;
+  color: var(--accent);
+}
+.companion-readout > span,
+.companion-readout small {
+  display: block;
+  color: var(--muted);
+  font-size: 10px;
+}
+.hud-inventory {
+  font-size: 11px;
+  color: var(--muted);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.companion-hud .companion-dismiss {
+  position: absolute;
+  right: 12px;
+  top: 12px;
+  width: 32px;
+  height: 32px;
+}
+@keyframes pet-walk {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-3deg) scaleX(var(--facing, 1));
+  }
+  50% {
+    transform: translateY(-6px) rotate(3deg) scaleX(var(--facing, 1));
+  }
+}
+@keyframes pet-roll {
+  0% {
+    transform: rotate(0);
+  }
+  50% {
+    transform: rotate(180deg) translateY(-8px);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+@keyframes pet-hover {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-6deg);
+  }
+  50% {
+    transform: translateY(-8px) rotate(6deg);
+  }
+}
+@keyframes pet-heart {
+  0% {
+    opacity: 0;
+    transform: translateY(0) scale(0.5);
+  }
+  20% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-28px) scale(1.2);
+  }
+}
+@keyframes pet-result {
+  0% {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  15%,
+  85% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes fetch-pulse {
+  50% {
+    opacity: 0.5;
+  }
+}
+.pixel-feedback {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  pointer-events: none;
+  overflow: hidden;
+}
+.pixel-feedback i {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: var(--accent);
+}
+.pixel-feedback i:nth-child(even) {
+  background: var(--blue);
+}
+.section-heading h2:before {
+  content: "";
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin-right: 14px;
+  background: var(--accent);
+  vertical-align: middle;
+  box-shadow: 4px -4px 0 color-mix(in srgb, var(--accent) 40%, transparent);
+}
+.hero-role:before {
+  content: "";
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  margin: 0 12px 2px 0;
+  background: var(--accent);
+  box-shadow: 4px -4px 0 var(--line);
+}
+.portrait-frame:after {
+  content: "";
+  position: absolute;
+  bottom: 22px;
+  right: -18px;
+  width: 12px;
+  height: 12px;
+  background: var(--accent);
+  box-shadow:
+    16px -16px 0 var(--line),
+    16px 0 0 var(--accent),
+    0 16px 0 var(--line),
+    -16px 16px 0 var(--accent);
+  pointer-events: none;
+}
+.tags span:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  transform: translateY(-2px);
+}
+.main-nav a,
+.text-link,
+.tags span {
+  transition:
+    color 0.15s,
+    transform 0.15s,
+    border-color 0.15s;
+}
+.text-link:hover {
+  transform: translate(2px, -2px);
+}
+.button:active,
+.companion-commands button:active,
+.sign-picker button:active,
+.companion-picker button:active {
+  transform: translate(2px, 2px);
+  box-shadow: none;
+}
+@media (min-width: 1280px) {
+  .companion-commands {
+    flex-wrap: nowrap;
+  }
+}
+@media (max-width: 1050px) {
+  .companion-hud {
+    flex-wrap: wrap;
+    gap: 8px 16px;
+  }
+  .companion-identity {
+    max-width: 190px;
+  }
+  .companion-commands {
+    order: 3;
+    width: 100%;
+  }
+  .companion-readout {
+    margin-left: auto;
+  }
+  .hud-inventory {
+    margin-left: 8px;
+  }
+}
+@media (max-width: 700px) {
+  .playground-grid {
+    grid-template-columns: 1fr;
+  }
+  .sign-lab {
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .sign-lab,
+  .pet-lab {
+    padding: 20px 16px;
+  }
+  .sign-stage {
+    height: 228px;
+  }
+  .sign-picker {
+    gap: 5px;
+  }
+  .sign-picker button {
+    font-size: 13px;
+    min-height: 68px;
+  }
+  .sign-description {
+    gap: 8px;
+    font-size: 12px;
+  }
+  .playground h3 {
+    font-size: 27px;
+  }
+  .play-panel-heading .pixel-label {
+    font-size: 10px;
+  }
+  .pet-preview-stage {
+    min-height: 248px;
+  }
+  .companion-hud {
+    padding: 8px 42px 8px 12px;
+    gap: 6px 10px;
+  }
+  .companion-identity {
+    max-width: 175px;
+    gap: 6px;
+  }
+  .companion-identity > .companion-art {
+    width: 34px;
+    height: 34px;
+  }
+  .companion-identity strong {
+    font-size: 14px;
+  }
+  .companion-identity .pixel-label {
+    font-size: 9px;
+  }
+  .companion-readout {
+    font-size: 10px;
+    max-width: 130px;
+    min-width: 0;
+  }
+  .companion-commands {
+    gap: 4px;
+  }
+  .companion-commands button {
+    font-size: 10px;
+    padding: 7px;
+    min-height: 38px;
+    flex: 1 0 auto;
+    justify-content: center;
+  }
+  .companion-commands svg {
+    width: 13px;
+    height: 13px;
+  }
+  .hud-inventory {
+    display: none;
+  }
+  .companion-hud .companion-dismiss {
+    right: 6px;
+    top: 8px;
+    width: 28px;
+    height: 28px;
+  }
+  .section-heading h2:before {
+    width: 6px;
+    height: 6px;
+    margin-right: 10px;
+  }
+  .pet-lab > .text-link {
+    min-height: 40px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .spell-effect i,
+  .spell-ring {
+    display: none;
+  }
+  .spell-glyph {
+    animation: none;
+    opacity: 0.75;
+  }
+  .pet-reaction {
+    animation: none;
+  }
+  .pet-sprite,
+  .fetch-pixel {
+    animation: none !important;
+  }
+  .pet-preview-stage:hover > .companion-art,
+  .tags span:hover,
+  .text-link:hover {
+    transform: none;
+  }
+  .pixel-feedback {
+    display: none;
+  }
+}
+
+.companion-hud {
+  padding-bottom: max(12px, env(safe-area-inset-bottom));
+  padding-left: max(12px, env(safe-area-inset-left));
+  padding-right: max(48px, env(safe-area-inset-right));
+}

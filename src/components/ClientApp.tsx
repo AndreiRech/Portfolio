@@ -5,6 +5,7 @@ import ExperienceSection from "@/components/sections/ExperienceSection";
 import ContactSection from "@/components/sections/ContactSection";
 import ContributionsSection from "@/components/sections/ContributionsSection";
 import ExploreSection from "@/components/sections/ExploreSection";
+import Playground from "@/components/interactions/Playground";
 export default function ClientApp() {
   return (
     <main id="main">
@@ -14,6 +15,7 @@ export default function ClientApp() {
       <ExperienceSection />
       <ContributionsSection />
       <ExploreSection />
+      <Playground />
       <ContactSection />
     </main>
   );

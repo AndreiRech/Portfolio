@@ -4,7 +4,6 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { Menu, X, ArrowUpRight } from "lucide-react";
 import { useSettings } from "@/context/SettingsContext";
-import CompanionDock from "@/components/collectibles/CompanionDock";
 export default function Navbar() {
   const { language, toggleLanguage, copy: c } = useSettings();
   const [open, setOpen] = useState(false);
@@ -12,7 +11,7 @@ export default function Navbar() {
   const links = [
     { href: "/#projects", label: c.projects },
     { href: "/#about", label: c.about },
-    { href: "/#contributions", label: c.contributions },
+    { href: "/#playground", label: c.explore },
     { href: "/cases", label: c.boxes },
     { href: "/inventory", label: c.inventory },
   ];
@@ -76,7 +75,6 @@ export default function Navbar() {
               {open ? <X size={22} /> : <Menu size={22} />}
             </button>
           </div>
-          <CompanionDock />
         </div>
       </header>
     </>

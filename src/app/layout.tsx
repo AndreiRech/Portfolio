@@ -1,10 +1,14 @@
 import type { Metadata, Viewport } from "next";
 import { Pixelify_Sans, DM_Sans } from "next/font/google";
 import "./globals.css";
+import "./interactions.css";
 import { SettingsProvider } from "@/context/SettingsContext";
 import { CollectionProvider } from "@/context/CollectionContext";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { CompanionProvider } from "@/context/CompanionContext";
+import CompanionDock from "@/components/collectibles/CompanionDock";
+import PixelFeedback from "@/components/interactions/PixelFeedback";
 const pixel = Pixelify_Sans({
   subsets: ["latin"],
   variable: "--font-pixel",
@@ -36,9 +40,13 @@ export default function RootLayout({
       <body>
         <SettingsProvider>
           <CollectionProvider>
-            <Navbar />
-            {children}
-            <Footer />
+            <CompanionProvider>
+              <Navbar />
+              {children}
+              <Footer />
+              <CompanionDock />
+              <PixelFeedback />
+            </CompanionProvider>
           </CollectionProvider>
         </SettingsProvider>
       </body>

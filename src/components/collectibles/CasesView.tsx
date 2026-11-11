@@ -10,6 +10,7 @@ import {
   getRarity,
   type Reward,
 } from "@/data/collectibles";
+import { useCompanion } from "@/context/CompanionContext";
 import { useCollection } from "@/context/CollectionContext";
 import { useSettings } from "@/context/SettingsContext";
 import ArcadeHeading from "./ArcadeHeading";
@@ -24,6 +25,7 @@ type Opening = {
 };
 export default function CasesView() {
   const { data, ready, grant, equip } = useCollection();
+  const { visit } = useCompanion();
   const { copy: c, language } = useSettings();
   const [opening, setOpening] = useState<Opening | null>(null);
   const [phase, setPhase] = useState<"idle" | "spinning" | "result">("idle");
@@ -150,7 +152,10 @@ export default function CasesView() {
               </div>
               <button
                 className="button"
-                onClick={() => equip(opening.reward.id)}
+                onClick={() => {
+                  if (opening.reward.kind === "companion") visit(null);
+                  equip(opening.reward.id);
+                }}
                 disabled={equipped}
               >
                 {equipped ? (

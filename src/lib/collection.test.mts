@@ -119,11 +119,11 @@ test("blocked reads and failed writes preserve a usable in-session collection", 
     throw new Error("blocked");
   });
   store.subscribe(() => {});
-  store.grant("a", "wolf");
-  store.equip("wolf");
+  store.grant("a", "medallion");
+  store.equip("medallion");
   assert.equal(store.getSnapshot().saved, false);
-  assert.equal(store.getSnapshot().data.equipped.companion, "wolf");
-  assert.equal(store.getSnapshot().data.counts.wolf, 1);
+  assert.equal(store.getSnapshot().data.equipped.companion, "medallion");
+  assert.equal(store.getSnapshot().data.counts.medallion, 1);
   const quota = createCollectionStore(() => ({
     getItem: () => null,
     setItem: () => {
@@ -135,4 +135,35 @@ test("blocked reads and failed writes preserve a usable in-session collection", 
   quota.grant("a", "d20");
   assert.equal(quota.getSnapshot().data.counts.d20, 1);
   assert.equal(quota.getSnapshot().saved, false);
+});
+
+test("legacy wolves migrate to medallions without losing ownership or equipment", () => {
+  const parsed = parseCollection(
+    JSON.stringify({
+      version: 1,
+      counts: { wolf: 3, medallion: 2, chicken: 1 },
+      equipped: { companion: "wolf" },
+      lastOpening: "legacy-opening",
+    }),
+  );
+  assert.deepEqual(parsed.counts, { chicken: 1, medallion: 5 });
+  assert.equal(parsed.equipped.companion, "medallion");
+  assert.equal(parsed.lastOpening, "legacy-opening");
+  assert.deepEqual(parseCollection(JSON.stringify(parsed)), parsed);
+  for (const invalid of [-1, 1.5, "2", null, 1_000_001]) {
+    const clean = parseCollection(
+      JSON.stringify({
+        version: 1,
+        counts: { wolf: invalid },
+        equipped: { companion: "wolf" },
+      }),
+    );
+    assert.deepEqual(clean, emptyCollection());
+  }
+  assert.equal(
+    parseCollection(
+      JSON.stringify({ version: 1, counts: { wolf: 999999, medallion: 2 } }),
+    ).counts.medallion,
+    1_000_000,
+  );
 });

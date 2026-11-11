@@ -59,10 +59,10 @@ export const REWARDS = [
     name: { en: "Sword", pt: "Espada" },
   },
   {
-    id: "wolf",
+    id: "medallion",
     kind: "companion",
     rarity: "classified",
-    name: { en: "Wolf", pt: "Lobo" },
+    name: { en: "Wolf School medallion", pt: "Medalhão da Escola do Lobo" },
   },
   {
     id: "aurora",

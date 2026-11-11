@@ -2,6 +2,7 @@
 import type { CSSProperties } from "react";
 import { Check, LockKeyhole } from "lucide-react";
 import { getRarity, type Reward } from "@/data/collectibles";
+import { useCompanion } from "@/context/CompanionContext";
 import { useCollection } from "@/context/CollectionContext";
 import { useSettings } from "@/context/SettingsContext";
 import RewardArt from "./RewardArt";
@@ -14,6 +15,7 @@ export default function ItemCard({
 }) {
   const { data, equip, remove } = useCollection();
   const { copy: c, language } = useSettings();
+  const { visit } = useCompanion();
   const count = data.counts[item.id] ?? 0;
   const equipped = data.equipped[item.kind] === item.id;
   const rarity = getRarity(item.rarity);
@@ -43,7 +45,11 @@ export default function ItemCard({
         <button
           className="button"
           aria-pressed={equipped}
-          onClick={() => (equipped ? remove(item.kind) : equip(item.id))}
+          onClick={() => {
+            if (item.kind === "companion") visit(null);
+            if (equipped) remove(item.kind);
+            else equip(item.id);
+          }}
         >
           {equipped ? (
             <>

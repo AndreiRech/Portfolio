@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { RotateCcw, ArrowUpRight } from "lucide-react";
 import { REWARDS, getReward, type RewardKind } from "@/data/collectibles";
+import { useCompanion } from "@/context/CompanionContext";
 import { useCollection } from "@/context/CollectionContext";
 import { useSettings } from "@/context/SettingsContext";
 import ArcadeHeading from "./ArcadeHeading";
@@ -14,6 +15,7 @@ const kinds = ["palette", "cursor", "companion"] as const;
 export default function InventoryView() {
   const { data, ready, remove, resetAppearance } = useCollection();
   const { copy: c, language } = useSettings();
+  const { visit } = useCompanion();
   const [filter, setFilter] = useState<"all" | RewardKind>("all");
   const [showLocked, setShowLocked] = useState(false);
   const items = REWARDS.filter(
@@ -28,7 +30,13 @@ export default function InventoryView() {
         <p className="section-count">
           {Object.keys(data.counts).length} / 12 {c.collectionProgress}
         </p>
-        <button className="button" onClick={resetAppearance}>
+        <button
+          className="button"
+          onClick={() => {
+            visit(null);
+            resetAppearance();
+          }}
+        >
           <RotateCcw size={14} />
           {c.restore}
         </button>
@@ -57,7 +65,14 @@ export default function InventoryView() {
                       : "Default"}
                 </strong>
                 {item ? (
-                  <button onClick={() => remove(kind)}>{c.remove}</button>
+                  <button
+                    onClick={() => {
+                      if (kind === "companion") visit(null);
+                      remove(kind);
+                    }}
+                  >
+                    {c.remove}
+                  </button>
                 ) : null}
               </div>
             </div>
