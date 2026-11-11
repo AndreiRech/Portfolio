@@ -70,14 +70,13 @@ function ActiveCompanion({
   const [reaction, setReaction] = useState(0);
   const [roll, setRoll] = useState<number | null>(null);
   const [target, setTarget] = useState<Point | null>(null);
-  const sprite = useRef<HTMLButtonElement>(null);
+  const sprite = useRef<HTMLDivElement>(null);
   const hud = useRef<HTMLElement>(null);
   const berth = useRef<HTMLButtonElement>(null);
   const toggle = useRef<HTMLButtonElement>(null);
   const position = useRef<Point>({ x: 8, y: 120 });
   const destination = useRef<Point>({ x: 8, y: 120 });
   const initialized = useRef(false);
-  const focused = useRef(false);
   const returnTo = useRef<"rest" | "roam" | "hide">("rest");
   const hideAction = useRef(hide);
   useEffect(() => {
@@ -143,7 +142,6 @@ function ActiveCompanion({
     const follow = (event: PointerEvent) => {
       if (
         mode !== "follow" ||
-        focused.current ||
         (event.target instanceof Element &&
           event.target.closest(".companion-hud"))
       )
@@ -172,7 +170,7 @@ function ActiveCompanion({
     const animate = (time: number) => {
       const elapsed = previous ? Math.min(time - previous, 40) / 1000 : 0;
       previous = time;
-      if (!focused.current && !document.hidden) {
+      if (!document.hidden) {
         if (mode === "roam") {
           const edge = Math.max(8, width - 76);
           if (position.current.x <= 9) direction = 1;
@@ -305,21 +303,11 @@ function ActiveCompanion({
             aria-hidden="true"
           />
         )}
-        <button
+        <div
           ref={sprite}
           className="world-pet"
           hidden={docked}
-          aria-label={`${c.controls}: ${item.name[language]}`}
-          onClick={() => {
-            setOpen(true);
-            toggle.current?.focus();
-          }}
-          onFocus={() => {
-            focused.current = true;
-          }}
-          onBlur={() => {
-            focused.current = false;
-          }}
+          aria-hidden="true"
         >
           <span className="pet-shadow" aria-hidden="true" />
           <span className="pet-sprite">
@@ -328,7 +316,7 @@ function ActiveCompanion({
             </span>
           </span>
           {reactionArt}
-        </button>
+        </div>
       </div>
       <aside
         ref={hud}

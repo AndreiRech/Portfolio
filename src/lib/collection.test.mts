@@ -137,6 +137,26 @@ test("blocked reads and failed writes preserve a usable in-session collection", 
   assert.equal(quota.getSnapshot().saved, false);
 });
 
+test("hiding an equipped companion preserves ownership after reloading", () => {
+  const values = new Map<string, string>();
+  const storage = () => ({
+    getItem: (key: string) => values.get(key) ?? null,
+    setItem: (key: string, value: string) => {
+      values.set(key, value);
+    },
+  });
+  const store = createCollectionStore(storage);
+  store.subscribe(() => {});
+  store.grant("first-companion", "chicken");
+  store.grant("second-companion", "chicken");
+  store.equip("chicken");
+  store.remove("companion");
+  const restored = createCollectionStore(storage);
+  restored.subscribe(() => {});
+  assert.equal(restored.getSnapshot().data.equipped.companion, null);
+  assert.equal(restored.getSnapshot().data.counts.chicken, 2);
+});
+
 test("legacy wolves migrate to medallions without losing ownership or equipment", () => {
   const parsed = parseCollection(
     JSON.stringify({
