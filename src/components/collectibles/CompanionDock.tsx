@@ -109,6 +109,13 @@ function ActiveCompanion({
         bounds(),
       );
     };
+    const collectPixel = () => {
+      setTarget(null);
+      setPixels((count) => count + 1);
+      setMessage("found");
+      setMode("rest");
+      setReaction((count) => count + 1);
+    };
     const animate = (time: number) => {
       const elapsed = previous ? Math.min(time - previous, 40) / 1000 : 0;
       previous = time;
@@ -151,17 +158,15 @@ function ActiveCompanion({
             position.current.y - destination.current.y,
           ) < 2
         ) {
-          setTarget(null);
-          setPixels((count) => count + 1);
-          setMessage("found");
-          setMode("rest");
-          setReaction((count) => count + 1);
+          collectPixel();
           return;
         }
       }
       frame = requestAnimationFrame(animate);
     };
     if (mode !== "rest" && !reduced) frame = requestAnimationFrame(animate);
+    else if (mode === "fetch" && target)
+      frame = requestAnimationFrame(collectPixel);
     window.addEventListener("pointermove", follow, { passive: true });
     window.addEventListener("pointerdown", follow, { passive: true });
     window.addEventListener("resize", resize);
@@ -214,13 +219,28 @@ function ActiveCompanion({
           : "affection",
     );
   }
+  const reactionArt = reaction > 0 && (
+    <span
+      key={reaction}
+      className={`pet-reaction reaction-${special}`}
+      aria-hidden="true"
+    >
+      {special === "roll" ? (
+        roll
+      ) : special === "magic" ? (
+        <SignGlyph id="quen" />
+      ) : (
+        "♥"
+      )}
+    </span>
+  );
   return (
     <>
       <div
         className={`companion-world pet-${item.id}`}
         data-motion={mode !== "rest" && !reduced ? "on" : "off"}
       >
-        {target && (
+        {target && !reduced && (
           <span
             className="fetch-pixel"
             style={{
@@ -232,6 +252,7 @@ function ActiveCompanion({
         <button
           ref={sprite}
           className="world-pet"
+          hidden={mode === "rest" || reduced}
           aria-label={`${c[special]}: ${item.name[language]}`}
           onClick={interact}
           onFocus={() => {
@@ -245,21 +266,7 @@ function ActiveCompanion({
           <span className="pet-sprite">
             <RewardArt reward={item} />
           </span>
-          {reaction > 0 && (
-            <span
-              key={reaction}
-              className={`pet-reaction reaction-${special}`}
-              aria-hidden="true"
-            >
-              {special === "roll" ? (
-                roll
-              ) : special === "magic" ? (
-                <SignGlyph id="quen" />
-              ) : (
-                "♥"
-              )}
-            </span>
-          )}
+          {reactionArt}
         </button>
       </div>
       <aside
@@ -271,7 +278,14 @@ function ActiveCompanion({
         }}
       >
         <div className="companion-identity">
-          <RewardArt reward={item} />
+          <button
+            className="hud-pet"
+            onClick={interact}
+            aria-label={`${c[special]}: ${item.name[language]}`}
+          >
+            <RewardArt reward={item} />
+            {(mode === "rest" || reduced) && reactionArt}
+          </button>
           <div>
             <span className="pixel-label">
               {visiting ? c.visiting : c.equipped}

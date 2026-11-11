@@ -1,6 +1,6 @@
 # Interações em pixel e companheiros ativos
 
-Base local: `89096e6b92edab39346dedf6d0bada0f712b7a89`, continuação do redesign existente. Branch de trabalho: `feature/pixel-interactions`. Destino previsto do PR: `main`, que ainda não contém os dois commits do redesign atual.
+Base local: `89096e6b92edab39346dedf6d0bada0f712b7a89`, continuação do redesign existente. Branch de trabalho: `feature/pixel-interactions`. Base do PR: `feature/pixel-art-redesign`, já em revisão no PR #1. A expansão será um PR dependente para manter o diff restrito a esta tarefa.
 
 ## Pedido
 

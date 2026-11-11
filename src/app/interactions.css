@@ -593,7 +593,7 @@ html[data-companion="active"] {
   max-width: 220px;
   flex-shrink: 0;
 }
-.companion-identity > .companion-art {
+.companion-identity .companion-art {
   width: 46px;
   height: 46px;
 }
@@ -863,7 +863,7 @@ html[data-companion="active"] {
     max-width: 175px;
     gap: 6px;
   }
-  .companion-identity > .companion-art {
+  .companion-identity .companion-art {
     width: 34px;
     height: 34px;
   }
@@ -940,4 +940,23 @@ html[data-companion="active"] {
   padding-bottom: max(12px, env(safe-area-inset-bottom));
   padding-left: max(12px, env(safe-area-inset-left));
   padding-right: max(48px, env(safe-area-inset-right));
+}
+
+.world-pet[hidden] {
+  display: none;
+}
+.hud-pet {
+  position: relative;
+  width: 46px;
+  height: 46px;
+  flex-shrink: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+}
+@media (max-width: 700px) {
+  .hud-pet {
+    width: 34px;
+    height: 34px;
+  }
 }
