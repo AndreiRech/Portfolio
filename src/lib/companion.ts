@@ -1,5 +1,9 @@
 export type Point = { x: number; y: number };
 export type Bounds = { width: number; height: number; floor: number };
+// The chicken artwork faces left at its natural scale.
+export function petFacing(from: Point, to: Point, previous = 1): number {
+  return to.x === from.x ? previous : to.x < from.x ? 1 : -1;
+}
 export function containPet(point: Point, bounds: Bounds): Point {
   const right = Math.max(8, bounds.width - 76);
   const bottom = Math.max(8, bounds.height - bounds.floor - 76);

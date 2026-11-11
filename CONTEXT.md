@@ -35,7 +35,7 @@ Customização que altera as cores do portfólio.
 Customização da aparência do ponteiro no portfólio, com arte em pixel.
 
 **Companheiro**:
-Personagem ou objeto em pixel art que pode passear, seguir o ponteiro ou toque, buscar pixels e descansar pelo portfólio. Cada um tem uma reação própria. Pode ser experimentado temporariamente sem obter o item; equipamento persistente depende do inventário.
+Personagem ou objeto em pixel art que pode passear, seguir o ponteiro ou toque, buscar pixels e descansar pelo portfólio. Cada um tem uma reação própria. Quando ativo, começa passeando e oferece outras ações em um menu recolhido. Descansar e ocultar incluem o retorno ao painel. Pode ser experimentado temporariamente sem obter o item; equipamento persistente depende do inventário.
 
 **Contribuições**:
 Atividades de Andrei contabilizadas no calendário de contribuições do GitHub, conforme os critérios da plataforma. É a métrica do gráfico de atividade do portfólio e pode incluir atividades além de commits.
@@ -47,5 +47,5 @@ Trabalho profissional, acadêmico ou pessoal de Andrei apresentado com imagens, 
 **Inspeção de projetos**:
 Apresentação dos trabalhos na qual o visitante seleciona um projeto em uma lista de nomes e categorias para explorar sua prévia, imagens e informações.
 
-**Sinal**:
-Interação opcional inspirada nos cinco sinais de The Witcher. O visitante seleciona um símbolo e conjura um efeito visual em pixel, sem bloquear informações profissionais.
+**Jogo de memória**:
+Interação opcional em que o visitante observa uma sequência de quatro cores numeradas e a repete na ordem. Cada rodada acrescenta uma cor. O recorde fica na sessão atual e não altera o inventário.

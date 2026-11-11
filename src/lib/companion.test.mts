@@ -1,6 +1,11 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { containPet, movePet } from "./companion.ts";
+import { containPet, movePet, petFacing } from "./companion.ts";
+test("left-facing artwork is mirrored only when walking right and keeps its facing vertically", () => {
+  assert.equal(petFacing({ x: 50, y: 50 }, { x: 60, y: 50 }), -1);
+  assert.equal(petFacing({ x: 50, y: 50 }, { x: 40, y: 50 }), 1);
+  assert.equal(petFacing({ x: 50, y: 50 }, { x: 50, y: 70 }, -1), -1);
+});
 test("pets stay within desktop, mobile and small landscape bounds", () => {
   for (const [width, height, floor] of [
     [1440, 900, 96],

@@ -1,17 +1,46 @@
 "use client";
 import { useEffect, useRef } from "react";
+import { usePathname } from "next/navigation";
 import { useReducedMotion } from "./useReducedMotion";
 export default function PixelFeedback() {
   const layer = useRef<HTMLDivElement>(null);
   const reduced = useReducedMotion();
+  const pathname = usePathname();
   useEffect(() => {
     if (reduced) return;
     const active = new Set<Animation>();
     const container = layer.current;
+    const reveals = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue;
+          reveals.unobserve(entry.target);
+          const animation = entry.target.animate(
+            [
+              { opacity: 0.4, transform: "translateY(14px)" },
+              { opacity: 1, transform: "translateY(0)" },
+            ],
+            { duration: 480, easing: "cubic-bezier(.2,.7,.2,1)" },
+          );
+          active.add(animation);
+          animation.onfinish = () => {
+            active.delete(animation);
+          };
+        }
+      },
+      { threshold: 0.08 },
+    );
+    document
+      .querySelectorAll(".section-heading, .project-inspector, .explore-card")
+      .forEach((element) => reveals.observe(element));
     const burst = (event: MouseEvent) => {
       if (!(event.target instanceof Element)) return;
       const control = event.target.closest("button, a");
-      if (!control || !layer.current || control.closest(".contribution-grid"))
+      if (
+        !control ||
+        !layer.current ||
+        control.closest(".calendar, .memory-board")
+      )
         return;
       const rect = control.getBoundingClientRect();
       const x = event.detail ? event.clientX : rect.x + rect.width / 2;
@@ -43,9 +72,10 @@ export default function PixelFeedback() {
     document.addEventListener("click", burst);
     return () => {
       document.removeEventListener("click", burst);
+      reveals.disconnect();
       active.forEach((animation) => animation.cancel());
       container?.replaceChildren();
     };
-  }, [reduced]);
+  }, [reduced, pathname]);
   return <div ref={layer} className="pixel-feedback" aria-hidden="true" />;
 }

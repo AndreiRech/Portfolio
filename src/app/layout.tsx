@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Pixelify_Sans, DM_Sans } from "next/font/google";
 import "./globals.css";
 import "./interactions.css";
+import "./hero.css";
 import { SettingsProvider } from "@/context/SettingsContext";
 import { CollectionProvider } from "@/context/CollectionContext";
 import Navbar from "@/components/Navbar";

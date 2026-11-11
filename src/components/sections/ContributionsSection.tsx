@@ -3,6 +3,10 @@ import { useRef, useState, type KeyboardEvent } from "react";
 import { ArrowUpRight } from "lucide-react";
 import snapshot from "@/data/contributions.json";
 import { useSettings } from "@/context/SettingsContext";
+import {
+  contributionLevel,
+  CONTRIBUTION_RANGES,
+} from "@/lib/contributionLevels";
 interface Day {
   date: string;
   count: number;
@@ -106,7 +110,7 @@ export default function ContributionsSection() {
                       buttons.current[index] = element;
                     }}
                     className="calendar-day"
-                    data-level={day.level}
+                    data-level={contributionLevel(day.count)}
                     title={label(day)}
                     aria-label={label(day)}
                     tabIndex={focusIndex === index ? 0 : -1}
@@ -130,12 +134,17 @@ export default function ContributionsSection() {
                   ? label(active)
                   : `${format(data.days[0].date)} / ${format(data.days.at(-1)!.date)}`}
               </span>
-              <div className="calendar-legend" aria-hidden="true">
-                <span>{c.less}</span>
+              <div className="calendar-legend" aria-label={c.activityScale}>
                 {[0, 1, 2, 3, 4].map((level) => (
-                  <i key={level} className="calendar-day" data-level={level} />
+                  <span key={level}>
+                    <i
+                      className="calendar-day"
+                      data-level={level}
+                      aria-hidden="true"
+                    />
+                    {CONTRIBUTION_RANGES[level]}
+                  </span>
                 ))}
-                <span>{c.more}</span>
               </div>
             </div>
           </>
