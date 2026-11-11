@@ -44,122 +44,159 @@
   gap: 24px;
   margin-top: 28px;
 }
-.hero-showcase {
+.hero-dice-scene {
   position: relative;
   min-width: 0;
-  background: var(--surface);
-  border: 1px solid var(--line);
-  box-shadow: 8px 8px 0 color-mix(in srgb, var(--blue) 35%, var(--bg));
-}
-.hero-showcase-heading {
-  padding: 14px 18px;
+  min-height: 500px;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: space-between;
-  border-bottom: 1px solid var(--line);
+  justify-content: center;
+  isolation: isolate;
+  overflow: clip;
 }
-.hero-project-category {
+.hero-dice-scene h2 {
+  font-size: 32px;
+  color: var(--fg);
+  margin-bottom: 12px;
+}
+.hero-dice-trigger {
+  width: min(320px, calc(100% - 20px));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--fg);
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+.hero-dice-trigger:active {
+  cursor: grabbing;
+}
+.hero-dice-trigger[aria-busy="true"] {
+  cursor: wait;
+}
+.hero-dice-art {
+  display: block;
+  width: min(300px, 100%);
+  aspect-ratio: 1;
+  transform-origin: center;
+  pointer-events: none;
+}
+.hero-dice-art img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  image-rendering: pixelated;
+  object-fit: contain;
+  transition: transform 0.2s;
+}
+.hero-dice-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  font-size: 14px;
+  font-weight: 600;
+  border-bottom: 1px solid var(--line);
+  transition:
+    color 0.2s,
+    border-color 0.2s;
+}
+.hero-dice-trigger:is(:hover, :focus-visible) .hero-dice-action {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+.hero-dice-ground {
+  position: absolute;
+  width: min(300px, 80%);
+  height: 24px;
+  bottom: 128px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: repeating-linear-gradient(
+    90deg,
+    var(--surface) 0 18px,
+    transparent 18px 22px
+  );
+  border-top: 4px solid var(--line);
+  z-index: -1;
+  pointer-events: none;
+}
+#hero-dice-hint {
+  margin-top: 16px;
   color: var(--muted);
   font-size: 12px;
 }
-.hero-project-visual {
-  display: block;
-  position: relative;
-  aspect-ratio: 1.65;
-  overflow: hidden;
-  background: var(--bg);
-}
-.hero-project-image {
-  object-fit: cover;
-  transition: transform 0.35s cubic-bezier(0.2, 0.7, 0.2, 1);
-  animation: project-arrive 0.4s both;
-}
-.hero-inspect {
+.hero-dice-result {
   position: absolute;
-  right: 16px;
-  bottom: 16px;
-  width: 44px;
-  height: 44px;
-  display: grid;
-  place-items: center;
-  background: var(--fg);
-  color: var(--bg);
-  box-shadow: 3px 3px 0 var(--bg);
-  transition:
-    transform 0.2s,
-    background 0.2s;
+  top: 115px;
+  right: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: end;
+  gap: 5px;
+  width: 130px;
+  pointer-events: none;
+  font-variant-numeric: tabular-nums;
 }
-.hero-project-visual:is(:hover, :focus-visible) .hero-project-image {
-  transform: scale(1.035);
+.hero-dice-result strong {
+  font: 400 80px/0.95 var(--font-heading);
+  color: var(--accent);
+  animation: dice-result 0.28s both;
 }
-.hero-project-visual:is(:hover, :focus-visible) .hero-inspect {
-  transform: translate(2px, -2px);
+.hero-dice-result > span:not(.sr-only) {
+  color: var(--muted);
+  font-size: 12px;
+}
+.hero-dice-result small {
+  flex-basis: 100%;
+  font-size: 12px;
+  text-align: right;
+  color: var(--accent);
+}
+.hero-dice-result[data-critical="high"] :is(strong, small) {
+  color: #eac67d;
+}
+.hero-dice-pixel {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  background: var(--blue);
+  pointer-events: none;
+}
+.dice-pixel-one {
+  left: 7%;
+  top: 38%;
+  box-shadow: 12px -12px 0 var(--line);
+}
+.dice-pixel-two {
+  right: 14%;
+  bottom: 26%;
+  width: 8px;
+  height: 8px;
   background: var(--accent);
+  box-shadow: 8px 8px 0 var(--line);
 }
-.hero-project-caption {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 18px;
-  gap: 16px;
-  min-height: 111px;
-  border-top: 1px solid var(--line);
+@keyframes dice-result {
+  from {
+    opacity: 0.3;
+    transform: translateY(8px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
-.hero-project-caption h2 {
-  color: var(--fg);
-  font-size: 30px;
-  margin-bottom: 6px;
-}
-.hero-project-caption p {
-  font-size: 13px;
-  line-height: 1.5;
-  color: var(--muted);
-  max-width: 34ch;
-}
-.hero-project-caption > a {
-  min-width: 44px;
-  min-height: 44px;
-  justify-content: center;
-}
-.hero-project-picker {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  border-top: 1px solid var(--line);
-}
-.hero-project-picker button {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  justify-content: center;
-  min-height: 62px;
-  padding: 10px 8px;
-  border: 0;
-  border-right: 1px solid var(--line);
-  background: transparent;
-  color: var(--muted);
-  font-size: 11px;
-  transition:
-    background 0.2s,
-    color 0.2s;
-}
-.hero-project-picker button:last-child {
-  border-right: 0;
-}
-.hero-project-picker button img {
-  border-radius: 6px;
-  transition: transform 0.2s;
-}
-.hero-project-picker button[aria-pressed="true"] {
-  background: var(--raised);
-  color: var(--fg);
-  box-shadow: inset 0 -3px 0 var(--accent);
-}
-.hero-project-picker button:is(:hover, :focus-visible) {
-  background: var(--raised);
-  color: var(--fg);
-}
-.hero-project-picker button:hover img {
-  transform: translateY(-3px) rotate(-5deg);
+@media (hover: hover) and (pointer: fine) {
+  .hero-dice-trigger:not([aria-busy="true"]):hover .hero-dice-art img {
+    transform: translateY(-6px) rotate(-4deg);
+  }
 }
 .hero-bottom {
   grid-column: 1/-1;
@@ -222,16 +259,6 @@
 .hero-sidequests > a > svg:first-child {
   color: var(--accent);
 }
-@keyframes project-arrive {
-  from {
-    opacity: 0.2;
-    transform: translateY(8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
 @media (max-width: 1100px) {
   .hero {
     gap: 36px;
@@ -250,6 +277,14 @@
   }
 }
 @media (max-width: 767px) {
+  .hero-dice-result {
+    top: 74px;
+    right: 0;
+    width: 100px;
+  }
+  .hero-dice-result strong {
+    font-size: 56px;
+  }
   .hero {
     grid-template-columns: 1fr;
     gap: 36px;
@@ -274,25 +309,6 @@
     gap: 22px;
     margin-top: 24px;
   }
-  .hero-showcase {
-    margin-right: 6px;
-    box-shadow: 6px 6px 0 color-mix(in srgb, var(--blue) 35%, var(--bg));
-  }
-  .hero-project-visual {
-    aspect-ratio: 1.8;
-  }
-  .hero-project-caption {
-    min-height: 105px;
-    padding: 16px;
-  }
-  .hero-project-picker button {
-    gap: 6px;
-    font-size: 10px;
-  }
-  .hero-project-picker button img {
-    width: 25px;
-    height: 25px;
-  }
   .hero-bottom {
     flex-direction: column;
     align-items: stretch;
@@ -315,15 +331,13 @@
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .hero-project-image {
+  .hero-dice-result strong {
     animation: none;
   }
   .hero :is(a, button, img, span) {
     transition: none;
   }
-  .hero-project-visual:is(:hover, :focus-visible) .hero-project-image,
-  .hero-project-visual:is(:hover, :focus-visible) .hero-inspect,
-  .hero-project-picker button:hover img,
+  .hero-dice-trigger:hover .hero-dice-art img,
   .hero-award:hover .hero-trophy,
   .hero-sidequests button:hover img {
     transform: none;
