@@ -339,6 +339,9 @@ html[data-companion="active"] {
   display: block;
   transform: scaleX(var(--facing, 1));
 }
+:is(.pet-d20, .pet-gold-d20, .pet-medallion) .pet-sprite {
+  transform: none;
+}
 .pet-body {
   display: block;
 }
@@ -566,10 +569,10 @@ html[data-companion="active"] {
     transform: rotate(0);
   }
   50% {
-    transform: rotate(180deg) translateY(-8px);
+    transform: rotate(calc(180deg * var(--roll-direction, 1))) translateY(-8px);
   }
   100% {
-    transform: rotate(360deg);
+    transform: rotate(calc(360deg * var(--roll-direction, 1)));
   }
 }
 @keyframes pet-hover {

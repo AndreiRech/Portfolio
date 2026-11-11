@@ -21,6 +21,18 @@ import { useReducedMotion } from "@/components/interactions/useReducedMotion";
 import RewardArt from "./RewardArt";
 
 type Mode = "rest" | "roam" | "follow" | "fetch" | "return";
+const modeLabels = {
+  rest: "resting",
+  roam: "walking",
+  follow: "follow",
+  fetch: "fetching",
+  return: "returning",
+} as const;
+const companionActions = {
+  roll: { Icon: Dices, message: "rolled", art: null },
+  shine: { Icon: Sparkles, message: "shining", art: "✦" },
+  pet: { Icon: Heart, message: "affection", art: "♥" },
+} as const;
 export default function CompanionDock() {
   const { data, remove } = useCollection();
   const { preview, visit } = useCompanion();
@@ -77,6 +89,8 @@ function ActiveCompanion({
       ? "shine"
       : "pet";
   const docked = mode === "rest" || reduced;
+  const action = companionActions[special];
+  const ActionIcon = action.Icon;
 
   useEffect(() => {
     const root = document.documentElement;
@@ -185,6 +199,7 @@ function ActiveCompanion({
           );
           facing = petFacing(before, position.current, facing);
           sprite.current.style.setProperty("--facing", String(facing));
+          sprite.current.style.setProperty("--roll-direction", String(-facing));
         }
         paint();
         const arrived =
@@ -263,13 +278,7 @@ function ActiveCompanion({
   function interact() {
     setReaction((count) => count + 1);
     setRoll(special === "roll" ? Math.floor(Math.random() * 20) + 1 : null);
-    setMessage(
-      special === "roll"
-        ? "rolled"
-        : special === "shine"
-          ? "shining"
-          : "affection",
-    );
+    setMessage(action.message);
   }
   const reactionArt = reaction > 0 && (
     <span
@@ -277,7 +286,7 @@ function ActiveCompanion({
       className={`pet-reaction reaction-${special}`}
       aria-hidden="true"
     >
-      {special === "roll" ? roll : special === "shine" ? "✦" : "♥"}
+      {special === "roll" ? roll : action.art}
     </span>
   );
   return (
@@ -356,19 +365,7 @@ function ActiveCompanion({
           >
             <span>
               <strong>{item.name[language]}</strong>
-              <small>
-                {reduced
-                  ? c.resting
-                  : mode === "return"
-                    ? c.returning
-                    : mode === "rest"
-                      ? c.resting
-                      : mode === "follow"
-                        ? c.follow
-                        : mode === "fetch"
-                          ? c.fetching
-                          : c.walking}
-              </small>
+              <small>{reduced ? c.resting : c[modeLabels[mode]]}</small>
             </span>
             <ChevronUp size={18} aria-hidden="true" />
             <span className="sr-only">{c.controls}</span>
@@ -411,13 +408,7 @@ function ActiveCompanion({
               {c.fetch}
             </button>
             <button onClick={interact}>
-              {special === "roll" ? (
-                <Dices size={16} />
-              ) : special === "shine" ? (
-                <Sparkles size={16} />
-              ) : (
-                <Heart size={16} />
-              )}
+              <ActionIcon size={16} />
               {c[special]}
             </button>
             <button

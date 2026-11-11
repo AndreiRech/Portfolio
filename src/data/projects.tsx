@@ -23,7 +23,7 @@ export const getProjects = (locale: 'en' | 'pt'): Project[] => {
           "/projects/hearme/screen3.png",
           "/projects/hearme/screen4.png",
         ],
-        logoUrl: "/projects/hearme/logo.png",
+        logoUrl: "/projects/hearme/logo-thumb.webp",
         cardImageUrl: "/projects/hearme/card.png",
         orientation: 'horizontal',
         team: [{ name: 'Andrei Rech', role: 'iOS Developer', linkedinUrl: 'https://linkedin.com/in/rechandrei' }]
@@ -57,7 +57,7 @@ export const getProjects = (locale: 'en' | 'pt'): Project[] => {
           "/projects/cerne/screen5.png",
           "/projects/cerne/screen6.png",
         ],
-        logoUrl: "/projects/cerne/logo.png",
+        logoUrl: "/projects/cerne/logo-thumb.webp",
         cardImageUrl: "/projects/cerne/card.png",
         orientation: 'vertical',
         team: [
@@ -95,7 +95,7 @@ export const getProjects = (locale: 'en' | 'pt'): Project[] => {
           "/projects/dirtydogs/screen5.png",
           "/projects/dirtydogs/screen6.png",
         ],
-        logoUrl: "/projects/dirtydogs/logo.png",
+        logoUrl: "/projects/dirtydogs/logo-thumb.webp",
         cardImageUrl: "/projects/dirtydogs/card.png",
         orientation: 'vertical',
         team: [
@@ -126,7 +126,7 @@ export const getProjects = (locale: 'en' | 'pt'): Project[] => {
           Implemented the GameCenter integration, allowing players to compete with each other with a global rank, achievements and leaderboards. <br/>
         </>,
         links: { github: 'https://github.com/camana98/WindSolveGame' },
-        logoUrl: "/projects/totw/logo.png",
+        logoUrl: "/projects/totw/logo-thumb.webp",
         cardImageUrl: "/projects/totw/card.png",
         orientation: 'vertical',
         media: [
@@ -165,7 +165,7 @@ export const getProjects = (locale: 'en' | 'pt'): Project[] => {
           Helped the team with the development of the application, providing guidance and support about technologies, architecture and GIT. <br/>
         </>,
         links: { appStore: 'https://apps.apple.com/br/app/clairfy/id6747406139', github: 'https://github.com/AndreiRech/Clairfy', live: 'https://clairfy.netlify.app/' },
-        logoUrl: "/projects/clairfy/logo.png",
+        logoUrl: "/projects/clairfy/logo-thumb.webp",
         cardImageUrl: "/projects/clairfy/card.png",
         orientation: 'vertical',
         media: [
@@ -204,7 +204,7 @@ export const getProjects = (locale: 'en' | 'pt'): Project[] => {
           "/projects/hearme/screen3.png",
           "/projects/hearme/screen4.png",
         ],
-        logoUrl: "/projects/hearme/logo.png",
+        logoUrl: "/projects/hearme/logo-thumb.webp",
         cardImageUrl: "/projects/hearme/card.png",
         orientation: 'horizontal',
         team: [{ name: 'Andrei Rech', role: 'Desenvolvedor iOS', linkedinUrl: 'https://linkedin.com/in/rechandrei' }]
@@ -238,7 +238,7 @@ export const getProjects = (locale: 'en' | 'pt'): Project[] => {
           "/projects/cerne/screen5.png",
           "/projects/cerne/screen6.png",
         ],
-        logoUrl: "/projects/cerne/logo.png",
+        logoUrl: "/projects/cerne/logo-thumb.webp",
         cardImageUrl: "/projects/cerne/card.png",
         orientation: 'vertical',
         team: [
@@ -276,7 +276,7 @@ export const getProjects = (locale: 'en' | 'pt'): Project[] => {
           "/projects/dirtydogs/screen5.png",
           "/projects/dirtydogs/screen6.png",
         ],
-        logoUrl: "/projects/dirtydogs/logo.png",
+        logoUrl: "/projects/dirtydogs/logo-thumb.webp",
         cardImageUrl: "/projects/dirtydogs/card.png",
         orientation: 'vertical',
         team: [
@@ -307,7 +307,7 @@ export const getProjects = (locale: 'en' | 'pt'): Project[] => {
           Implementei a integração com o GameCenter, permitindo que os jogadores competissem entre si com um ranking global, conquistas e tabelas de classificação. <br/>
         </>,
         links: { github: 'https://github.com/camana98/WindSolveGame' },
-        logoUrl: "/projects/totw/logo.png",
+        logoUrl: "/projects/totw/logo-thumb.webp",
         cardImageUrl: "/projects/totw/card.png",
         orientation: 'vertical',
         media: [
@@ -346,7 +346,7 @@ export const getProjects = (locale: 'en' | 'pt'): Project[] => {
           Ajudei a equipe no desenvolvimento do aplicativo, fornecendo orientação e suporte sobre tecnologias, arquitetura e GIT. <br/>
         </>,
         links: { appStore: 'https://apps.apple.com/br/app/clairfy/id6747406139', github: 'https://github.com/AndreiRech/Clairfy', live: 'https://clairfy.netlify.app/' },
-        logoUrl: "/projects/clairfy/logo.png",
+        logoUrl: "/projects/clairfy/logo-thumb.webp",
         cardImageUrl: "/projects/clairfy/card.png",
         orientation: 'vertical',
         media: [

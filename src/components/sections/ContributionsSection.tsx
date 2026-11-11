@@ -134,7 +134,11 @@ export default function ContributionsSection() {
                   ? label(active)
                   : `${format(data.days[0].date)} / ${format(data.days.at(-1)!.date)}`}
               </span>
-              <div className="calendar-legend" aria-label={c.activityScale}>
+              <div
+                className="calendar-legend"
+                role="group"
+                aria-label={c.activityScale}
+              >
                 {[0, 1, 2, 3, 4].map((level) => (
                   <span key={level}>
                     <i

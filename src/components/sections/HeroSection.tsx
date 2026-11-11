@@ -59,6 +59,7 @@ export default function HeroSection() {
             fill
             sizes="(max-width: 767px) 90vw, 46vw"
             priority={selected === 0}
+            fetchPriority={selected === 0 ? "high" : "auto"}
             className="hero-project-image"
           />
           <span className="hero-inspect">

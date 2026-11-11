@@ -108,7 +108,6 @@ export default function MemoryGame() {
             className="memory-pad"
             style={{ "--pad-color": colors[pad] } as CSSProperties}
             data-lit={lit === pad}
-            aria-label={`${c.colors[pad]}, ${pad + 1}`}
             aria-disabled={game.phase !== "input"}
             onClick={() => press(pad)}
           >
