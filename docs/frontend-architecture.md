@@ -13,9 +13,15 @@ src/
     portfolio/         Home, seções, página de projeto, 404, dados e tipos
     games/             página de jogos, barra de abas e os jogos
       memory/          sinais de The Witcher
-      songs/           adivinhe a música (prévias do Apple Music)
-      anime/           mais ou menos (AniList)
+      songs/           adivinhe a música (prévias do Apple Music, quatro listas)
+      higher-lower/    mais ou menos (AniList, IMDb e Spotify)
       duel/            duelo D20 contra monstros
+      daily/           data do dia, sorteio com semente e progresso salvo
+      termo/           Termo diário
+      conexo/          Conexo diário
+      crossword/       palavra cruzada diária
+      rarity/          Raridade diária (respostas raras valem mais)
+      sudoku/          sudoku diário
     dice/              dado 3D e o gesto de arrastar e soltar
     collectibles/      caixas, inventário, recompensas e coleção salva
     companions/        companheiros em pixel art, HUD e pet pela página
@@ -24,7 +30,7 @@ src/
     i18n/              idioma, textos em inglês e português
     lib/               sons sintetizados e explosão de pixels
     ui/                ícones, pixel art em grade, letras e movimento reduzido
-scripts/               jobs de dados (contribuições, músicas) e seus testes
+scripts/               jobs de dados (contribuições, músicas, mais ou menos, palavras) e seus testes
 ```
 
 Cada funcionalidade agrupa `pages/`, `components/`, `hooks/`, `model/`, `services/` e
@@ -60,6 +66,17 @@ independente das funcionalidades.
 A coleção, a escolha de companheiro e as conquistas ficam em `localStorage`, atrás de
 stores criados pelos providers de cada funcionalidade. Os parsers validam o formato salvo
 antes de usá-lo. Pontuações dos jogos valem só para a sessão.
+
+Os desafios diários usam o número do dia local como semente de um gerador
+determinístico (`daily/model/daily.ts`), então o desafio é igual para todos sem
+servidor. O progresso do dia fica em `localStorage` sob `daily:<jogo>:<data>`, via
+`useDailyProgress`, que descarta os dias anteriores.
+
+Dados que não têm API pública para o navegador viram instantâneos em `data/`,
+atualizados manualmente: `npm run refresh:songs` (paradas do Spotify via kworb.net e
+prévias do iTunes), `npm run refresh:higher-lower` (streams do Spotify e notas do
+IMDb, dos datasets não comerciais) e `npm run refresh:words` (léxico do Termo). O
+Mais ou menos carrega o instantâneo de uma categoria só quando ela é jogada.
 
 As chamadas HTTP ficam em `services/`. Elas recebem `fetch` e `AbortSignal` como
 dependências, o que permite testá-las sem rede. O jogo de músicas toca prévias públicas

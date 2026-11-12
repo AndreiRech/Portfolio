@@ -5,6 +5,7 @@ import "./interactions.css";
 import "./hero.css";
 import "./polish.css";
 import "./games.css";
+import "./daily.css";
 import { SettingsProvider } from "@/shared/i18n/SettingsContext";
 import { CollectionProvider } from "@/features/collectibles/hooks/CollectionContext";
 import Navbar from "@/layouts/site/Navbar";

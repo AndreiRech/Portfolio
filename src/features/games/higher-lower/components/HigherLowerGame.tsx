@@ -8,14 +8,15 @@ import { playCopy } from "@/shared/i18n/play";
 import { sfx } from "@/shared/lib/sfx";
 import { pixelBurst } from "@/shared/lib/pixelBurst";
 import {
+  CATEGORIES,
+  DECIMALS,
   LOW_QUEUE,
   higherLowerReducer,
   initialHigherLower,
-  pickPages,
-  shuffle,
-  type AnimeMedia,
-} from "@/features/games/anime/model/anime";
-import { fetchAnimePage } from "@/features/games/anime/services/anilist";
+  type HLCategory,
+  type HLItem,
+} from "@/features/games/higher-lower/model/higherLower";
+import { loadBatch } from "@/features/games/higher-lower/services/sources";
 
 /** Time to read the revealed number before the next pair slides in. */
 const REVEAL_MS = 2100;
@@ -23,8 +24,8 @@ const COUNT_MS = 700;
 const fill = (text: string, values: Record<string, string | number>) =>
   text.replace(/\{(\w+)\}/g, (_, key: string) => String(values[key] ?? ""));
 
-/** Counts up to the revealed popularity so the answer lands with a beat. */
-function useCountUp(target: number | null) {
+/** Counts up to the revealed number so the answer lands with a beat. */
+function useCountUp(target: number | null, decimals: number) {
   const [value, setValue] = useState(0);
   useEffect(() => {
     if (target === null) return;
@@ -32,24 +33,27 @@ function useCountUp(target: number | null) {
     const started = performance.now();
     const tick = (now: number) => {
       const t = Math.min((now - started) / COUNT_MS, 1);
-      setValue(Math.round(target * (1 - (1 - t) ** 3)));
+      const step = 10 ** decimals;
+      setValue(Math.round(target * (1 - (1 - t) ** 3) * step) / step);
       if (t < 1) frame = requestAnimationFrame(tick);
     };
     frame = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(frame);
-  }, [target]);
+  }, [target, decimals]);
   return target === null ? null : value;
 }
 
-function AnimeCard({
+function ItemCard({
   media,
   users,
   label,
+  kind,
   children,
 }: {
-  media: AnimeMedia;
+  media: HLItem;
   users: string;
   label: string;
+  kind?: string;
   children?: React.ReactNode;
 }) {
   return (
@@ -68,11 +72,7 @@ function AnimeCard({
       )}
       <div className="hl-info">
         <strong>{media.title}</strong>
-        <small>
-          {[media.format?.replace("_", " "), media.seasonYear]
-            .filter(Boolean)
-            .join(" · ")}
-        </small>
+        <small>{[kind, media.subtitle].filter(Boolean).join(" · ")}</small>
         <span className="hl-users">
           <b>{users}</b> {label}
         </span>
@@ -82,18 +82,52 @@ function AnimeCard({
   );
 }
 
-export default function AnimeGame() {
+/** Category picker; each category plays its own run. */
+export default function HigherLowerGame() {
   const { language } = useSettings();
   const c = playCopy[language];
+  const [category, setCategory] = useState<HLCategory>("anime");
+  return (
+    <HigherLowerRun key={category} category={category}>
+      <div className="level-picker" role="group" aria-label={c.hlCategory}>
+        {CATEGORIES.map((id) => (
+          <button
+            key={id}
+            aria-pressed={category === id}
+            onClick={() => setCategory(id)}
+          >
+            {c.hlCategories[id].tab}
+          </button>
+        ))}
+      </div>
+    </HigherLowerRun>
+  );
+}
+
+function HigherLowerRun({
+  category,
+  children,
+}: {
+  category: HLCategory;
+  children: React.ReactNode;
+}) {
+  const { language } = useSettings();
+  const c = playCopy[language];
+  const copy = c.hlCategories[category];
   const unlock = useUnlock();
   const [game, dispatch] = useReducer(higherLowerReducer, initialHigherLower);
   const [error, setError] = useState<"rate-limit" | "unavailable" | null>(null);
   const fetching = useRef(false);
   const controller = useRef<AbortController | null>(null);
-  const numbers = new Intl.NumberFormat(language === "pt" ? "pt-BR" : "en-US");
+  const decimals = DECIMALS[category];
+  const numbers = new Intl.NumberFormat(language === "pt" ? "pt-BR" : "en-US", {
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals,
+  });
   const revealed = game.phase === "reveal" || game.phase === "lost";
   const counted = useCountUp(
-    revealed && game.next ? game.next.popularity : null,
+    revealed && game.next ? game.next.value : null,
+    decimals,
   );
 
   const load = useCallback(async () => {
@@ -102,18 +136,12 @@ export default function AnimeGame() {
     const own = new AbortController();
     controller.current = own;
     try {
-      const results = await Promise.all(
-        pickPages().map((page) => fetchAnimePage(page, { signal: own.signal })),
-      );
+      const result = await loadBatch(category, own.signal);
       if (own.signal.aborted) return;
-      const failure = results.find((result) => !result.ok);
-      const media = results.flatMap((result) =>
-        result.ok ? result.media : [],
-      );
-      if (media.length) {
+      if (result.ok) {
         setError(null);
-        dispatch({ type: "load", media: shuffle(media) });
-      } else if (failure && !failure.ok) setError(failure.reason);
+        dispatch({ type: "load", media: result.media });
+      } else setError(result.reason);
     } catch {
       /* Aborted on unmount. */
     } finally {
@@ -122,7 +150,7 @@ export default function AnimeGame() {
         controller.current = null;
       }
     }
-  }, []);
+  }, [category]);
 
   useEffect(
     () => () => {
@@ -181,9 +209,9 @@ export default function AnimeGame() {
     game.phase === "reveal"
       ? c.hlRight
       : game.phase === "lost" && game.next
-        ? fill(c.hlLost, {
+        ? fill(copy.lost, {
             title: game.next.title,
-            users: numbers.format(game.next.popularity),
+            value: numbers.format(game.next.value),
             n: game.streak,
           })
         : " ";
@@ -191,7 +219,7 @@ export default function AnimeGame() {
   return (
     <article className="anime-lab" aria-labelledby="anime-title">
       <div className="play-panel-heading">
-        <span className="pixel-label">{c.animeLabel}</span>
+        <span className="pixel-label">{copy.label}</span>
         <span className="memory-best">
           {c.hlStreak}{" "}
           <strong key={game.streak} className="hl-streak">
@@ -203,7 +231,8 @@ export default function AnimeGame() {
           </small>
         </span>
       </div>
-      <h2 id="anime-title">{c.animeTitle}</h2>
+      <h2 id="anime-title">{copy.title}</h2>
+      {children}
 
       {game.current && game.next ? (
         <div
@@ -231,33 +260,35 @@ export default function AnimeGame() {
                 {banner.right
                   ? fill(c.hlStreakUp, { n: game.streak })
                   : game.next && game.current
-                    ? game.next.popularity > game.current.popularity
-                      ? c.hlHadMore
-                      : c.hlHadFewer
+                    ? game.next.value > game.current.value
+                      ? copy.hadMore
+                      : copy.hadFewer
                     : ""}
               </span>
             </div>
           ) : null}
-          <AnimeCard
+          <ItemCard
             key={`current-${game.current.id}`}
             media={game.current}
-            users={numbers.format(game.current.popularity)}
-            label={c.animeUsers}
+            users={numbers.format(game.current.value)}
+            label={copy.unit}
+            kind={game.current.kind && c.hlKinds[game.current.kind]}
           />
           <span className="hl-versus" aria-hidden="true">
             VS
           </span>
-          <AnimeCard
+          <ItemCard
             key={`next-${game.next.id}`}
             media={game.next}
             users={revealed ? numbers.format(counted ?? 0) : "?"}
-            label={c.animeUsers}
+            label={copy.unit}
+            kind={game.next.kind && c.hlKinds[game.next.kind]}
           >
             {game.phase === "guess" ? (
               <div
                 className="hl-buttons"
                 role="group"
-                aria-label={fill(c.hlAsk, { title: game.current.title })}
+                aria-label={fill(copy.ask, { title: game.current.title })}
               >
                 <button
                   className="button primary"
@@ -267,7 +298,7 @@ export default function AnimeGame() {
                   }}
                 >
                   <ArrowUp size={17} aria-hidden="true" />
-                  {c.hlHigher}
+                  {copy.higher}
                 </button>
                 <button
                   className="button"
@@ -277,7 +308,7 @@ export default function AnimeGame() {
                   }}
                 >
                   <ArrowDown size={17} aria-hidden="true" />
-                  {c.hlLower}
+                  {copy.lower}
                 </button>
               </div>
             ) : (
@@ -289,14 +320,14 @@ export default function AnimeGame() {
                 )}
               </span>
             )}
-          </AnimeCard>
+          </ItemCard>
         </div>
       ) : (
         <div className="game-loading hl-loading" role="status">
           {error === "rate-limit"
             ? c.animeRateLimit
             : error === "unavailable"
-              ? c.animeUnavailable
+              ? copy.unavailable
               : c.hlLoading}
           {error ? (
             <button

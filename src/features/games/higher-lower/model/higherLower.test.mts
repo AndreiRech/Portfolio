@@ -5,15 +5,14 @@ import {
   initialHigherLower,
   isRightGuess,
   pickPages,
-  type AnimeMedia,
-} from "./anime.ts";
+  type HLItem,
+} from "./higherLower.ts";
 
-const anime = (id: number, popularity: number): AnimeMedia => ({
-  id,
+const anime = (id: number, value: number): HLItem => ({
+  id: String(id),
   title: `Anime ${id}`,
-  popularity,
-  seasonYear: 2000,
-  format: "TV",
+  value,
+  subtitle: "TV · 2000",
   cover: null,
 });
 
@@ -30,11 +29,11 @@ test("loading deals a pair, skipping duplicates and near ties", () => {
     media: [anime(1, 1000), anime(1, 1000), anime(2, 1010), anime(3, 5000)],
   });
   assert.equal(state.phase, "guess");
-  assert.equal(state.current?.id, 1);
-  assert.equal(state.next?.id, 3);
+  assert.equal(state.current?.id, "1");
+  assert.equal(state.next?.id, "3");
   assert.deepEqual(
     state.queue.map((media) => media.id),
-    [2],
+    ["2"],
   );
 });
 
@@ -47,8 +46,8 @@ test("a right guess grows the streak and the next anime becomes current", () => 
   assert.equal(state.phase, "reveal");
   assert.equal(state.streak, 1);
   state = higherLowerReducer(state, { type: "advance" });
-  assert.equal(state.current?.id, 2);
-  assert.equal(state.next?.id, 3);
+  assert.equal(state.current?.id, "2");
+  assert.equal(state.next?.id, "3");
   assert.equal(state.phase, "guess");
 });
 
@@ -86,10 +85,10 @@ test("running out of anime waits for the next load", () => {
   state = higherLowerReducer(state, { type: "guess", guess: "higher" });
   state = higherLowerReducer(state, { type: "advance" });
   assert.equal(state.phase, "loading");
-  assert.equal(state.current?.id, 2);
+  assert.equal(state.current?.id, "2");
   state = higherLowerReducer(state, { type: "load", media: [anime(3, 20)] });
   assert.equal(state.phase, "guess");
-  assert.equal(state.next?.id, 3);
+  assert.equal(state.next?.id, "3");
 });
 
 test("pages mix the top of the ranking with deeper ones", () => {

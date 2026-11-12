@@ -23,10 +23,26 @@ const GAMES: Record<GameActivity, React.ComponentType> = {
   songs: dynamic(() => import("../songs/components/SongGame"), {
     loading: LoadingGame,
   }),
-  anime: dynamic(() => import("../anime/components/AnimeGame"), {
+  "higher-lower": dynamic(
+    () => import("../higher-lower/components/HigherLowerGame"),
+    { loading: LoadingGame },
+  ),
+  duel: dynamic(() => import("../duel/components/DuelGame"), {
     loading: LoadingGame,
   }),
-  duel: dynamic(() => import("../duel/components/DuelGame"), {
+  termo: dynamic(() => import("../termo/components/TermoGame"), {
+    loading: LoadingGame,
+  }),
+  conexo: dynamic(() => import("../conexo/components/ConexoGame"), {
+    loading: LoadingGame,
+  }),
+  crossword: dynamic(() => import("../crossword/components/CrosswordGame"), {
+    loading: LoadingGame,
+  }),
+  rarity: dynamic(() => import("../rarity/components/RarityGame"), {
+    loading: LoadingGame,
+  }),
+  sudoku: dynamic(() => import("../sudoku/components/SudokuGame"), {
     loading: LoadingGame,
   }),
   companions: dynamic(
@@ -38,7 +54,9 @@ const GAMES: Record<GameActivity, React.ComponentType> = {
 export default function Playground() {
   const params = useSearchParams();
   // ASVS 2.2.1: URL input can only select a known activity.
-  const requested = params.get("activity");
+  // Old links used "anime" for Higher or lower.
+  const raw = params.get("activity");
+  const requested = raw === "anime" ? "higher-lower" : raw;
   const activity: GameActivity =
     GAME_ACTIVITIES.find((id) => id === requested) ?? "memory";
   const Game = GAMES[activity];

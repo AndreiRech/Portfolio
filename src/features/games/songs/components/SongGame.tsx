@@ -6,7 +6,10 @@ import { ArrowRight, Pause, Play, SkipForward, X, Check } from "lucide-react";
 import { useSettings } from "@/shared/i18n/SettingsContext";
 import { useUnlock } from "@/features/achievements/hooks/AchievementContext";
 import { playCopy } from "@/shared/i18n/play";
-import catalogue from "@/features/games/songs/data/songs.json";
+import personal from "@/features/games/songs/data/personal.json";
+import global from "@/features/games/songs/data/global.json";
+import brazil from "@/features/games/songs/data/brazil.json";
+import classics from "@/features/games/songs/data/classics.json";
 import {
   CLIP_SECONDS,
   MAX_ATTEMPTS,
@@ -21,7 +24,15 @@ import {
   type SongRound,
 } from "@/features/games/songs/model/songs";
 
-const SONGS = catalogue as Song[];
+/** Personal playlist first; charts refresh with `npm run refresh:songs`. */
+const SONG_CATEGORIES = {
+  personal: personal as Song[],
+  global: global as Song[],
+  brazil: brazil as Song[],
+  classics: classics as Song[],
+};
+type SongCategory = keyof typeof SONG_CATEGORIES;
+const CATEGORY_IDS = Object.keys(SONG_CATEGORIES) as SongCategory[];
 const fill = (text: string, values: Record<string, string | number>) =>
   text.replace(/\{(\w+)\}/g, (_, key: string) => String(values[key] ?? ""));
 
@@ -45,13 +56,56 @@ function prepareClip(
   return element;
 }
 
+/** Category picker; the session score carries across categories. */
 export default function SongGame() {
   const { language } = useSettings();
   const c = playCopy[language];
+  const [category, setCategory] = useState<SongCategory>("personal");
+  const [score, setScore] = useState(0);
+  return (
+    <SongRun
+      key={category}
+      category={category}
+      score={score}
+      addScore={(points) => setScore((current) => current + points)}
+    >
+      <div
+        className="level-picker song-categories"
+        role="group"
+        aria-label={c.songsCategory}
+      >
+        {CATEGORY_IDS.map((id) => (
+          <button
+            key={id}
+            aria-pressed={category === id}
+            onClick={() => setCategory(id)}
+          >
+            {c.songCategories[id].tab}
+          </button>
+        ))}
+      </div>
+    </SongRun>
+  );
+}
+
+function SongRun({
+  category,
+  score,
+  addScore,
+  children,
+}: {
+  category: SongCategory;
+  score: number;
+  addScore: (points: number) => void;
+  children: React.ReactNode;
+}) {
+  const { language } = useSettings();
+  const c = playCopy[language];
+  const copy = c.songCategories[category];
+  const SONGS = SONG_CATEGORIES[category];
   const unlock = useUnlock();
   const [played, setPlayed] = useState<string[]>([]);
   const [round, setRound] = useState<SongRound | null>(null);
-  const [score, setScore] = useState(0);
   const [query, setQuery] = useState("");
   const [audio, setAudio] = useState<"idle" | "loading" | "playing" | "error">(
     "idle",
@@ -77,7 +131,7 @@ export default function SongGame() {
       setRound(newRound(first));
       setPlayed([first]);
     });
-  }, []);
+  }, [SONGS]);
 
   useEffect(
     () => () => {
@@ -159,7 +213,7 @@ export default function SongGame() {
     // The answer keeps playing until the visitor moves on.
     if (audio !== "error") startClip(Infinity);
     const points = songPoints(next);
-    setScore((current) => current + points);
+    addScore(points);
     if (points === MAX_ATTEMPTS) unlock("perfect-pitch");
   }
 
@@ -192,7 +246,7 @@ export default function SongGame() {
   return (
     <article className="song-lab" aria-labelledby="songs-title">
       <div className="play-panel-heading">
-        <span className="pixel-label">{c.songsLabel}</span>
+        <span className="pixel-label">{copy.label}</span>
         <span className="memory-best">
           {c.songScore} <strong>{String(score).padStart(2, "0")}</strong>
           <small>
@@ -202,7 +256,8 @@ export default function SongGame() {
         </span>
       </div>
       <h2 id="songs-title">{c.songsTitle}</h2>
-      <p className="memory-intro">{c.songsIntro}</p>
+      {children}
+      <p className="memory-intro">{copy.intro}</p>
 
       <ol className="song-attempts" aria-label={c.attempts}>
         {Array.from({ length: MAX_ATTEMPTS }, (_, index) => {
