@@ -1,0 +1,342 @@
+.hero h1 > span {
+  color: var(--accent);
+}
+.hero-period {
+  color: var(--fg);
+}
+.hero-links {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.hero-links .text-link {
+  font-size: 14px;
+}
+.hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 48px 70px;
+  padding-block: 60px 32px;
+  align-items: center;
+}
+.hero-copy {
+  min-width: 0;
+}
+.hero-role {
+  color: var(--muted);
+  font-size: 16px;
+  margin-bottom: 26px;
+}
+.hero h1 {
+  letter-spacing: -0.045em;
+  margin-left: -5px;
+  font-size: clamp(90px, 10.5vw, 150px);
+  line-height: 0.86;
+}
+.hero-description {
+  color: var(--muted);
+  max-width: 33ch;
+  font-size: 20px;
+  line-height: 1.5;
+  margin-top: 30px;
+}
+.hero-links {
+  gap: 24px;
+  margin-top: 28px;
+}
+.hero-dice-scene {
+  position: relative;
+  min-width: 0;
+  min-height: 500px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  isolation: isolate;
+  overflow: clip;
+}
+.hero-dice-scene h2 {
+  font-size: 32px;
+  color: var(--fg);
+  margin-bottom: 12px;
+}
+.hero-dice-trigger {
+  width: min(320px, calc(100% - 20px));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--fg);
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+.hero-dice-trigger:active {
+  cursor: grabbing;
+}
+.hero-dice-trigger[aria-busy="true"] {
+  cursor: wait;
+}
+.hero-dice-art {
+  display: block;
+  width: min(300px, 100%);
+  aspect-ratio: 1;
+  transform-origin: center;
+  pointer-events: none;
+}
+.hero-dice-art .hero-dice-pet {
+  display: block;
+  width: 100%;
+  height: 100%;
+  image-rendering: pixelated;
+  object-fit: contain;
+  transition: transform 0.2s;
+}
+.hero-dice-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  font-size: 14px;
+  font-weight: 600;
+  border-bottom: 1px solid var(--line);
+  transition:
+    color 0.2s,
+    border-color 0.2s;
+}
+.hero-dice-trigger:is(:hover, :focus-visible) .hero-dice-action {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+.hero-dice-ground {
+  position: absolute;
+  width: min(300px, 80%);
+  height: 24px;
+  bottom: 128px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: repeating-linear-gradient(
+    90deg,
+    var(--surface) 0 18px,
+    transparent 18px 22px
+  );
+  border-top: 4px solid var(--line);
+  z-index: -1;
+  pointer-events: none;
+}
+.hero-dice-result {
+  position: absolute;
+  top: 115px;
+  right: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: end;
+  gap: 5px;
+  width: 130px;
+  pointer-events: none;
+  font-variant-numeric: tabular-nums;
+}
+.hero-dice-result strong {
+  font: 400 80px/0.95 var(--font-heading);
+  color: var(--accent);
+  animation: dice-result 0.28s both;
+}
+.hero-dice-result > span:not(.sr-only) {
+  color: var(--muted);
+  font-size: 12px;
+}
+.hero-dice-result small {
+  flex-basis: 100%;
+  font-size: 12px;
+  text-align: right;
+  color: var(--accent);
+}
+.hero-dice-result[data-critical="high"] :is(strong, small) {
+  color: #eac67d;
+}
+.hero-dice-pixel {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  background: var(--blue);
+  pointer-events: none;
+}
+.dice-pixel-one {
+  left: 7%;
+  top: 38%;
+  box-shadow: 12px -12px 0 var(--line);
+}
+.dice-pixel-two {
+  right: 14%;
+  bottom: 26%;
+  width: 8px;
+  height: 8px;
+  background: var(--accent);
+  box-shadow: 8px 8px 0 var(--line);
+}
+@keyframes dice-result {
+  from {
+    opacity: 0.3;
+    transform: translateY(8px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+@media (hover: hover) and (pointer: fine) {
+  .hero-dice-trigger:not([aria-busy="true"]):hover
+    .hero-dice-art
+    .hero-dice-pet {
+    transform: translateY(-6px) rotate(-4deg);
+  }
+}
+.hero-bottom {
+  grid-column: 1/-1;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  border-block: 1px solid var(--line);
+  padding-block: 18px;
+}
+.hero-award {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 12px;
+}
+.hero-trophy {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  background: var(--surface);
+  color: #eac67d;
+  transition: transform 0.25s;
+}
+.hero-award:hover .hero-trophy {
+  transform: rotate(-12deg);
+}
+.hero-award > svg {
+  color: var(--muted);
+}
+.hero-sidequests {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+}
+.hero-sidequests button,
+.hero-sidequests a {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  border: 0;
+  padding: 4px 0;
+  min-height: 44px;
+  font-size: 12px;
+  color: var(--muted);
+  background: none;
+}
+.hero-sidequests :is(img, svg) {
+  image-rendering: pixelated;
+  transition: transform 0.2s;
+}
+.hero-sidequests button:hover img {
+  transform: translateY(-5px) rotate(-9deg);
+}
+.hero-sidequests :is(a, button):is(:hover, :focus-visible) {
+  color: var(--accent);
+}
+.hero-sidequests > a > svg:first-child {
+  color: var(--accent);
+}
+@media (max-width: 1100px) {
+  .hero {
+    gap: 36px;
+  }
+  .hero h1 {
+    font-size: clamp(90px, 11vw, 130px);
+  }
+  .hero-description {
+    font-size: 18px;
+  }
+  .hero-bottom {
+    gap: 14px;
+  }
+  .hero-sidequests {
+    gap: 18px;
+  }
+}
+@media (max-width: 767px) {
+  .hero-dice-result {
+    top: 74px;
+    right: 0;
+    width: 100px;
+  }
+  .hero-dice-result strong {
+    font-size: 56px;
+  }
+  .hero {
+    grid-template-columns: 1fr;
+    gap: 36px;
+    padding-block: 36px 24px;
+  }
+  .hero h1 {
+    font-size: clamp(96px, 21vw, 140px);
+  }
+  .hero-role {
+    font-size: 14px;
+    margin-bottom: 20px;
+  }
+  .hero-copy {
+    padding-top: 0;
+  }
+  .hero-description {
+    max-width: 34ch;
+    margin-top: 22px;
+    font-size: 17px;
+  }
+  .hero-links {
+    gap: 22px;
+    margin-top: 24px;
+  }
+  .hero-bottom {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 14px;
+    padding-block: 18px 10px;
+  }
+  .hero-sidequests {
+    justify-content: space-between;
+    gap: 8px;
+    border-top: 1px solid var(--line);
+    padding-top: 10px;
+  }
+  .hero-sidequests button,
+  .hero-sidequests a {
+    gap: 7px;
+    font-size: 11px;
+  }
+  .hero-award {
+    font-size: 11px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-dice-result strong {
+    animation: none;
+  }
+  .hero :is(a, button, img, span) {
+    transition: none;
+  }
+  .hero-dice-trigger:hover .hero-dice-art .hero-dice-pet,
+  .hero-award:hover .hero-trophy,
+  .hero-sidequests button:hover img {
+    transform: none;
+  }
+}
