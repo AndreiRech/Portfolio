@@ -11,3 +11,7 @@ Default five canonical labels: `needs-triage`, `needs-info`, `ready-for-agent`, 
 ### Domain docs
 
 Single-context: `CONTEXT.md` + `docs/adr/` at the repo root. See `docs/agents/domain.md`.
+
+### Frontend architecture
+
+Feature-based layout (`src/features`, `src/shared`, `src/layouts`). See `docs/frontend-architecture.md`.
