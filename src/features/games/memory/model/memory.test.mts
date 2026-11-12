@@ -37,16 +37,40 @@ test("a wrong pad ends the round and restarting retains only the session best", 
   });
 });
 
-test("replaying clears partial input without extending the sequence", () => {
+test("next is ignored until the round is cleared", () => {
   const input: MemoryState = {
     phase: "input",
     sequence: [0, 0, 3],
     inputIndex: 2,
     best: 2,
   };
-  const replay = memoryReducer(input, { type: "replay" });
-  assert.equal(replay.phase, "watch");
-  assert.equal(replay.inputIndex, 0);
-  assert.deepEqual(replay.sequence, [0, 0, 3]);
   assert.equal(memoryReducer(input, { type: "next", pad: 1 }), input);
+});
+
+test("all five signs can join a sequence, including consecutive Axii casts", () => {
+  const input: MemoryState = {
+    phase: "input",
+    sequence: [0, 1, 2, 3, 4, 4],
+    inputIndex: 0,
+    best: 0,
+  };
+  const result = input.sequence.reduce(
+    (state, pad) => memoryReducer(state, { type: "press", pad }),
+    input,
+  );
+  assert.equal(result.phase, "success");
+  assert.equal(result.best, 6);
+  const next = memoryReducer(result, { type: "next", pad: 4 });
+  assert.deepEqual(next.sequence, [0, 1, 2, 3, 4, 4, 4]);
+  assert.equal(next.phase, "watch");
+});
+
+test("difficulty levels narrow signs on easy and speed up on hard", async () => {
+  const { MEMORY_LEVELS, isMemoryLevel } = await import("./memory.ts");
+  assert.equal(MEMORY_LEVELS.easy.pads, 3);
+  assert.equal(MEMORY_LEVELS.normal.pads, 5);
+  assert.ok(MEMORY_LEVELS.hard.lit < MEMORY_LEVELS.normal.lit);
+  assert.ok(MEMORY_LEVELS.hard.gap < MEMORY_LEVELS.normal.gap);
+  assert.ok(isMemoryLevel("hard"));
+  assert.ok(!isMemoryLevel("constructor"));
 });

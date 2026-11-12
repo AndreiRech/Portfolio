@@ -1,4 +1,4 @@
-export type MemoryPad = 0 | 1 | 2 | 3;
+export type MemoryPad = 0 | 1 | 2 | 3 | 4;
 export type MemoryState = {
   phase: "idle" | "watch" | "input" | "success" | "lost";
   sequence: MemoryPad[];
@@ -8,7 +8,7 @@ export type MemoryState = {
 export type MemoryAction =
   | { type: "start" | "next"; pad: MemoryPad }
   | { type: "press"; pad: MemoryPad }
-  | { type: "ready" | "replay" };
+  | { type: "ready" | "reset" };
 
 export const initialMemory: MemoryState = {
   phase: "idle",
@@ -22,6 +22,8 @@ export function memoryReducer(
   action: MemoryAction,
 ): MemoryState {
   switch (action.type) {
+    case "reset":
+      return initialMemory;
     case "start":
       return {
         ...initialMemory,
@@ -40,10 +42,6 @@ export function memoryReducer(
         : state;
     case "ready":
       return state.phase === "watch" ? { ...state, phase: "input" } : state;
-    case "replay":
-      return state.phase === "input"
-        ? { ...state, phase: "watch", inputIndex: 0 }
-        : state;
     case "press": {
       if (state.phase !== "input") return state;
       if (action.pad !== state.sequence[state.inputIndex])
@@ -60,3 +58,16 @@ export function memoryReducer(
     }
   }
 }
+
+export type MemoryLevel = "easy" | "normal" | "hard";
+/** Easy uses only the first three signs; hard casts much faster. */
+export const MEMORY_LEVELS: Record<
+  MemoryLevel,
+  { pads: number; lit: number; gap: number }
+> = {
+  easy: { pads: 3, lit: 720, gap: 420 },
+  normal: { pads: 5, lit: 480, gap: 300 },
+  hard: { pads: 5, lit: 260, gap: 140 },
+};
+export const isMemoryLevel = (value: unknown): value is MemoryLevel =>
+  typeof value === "string" && Object.hasOwn(MEMORY_LEVELS, value);
