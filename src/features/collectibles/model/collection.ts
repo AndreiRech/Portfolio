@@ -20,6 +20,13 @@ const validCount = (count: unknown): count is number =>
   count > 0 &&
   count <= 1_000_000;
 
+/** Companion activation follows the same ownership rule as equipment. */
+export function canUseCompanion(collection: Collection, id: string): boolean {
+  return (
+    getReward(id)?.kind === "companion" && (collection.counts[id] ?? 0) > 0
+  );
+}
+
 export function parseCollection(raw: string | null): Collection {
   const clean = emptyCollection();
   if (!raw || raw.length > 16000) return clean;

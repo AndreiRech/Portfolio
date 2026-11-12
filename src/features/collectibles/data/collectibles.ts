@@ -6,7 +6,7 @@ export const RARITIES = [
   { id: "restricted", name: "Restricted", color: "#8847ff", chance: 10 },
   { id: "classified", name: "Classified", color: "#d45ce8", chance: 6 },
   { id: "covert", name: "Covert", color: "#ef6464", chance: 3 },
-  { id: "special", name: "★ Facas e luvas", color: "#edc45a", chance: 1 },
+  { id: "special", name: "Legendary", color: "#edc45a", chance: 1 },
 ] as const;
 export type RarityId = (typeof RARITIES)[number]["id"];
 export interface Reward {
@@ -100,6 +100,9 @@ export const getReward = (id: string): Reward | undefined =>
   REWARDS.find((item) => item.id === id);
 export const getRarity = (id: RarityId) =>
   RARITIES.find((rarity) => rarity.id === id)!;
+/** Tier names follow the CS2 reference; only the special tier is translated. */
+export const rarityName = (id: RarityId, special: string) =>
+  id === "special" ? special : getRarity(id).name;
 
 export function drawReward(random: () => number = Math.random): Reward {
   const roll = random();

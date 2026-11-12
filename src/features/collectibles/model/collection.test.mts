@@ -3,12 +3,26 @@ import assert from "node:assert/strict";
 import { drawReward, RARITIES, REWARDS } from "../data/collectibles.ts";
 import {
   COLLECTION_KEY,
+  canUseCompanion,
   createCollectionStore,
   emptyCollection,
   equipReward,
   grantReward,
   parseCollection,
 } from "./collection.ts";
+
+test("companions remain locked until obtained, and other reward kinds cannot be activated", () => {
+  const empty = emptyCollection();
+  for (const id of ["chicken", "medallion", "d20", "gold-d20", "unknown"])
+    assert.equal(canUseCompanion(empty, id), false);
+  const owned = grantReward(grantReward(empty, "a", "chicken"), "b", "forest");
+  assert.equal(canUseCompanion(owned, "chicken"), true);
+  assert.equal(canUseCompanion(owned, "forest"), false);
+  assert.equal(canUseCompanion(owned, "gold-d20"), false);
+  const restored = parseCollection(JSON.stringify(owned));
+  assert.equal(canUseCompanion(restored, "chicken"), true);
+  assert.equal(canUseCompanion(restored, "medallion"), false);
+});
 
 test("seven approved ranges include their lower bound and exclude their upper bound", () => {
   const cases = [

@@ -1,10 +1,15 @@
 "use client";
+import { sfx } from "@/shared/lib/sfx";
 import type { CSSProperties } from "react";
 import { Check, LockKeyhole } from "lucide-react";
-import { getRarity, type Reward } from "@/data/collectibles";
-import { useCompanion } from "@/context/CompanionContext";
-import { useCollection } from "@/context/CollectionContext";
-import { useSettings } from "@/context/SettingsContext";
+import {
+  getRarity,
+  rarityName,
+  type Reward,
+} from "@/features/collectibles/data/collectibles";
+import { useCompanion } from "@/features/companions/hooks/CompanionContext";
+import { useCollection } from "@/features/collectibles/hooks/CollectionContext";
+import { useSettings } from "@/shared/i18n/SettingsContext";
 import RewardArt from "./RewardArt";
 export default function ItemCard({
   item,
@@ -28,7 +33,7 @@ export default function ItemCard({
         <RewardArt reward={item} />
       </div>
       <h3>{item.name[language]}</h3>
-      <p className="rarity-label">{rarity.name}</p>
+      <p className="rarity-label">{rarityName(item.rarity, c.specialRarity)}</p>
       <div className="item-meta">
         <span className="item-kind">{c[item.kind]}</span>
         {collectible ? (
@@ -48,7 +53,10 @@ export default function ItemCard({
           onClick={() => {
             if (item.kind === "companion") visit(null);
             if (equipped) remove(item.kind);
-            else equip(item.id);
+            else {
+              sfx.sparkle();
+              equip(item.id);
+            }
           }}
         >
           {equipped ? (

@@ -1,5 +1,5 @@
 "use client";
-import { useRef, useState, type CSSProperties } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight, Check, PackageOpen } from "lucide-react";
@@ -8,14 +8,17 @@ import {
   REWARDS,
   drawReward,
   getRarity,
+  rarityName,
   type Reward,
-} from "@/data/collectibles";
-import { useCompanion } from "@/context/CompanionContext";
-import { useCollection } from "@/context/CollectionContext";
-import { useSettings } from "@/context/SettingsContext";
-import ArcadeHeading from "./ArcadeHeading";
-import ItemCard from "./ItemCard";
-import RewardArt from "./RewardArt";
+} from "@/features/collectibles/data/collectibles";
+import { useCompanion } from "@/features/companions/hooks/CompanionContext";
+import { useCollection } from "@/features/collectibles/hooks/CollectionContext";
+import { useSettings } from "@/shared/i18n/SettingsContext";
+import { useUnlock } from "@/features/achievements/hooks/AchievementContext";
+import { sfx } from "@/shared/lib/sfx";
+import ArcadeHeading from "../../games/components/ArcadeHeading";
+import ItemCard from "../components/ItemCard";
+import RewardArt from "../components/RewardArt";
 
 type Opening = {
   id: string;
@@ -31,7 +34,45 @@ export default function CasesView() {
   const [phase, setPhase] = useState<"idle" | "spinning" | "result">("idle");
   const locked = useRef(false);
   const activeOpening = useRef<string | null>(null);
-  const openButton = useRef<HTMLButtonElement>(null);
+  const unlock = useUnlock();
+  const track = useRef<HTMLDivElement>(null);
+
+  // Each tile that crosses the marker ticks, like the CS2 case reel.
+  useEffect(() => {
+    if (phase !== "spinning") return;
+    const node = track.current;
+    const tiles = node?.children;
+    if (!node || !tiles || tiles.length < 2) return;
+    const first = tiles[0] as HTMLElement;
+    const step = (tiles[1] as HTMLElement).offsetLeft - first.offsetLeft;
+    const half = first.offsetWidth / 2;
+    let passed = 0;
+    let frame = 0;
+    const watch = () => {
+      const offset = -new DOMMatrixReadOnly(getComputedStyle(node).transform)
+        .m41;
+      const current = Math.floor((offset - half) / step + 0.5);
+      if (current > passed) {
+        passed = current;
+        sfx.tick();
+      }
+      frame = requestAnimationFrame(watch);
+    };
+    frame = requestAnimationFrame(watch);
+    return () => cancelAnimationFrame(frame);
+  }, [phase, opening?.id]);
+
+  // Unlocks wait for the reveal so a toast never spoils the roulette.
+  function celebrate(reward: Reward) {
+    sfx.reveal(
+      Math.max(
+        0,
+        RARITIES.findIndex((rarity) => rarity.id === reward.rarity),
+      ),
+    );
+    unlock("first-case");
+    if (reward.rarity === "special") unlock("golden-drop");
+  }
   function start() {
     if (locked.current || !ready) return;
     locked.current = true;
@@ -42,6 +83,7 @@ export default function CasesView() {
       index === 26 ? reward : drawReward(),
     );
     grant(id, reward.id);
+    sfx.caseOpen();
     setOpening({
       id,
       reward,
@@ -52,13 +94,16 @@ export default function CasesView() {
       "(prefers-reduced-motion: reduce)",
     ).matches;
     setPhase(reduced ? "result" : "spinning");
-    if (reduced) locked.current = false;
+    if (reduced) {
+      locked.current = false;
+      celebrate(reward);
+    }
   }
-  function finish(id: string, fromButton = false) {
+  function finish(id: string) {
     if (activeOpening.current !== id) return;
     locked.current = false;
     setPhase("result");
-    if (fromButton) requestAnimationFrame(() => openButton.current?.focus());
+    if (opening) celebrate(opening.reward);
   }
   const equipped = opening
     ? data.equipped[opening.reward.kind] === opening.reward.id
@@ -71,6 +116,7 @@ export default function CasesView() {
           <div className="roulette-window">
             <div
               key={opening.id}
+              ref={track}
               className={`roulette-track ${phase === "spinning" ? "spinning" : "finished"}`}
               aria-hidden="true"
               onAnimationEnd={(event) => {
@@ -107,29 +153,18 @@ export default function CasesView() {
         )}
         <div className="roulette-actions">
           <button
-            ref={openButton}
             className="button primary"
             onClick={start}
             disabled={!ready || phase === "spinning"}
           >
             <PackageOpen size={18} />
-            {phase === "spinning" ? c.opening : c.openCase}
+            {c.openCase}
           </button>
-          {phase === "spinning" ? (
-            <button
-              className="button"
-              onClick={() => opening && finish(opening.id, true)}
-            >
-              {c.skipAnimation}
-            </button>
-          ) : (
-            <Link href="/inventory" className="button">
-              {c.inventory}
-              <ArrowUpRight size={16} />
-            </Link>
-          )}
+          <Link href="/inventory" className="button">
+            {c.inventory}
+            <ArrowUpRight size={16} />
+          </Link>
         </div>
-        <p className="free-note">{c.free}</p>
         <div aria-live="polite" aria-atomic="true">
           {opening && phase === "result" ? (
             <div className="reward-result">
@@ -147,13 +182,14 @@ export default function CasesView() {
                     } as CSSProperties
                   }
                 >
-                  {getRarity(opening.reward.rarity).name}
+                  {rarityName(opening.reward.rarity, c.specialRarity)}
                 </p>
               </div>
               <button
                 className="button"
                 onClick={() => {
                   if (opening.reward.kind === "companion") visit(null);
+                  sfx.sparkle();
                   equip(opening.reward.id);
                 }}
                 disabled={equipped}
@@ -173,7 +209,9 @@ export default function CasesView() {
       </section>
       <div className="subheading">
         <h2>{c.caseContents}</h2>
-        <span className="section-count">12 {c.items}</span>
+        <span className="section-count">
+          {REWARDS.length} {c.items}
+        </span>
       </div>
       <div className="collection-grid">
         {REWARDS.map((item) => (
@@ -191,7 +229,7 @@ export default function CasesView() {
               key={rarity.id}
               style={{ "--rarity": rarity.color } as CSSProperties}
             >
-              <span>{rarity.name}</span>
+              <span>{rarityName(rarity.id, c.specialRarity)}</span>
               <strong>{rarity.chance}%</strong>
             </div>
           ))}

@@ -2,20 +2,27 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { RotateCcw, ArrowUpRight } from "lucide-react";
-import { REWARDS, getReward, type RewardKind } from "@/data/collectibles";
-import { useCompanion } from "@/context/CompanionContext";
-import { useCollection } from "@/context/CollectionContext";
-import { useSettings } from "@/context/SettingsContext";
-import ArcadeHeading from "./ArcadeHeading";
-import ItemCard from "./ItemCard";
-import RewardArt from "./RewardArt";
+import { RotateCcw, ArrowUpRight, LockKeyhole, Trophy } from "lucide-react";
+import {
+  REWARDS,
+  getReward,
+  type RewardKind,
+} from "@/features/collectibles/data/collectibles";
+import { useCompanion } from "@/features/companions/hooks/CompanionContext";
+import { useCollection } from "@/features/collectibles/hooks/CollectionContext";
+import { useSettings } from "@/shared/i18n/SettingsContext";
+import { useAchievements } from "@/features/achievements/hooks/AchievementContext";
+import { ACHIEVEMENTS } from "@/features/achievements/model/achievements";
+import ArcadeHeading from "../../games/components/ArcadeHeading";
+import ItemCard from "../components/ItemCard";
+import RewardArt from "../components/RewardArt";
 
 const kinds = ["palette", "cursor", "companion"] as const;
 export default function InventoryView() {
   const { data, ready, remove, resetAppearance } = useCollection();
   const { copy: c, language } = useSettings();
   const { visit } = useCompanion();
+  const { unlocked } = useAchievements();
   const [filter, setFilter] = useState<"all" | RewardKind>("all");
   const [showLocked, setShowLocked] = useState(false);
   const items = REWARDS.filter(
@@ -28,7 +35,8 @@ export default function InventoryView() {
       <ArcadeHeading page="inventory" />
       <div className="page-heading-row">
         <p className="section-count">
-          {Object.keys(data.counts).length} / 12 {c.collectionProgress}
+          {Object.keys(data.counts).length} / {REWARDS.length}{" "}
+          {c.collectionProgress}
         </p>
         <button
           className="button"
@@ -57,13 +65,7 @@ export default function InventoryView() {
               </div>
               <div>
                 <small>{c[kind]}</small>
-                <strong>
-                  {item
-                    ? item.name[language]
-                    : language === "pt"
-                      ? "Padrão"
-                      : "Default"}
-                </strong>
+                <strong>{item ? item.name[language] : c.defaultItem}</strong>
                 {item ? (
                   <button
                     onClick={() => {
@@ -118,9 +120,7 @@ export default function InventoryView() {
           />
           <h2>
             {!ready
-              ? language === "pt"
-                ? "Carregando coleção…"
-                : "Loading collection…"
+              ? c.loadingCollection
               : Object.keys(data.counts).length
                 ? c.emptyFilter
                 : c.empty}
@@ -134,6 +134,36 @@ export default function InventoryView() {
           </Link>
         </div>
       )}
+      <section className="achievements" aria-labelledby="achievements-title">
+        <div className="subheading">
+          <div>
+            <h2 id="achievements-title">{c.achievementsTitle}</h2>
+            <p>{c.achievementsBody}</p>
+          </div>
+          <span className="section-count">
+            {unlocked.length} / {ACHIEVEMENTS.length} {c.achievementsProgress}
+          </span>
+        </div>
+        <ul className="achievement-grid">
+          {ACHIEVEMENTS.map((achievement) => {
+            const done = unlocked.includes(achievement.id);
+            return (
+              <li key={achievement.id} data-unlocked={done}>
+                <span className="achievement-icon" aria-hidden="true">
+                  {done ? <Trophy size={20} /> : <LockKeyhole size={18} />}
+                </span>
+                <div>
+                  <strong>{achievement.title[language]}</strong>
+                  <p>{achievement.hint[language]}</p>
+                  {done ? null : (
+                    <span className="sr-only">{c.achievementLocked}</span>
+                  )}
+                </div>
+              </li>
+            );
+          })}
+        </ul>
+      </section>
       <p className="storage-note">{c.savedLocally}</p>
     </main>
   );

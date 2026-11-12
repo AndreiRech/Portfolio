@@ -8,7 +8,7 @@ import {
   useSyncExternalStore,
   type ReactNode,
 } from "react";
-import { createCollectionStore } from "@/lib/collection";
+import { createCollectionStore } from "@/features/collectibles/model/collection";
 
 type Store = ReturnType<typeof createCollectionStore>;
 const CollectionContext = createContext<Store | null>(null);
