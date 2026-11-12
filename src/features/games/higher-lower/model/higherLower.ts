@@ -1,40 +1,51 @@
 /**
- * Higher or lower: the visitor sees one anime's AniList popularity (users
- * with it on their list) and guesses whether the next one has more or fewer.
+ * Higher or lower: the visitor sees one item's number (AniList users, IMDb
+ * rating or Spotify streams) and guesses whether the next one is higher or
+ * lower.
  */
-export type AnimeMedia = {
-  id: number;
+export type HLItem = {
+  id: string;
   title: string;
-  popularity: number;
-  seasonYear: number | null;
-  format: string | null;
+  value: number;
+  /** Year, format or artist, shown under the title. */
+  subtitle: string | null;
   cover: string | null;
+  /** Movies and series are told apart by a translated tag. */
+  kind?: "movie" | "series";
 };
+export const CATEGORIES = ["anime", "screen", "streams"] as const;
+export type HLCategory = (typeof CATEGORIES)[number];
 export type Guess = "higher" | "lower";
+/** IMDb ratings have one decimal (8.7); the counts are whole numbers. */
+export const DECIMALS: Record<HLCategory, number> = {
+  anime: 0,
+  screen: 1,
+  streams: 0,
+};
 
 /** A tie counts as right for either guess. */
 export function isRightGuess(
-  current: AnimeMedia,
-  next: AnimeMedia,
+  current: HLItem,
+  next: HLItem,
   guess: Guess,
 ): boolean {
-  if (next.popularity === current.popularity) return true;
+  if (next.value === current.value) return true;
   return guess === "higher"
-    ? next.popularity > current.popularity
-    : next.popularity < current.popularity;
+    ? next.value > current.value
+    : next.value < current.value;
 }
 
 export type HigherLowerState = {
   phase: "loading" | "guess" | "reveal" | "lost";
-  queue: AnimeMedia[];
-  current: AnimeMedia | null;
-  next: AnimeMedia | null;
+  queue: HLItem[];
+  current: HLItem | null;
+  next: HLItem | null;
   streak: number;
   best: number;
   lastGuess: Guess | null;
 };
 export type HigherLowerAction =
-  | { type: "load"; media: AnimeMedia[] }
+  | { type: "load"; media: HLItem[] }
   | { type: "guess"; guess: Guess }
   | { type: "advance" }
   | { type: "restart" };
@@ -51,12 +62,12 @@ export const initialHigherLower: HigherLowerState = {
 
 /** Pairs too close to call make for a coin flip, so they are skipped. */
 const TOO_CLOSE = 0.04;
-function nextDistinct(current: AnimeMedia, queue: AnimeMedia[]) {
+function nextDistinct(current: HLItem, queue: HLItem[]) {
   const index = queue.findIndex(
     (media) =>
       media.id !== current.id &&
-      Math.abs(media.popularity - current.popularity) /
-        Math.max(media.popularity, current.popularity, 1) >
+      Math.abs(media.value - current.value) /
+        Math.max(media.value, current.value, 1) >
         TOO_CLOSE,
   );
   if (index < 0) return { next: null, queue };
@@ -66,7 +77,7 @@ function nextDistinct(current: AnimeMedia, queue: AnimeMedia[]) {
   };
 }
 
-function deal(state: HigherLowerState, current: AnimeMedia | null) {
+function deal(state: HigherLowerState, current: HLItem | null) {
   let queue = state.queue;
   if (!current) {
     [current, ...queue] = queue;
@@ -98,8 +109,8 @@ export function higherLowerReducer(
       );
       const fresh = action.media.filter(
         (media) =>
-          Number.isFinite(media.popularity) &&
-          media.popularity >= 0 &&
+          Number.isFinite(media.value) &&
+          media.value >= 0 &&
           !known.has(media.id) &&
           known.add(media.id),
       );

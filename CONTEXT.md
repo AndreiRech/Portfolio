@@ -51,16 +51,35 @@ Apresentação dos trabalhos na qual o visitante seleciona um projeto em uma lis
 Interação opcional na página de jogos em que o visitante observa uma sequência dos cinco sinais de The Witcher, Yrden, Quen, Igni, Axii e Aard, e a repete na ordem. Cada sinal tem efeito visual e som próprios ao ser lançado. Cada rodada acrescenta um sinal, e a próxima começa sozinha cerca de dois segundos depois de um acerto. Tem três dificuldades: Fácil usa só Yrden, Quen e Igni em ritmo lento; Normal usa os cinco; Difícil usa os cinco em ritmo rápido. As teclas numéricas também selecionam os sinais. O recorde de cada dificuldade fica na sessão atual e não altera o inventário.
 
 **Jogo de músicas**:
-Interação opcional em que o visitante ouve trechos crescentes de uma música da playlist de Andrei e tenta identificá-la em até oito tentativas, com trechos de 0,1 s a 16 s. Os trechos são prévias públicas do Apple Music; ao fim da rodada, a prévia completa continua tocando até o visitante seguir para outra música.
+Interação opcional em que o visitante ouve trechos crescentes de uma música e tenta identificá-la em até oito tentativas, com trechos de 0,1 s a 16 s. Tem quatro listas: a playlist de Andrei, o top 30 do Spotify no mundo, o top 30 do Spotify no Brasil e 30 clássicos do pop. As paradas são instantâneos atualizados manualmente, não ao vivo. Os pontos da sessão somam todas as listas. Os trechos são prévias públicas do Apple Music; ao fim da rodada, a prévia completa continua tocando até o visitante seguir para outra música.
 
 **Mais ou menos**:
-Interação opcional em que o visitante vê quantos usuários do AniList têm um anime na lista e adivinha se o próximo anime tem mais ou menos. Cada acerto aumenta a sequência; um erro encerra a partida. A maior sequência vale só para a sessão atual.
+Interação opcional em que o visitante vê o número de um item e adivinha se o próximo tem mais ou menos. Tem três categorias: animes, por usuários do AniList (ao vivo); filmes e séries mais votados no IMDb, pela nota média; e músicas mais ouvidas, por streams no Spotify. As duas últimas são instantâneos atualizados manualmente. Cada acerto aumenta a sequência; um erro encerra a partida. A maior sequência vale só para a sessão atual.
+
+**Desafio diário**:
+Jogo com um único desafio por dia, igual para todos os visitantes no mesmo dia do calendário local: Termo, Conexo, palavra cruzada, Raridade e sudoku. O desafio é gerado a partir do número do dia, sem servidor. O progresso do dia fica salvo no navegador e o do dia anterior é descartado. Ao terminar, o visitante pode copiar um resultado sem spoilers e vê quanto falta para o próximo desafio. As palavras do Termo, do Conexo, da palavra cruzada e da Raridade são sempre em português; a interface segue o idioma do site e, em inglês, esses jogos mostram uma faixa diagonal "PT-BR" no canto do painel. Na página de jogos, Termo, Conexo, palavra cruzada e Raridade ficam juntos em "Jogos diários"; Músicas, Mais ou menos e sudoku, em "Jogos infinitos".
+_Evitar_: Recorde, ranking.
+
+**Termo**:
+Desafio diário em que o visitante descobre uma palavra de cinco letras em até seis tentativas. Verde indica a letra no lugar certo; amarelo, a letra presente em outro lugar. Os acentos são opcionais ao digitar. As palavras vêm do léxico aberto do Termo original (fserb/pt-br).
+
+**Conexo**:
+Desafio diário com dezesseis palavras que formam quatro grupos de quatro, um por nível de dificuldade, do mais direto ao jogo de palavras. Não há limite de tentativas; o visitante pode ver a resposta.
+
+**Palavra cruzada**:
+Desafio diário numa grade 11×11 montada a partir de um banco próprio de palavras e dicas, sem acentos. O visitante pode conferir as letras ou ver a resposta.
+
+**Raridade**:
+Desafio diário inspirado no decola.io com cinco temas. Para cada tema o visitante dá uma resposta; uma resposta da lista vale de 1 (a que todo mundo diz) a 10 pontos (a que quase ninguém lembra), e o objetivo é a maior soma do dia, até 50. Respostas fora da lista podem ser trocadas; pular um tema vale zero. Acentos, plurais e um erro de digitação não atrapalham.
+
+**Sudoku**:
+Desafio diário em três dificuldades (Fácil, Normal e Difícil), cada uma com solução única.
 
 **Duelo D20**:
 Interação opcional em que um companheiro liberado enfrenta um monstro sorteado (slime, morcego vampiro, esqueleto, goblin ou mímico). Cada lado tem pontos de vida, classe de armadura, bônus de ataque, faixas de dano e cura e um especial próprio. Em cada turno o visitante escolhe atacar, defender, usar o especial ou curar e arremessa um D20 3D. O resultado aparece como acerto, erro, crítico ou falha crítica; quando o ataque acerta ou a cura funciona, o visitante arremessa também os dados de dano ou cura (d4, d6, d8 ou d10), e a soma deles define o valor. Depois o monstro faz o mesmo sozinho. Sem companheiro, o duelo não começa.
 
 **Jogos**:
-Página que reúne o jogo de memória, o jogo de músicas, o Mais ou menos, o duelo D20 e a ativação dos companheiros liberados, com acesso às caixas e ao inventário em uma única barra, na mesma linha do link de volta. Todas as abas têm o mesmo título centralizado, sem subtítulo. Cada atividade ocupa a largura disponível e tem o conteúdo centralizado. A Home apresenta prévias com links para sinais, caixas e companheiros, uma linha com os demais jogos, depois de Projetos e antes de Contato. O calendário de contribuições faz parte da seção de Experiência.
+Página que reúne o jogo de memória, o jogo de músicas, o Mais ou menos, o duelo D20, os desafios diários e a ativação dos companheiros liberados, com acesso às caixas e ao inventário em uma única barra, na mesma linha do link de volta. Todas as abas têm o mesmo título centralizado, sem subtítulo. Cada atividade ocupa a largura disponível e tem o conteúdo centralizado. A Home apresenta prévias com links para sinais, caixas e companheiros, uma linha com os demais jogos, depois de Projetos e antes de Contato. O calendário de contribuições faz parte da seção de Experiência.
 
 **Conquista**:
 Marco opcional registrado quando o visitante descobre uma interação do portfólio, como tirar 20 no D20 ou abrir a primeira caixa. Aparece em um aviso e na lista do inventário, fica salva no navegador e não desbloqueia nenhuma informação profissional.

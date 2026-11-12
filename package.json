@@ -10,6 +10,8 @@
     "test": "node --test \"src/**/*.test.mts\" \"scripts/*.test.mts\"",
     "refresh:contributions": "node scripts/update-contributions.mjs",
     "refresh:songs": "node scripts/update-songs.mjs",
+    "refresh:higher-lower": "node scripts/update-higher-lower.mjs",
+    "refresh:words": "node scripts/update-words.mjs",
     "verify": "prettier --check src scripts && npm run lint && npm test && npm run build"
   },
   "dependencies": {

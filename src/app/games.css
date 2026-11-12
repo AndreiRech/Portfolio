@@ -26,6 +26,42 @@
 .arcade-heading {
   text-align: center;
 }
+/* Daily and infinite games: a second strip picks the game in the group. */
+.arcade-subtabs {
+  display: flex;
+  width: fit-content;
+  max-width: 100%;
+  margin: -12px auto 28px;
+  border: 2px solid var(--line);
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+.arcade-subtabs a {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  min-height: 40px;
+  padding: 0 18px;
+  color: var(--muted);
+  font: 14px/1 var(--font-heading);
+  white-space: nowrap;
+}
+.arcade-subtabs a + a {
+  border-left: 2px solid var(--line);
+}
+.arcade-subtabs a[aria-current] {
+  background: var(--accent);
+  color: var(--bg);
+}
+.arcade-subtabs a:not([aria-current]):hover {
+  color: var(--fg);
+}
+@media (max-width: 480px) {
+  .arcade-subtabs a {
+    padding: 0 10px;
+    font-size: 12px;
+  }
+}
 @media (max-width: 800px) {
   .arcade-bar {
     flex-direction: column;

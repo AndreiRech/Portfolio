@@ -30,6 +30,9 @@ test("AniList responses are mapped and failures reported", async () => {
   assert.ok(result.ok);
   assert.equal(result.media.length, 1);
   assert.equal(result.media[0].title, "Attack on Titan");
+  assert.equal(result.media[0].id, "anilist-1");
+  assert.equal(result.media[0].value, 1_000_000);
+  assert.equal(result.media[0].subtitle, "TV · 2013");
   const busy = (async () => new Response("", { status: 429 })) as typeof fetch;
   assert.deepEqual(await fetchAnimePage(1, { fetcher: busy }), {
     ok: false,

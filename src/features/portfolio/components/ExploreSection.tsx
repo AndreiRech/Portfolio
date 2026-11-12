@@ -77,8 +77,13 @@ export default function ExploreSection() {
         <span>{play.moreGames}:</span>
         {(
           [
+            ["termo", play.termoTab],
+            ["conexo", play.conexoTab],
+            ["crossword", play.cwTab],
+            ["rarity", play.rarityTab],
             ["songs", play.songsTab],
-            ["anime", play.animeTab],
+            ["higher-lower", play.animeTab],
+            ["sudoku", play.sudokuTab],
             ["duel", play.duelTab],
           ] as const
         ).map(([id, label]) => (

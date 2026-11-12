@@ -1,4 +1,4 @@
-import type { AnimeMedia } from "../model/anime.ts";
+import type { HLItem } from "../model/higherLower.ts";
 
 /** Reads AniList's public GraphQL API; it allows cross-origin requests. */
 const QUERY = `query ($page: Int) {
@@ -24,7 +24,7 @@ type RawMedia = {
 };
 
 export type AnimeFetch =
-  | { ok: true; media: AnimeMedia[] }
+  | { ok: true; media: HLItem[] }
   | { ok: false; reason: "rate-limit" | "unavailable" };
 
 export async function fetchAnimePage(
@@ -58,11 +58,13 @@ export async function fetchAnimePage(
         if (!title || typeof item.popularity !== "number") return [];
         return [
           {
-            id: item.id,
+            id: `anilist-${item.id}`,
             title,
-            popularity: item.popularity,
-            seasonYear: item.seasonYear ?? null,
-            format: item.format ?? null,
+            value: item.popularity,
+            subtitle:
+              [item.format?.replace("_", " "), item.seasonYear]
+                .filter(Boolean)
+                .join(" · ") || null,
             cover: item.coverImage?.large ?? null,
           },
         ];
