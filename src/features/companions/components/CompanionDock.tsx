@@ -1,4 +1,5 @@
 "use client";
+import { sfx } from "@/shared/lib/sfx";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import {
@@ -11,14 +12,24 @@ import {
   Dices,
   ChevronUp,
 } from "lucide-react";
-import { getReward, type Reward } from "@/data/collectibles";
-import { useCollection } from "@/context/CollectionContext";
-import { useSettings } from "@/context/SettingsContext";
-import { useCompanion } from "@/context/CompanionContext";
-import { containPet, movePet, petFacing, type Point } from "@/lib/companion";
-import { playCopy } from "@/locales/play";
-import { useReducedMotion } from "@/components/interactions/useReducedMotion";
-import RewardArt from "./RewardArt";
+import {
+  getReward,
+  type Reward,
+} from "@/features/collectibles/data/collectibles";
+import { useCollection } from "@/features/collectibles/hooks/CollectionContext";
+import { useSettings } from "@/shared/i18n/SettingsContext";
+import { useCompanion } from "@/features/companions/hooks/CompanionContext";
+import {
+  containPet,
+  movePet,
+  petFacing,
+  type Point,
+} from "@/features/companions/model/companion";
+import { playCopy } from "@/shared/i18n/play";
+import { useReducedMotion } from "@/shared/ui/useReducedMotion";
+import RewardArt from "../../collectibles/components/RewardArt";
+import PixelPet from "@/features/companions/components/PixelPet";
+import Die3D, { type DieRoll } from "@/features/dice/components/Die3D";
 
 type Mode = "rest" | "roam" | "follow" | "fetch" | "return";
 const modeLabels = {
@@ -33,6 +44,38 @@ const companionActions = {
   shine: { Icon: Sparkles, message: "shining", art: "✦" },
   pet: { Icon: Heart, message: "affection", art: "♥" },
 } as const;
+/** Time the companion spends picking up a pixel before heading home. */
+const PICK_MS = 900;
+const isDie = (id: string) => id === "d20" || id === "gold-d20";
+
+/** Dice companions show the number they last rolled on their face. */
+function PetArt({
+  item,
+  face,
+  roll,
+  onLanded,
+}: {
+  item: Reward;
+  face: number;
+  roll?: DieRoll | null;
+  onLanded?: (roll: DieRoll) => void;
+}) {
+  if (!isDie(item.id)) return <RewardArt reward={item} />;
+  return (
+    <span className="pet-die" data-die={item.id} data-mode={roll ? "3d" : "2d"}>
+      <PixelPet id={item.id} face={face} className="companion-art" />
+      {roll ? (
+        <Die3D
+          roll={roll}
+          onLanded={onLanded}
+          variant={item.id === "gold-d20" ? "gold" : "purple"}
+          resolution={40}
+        />
+      ) : null}
+    </span>
+  );
+}
+
 export default function CompanionDock() {
   const { data, remove } = useCollection();
   const { preview, visit } = useCompanion();
@@ -65,10 +108,27 @@ function ActiveCompanion({
   const reduced = useReducedMotion();
   const [mode, setMode] = useState<Mode>("roam");
   const [open, setOpen] = useState(false);
-  const [message, setMessage] = useState<keyof typeof c>("walking");
+  const [message, setMessage] = useState<
+    {
+      [K in keyof typeof c]: (typeof c)[K] extends string ? K : never;
+    }[keyof typeof c]
+  >("walking");
   const [pixels, setPixels] = useState(0);
   const [reaction, setReaction] = useState(0);
   const [roll, setRoll] = useState<number | null>(null);
+  const [face, setFace] = useState(20);
+  const [rolling, setRolling] = useState(false);
+  const [picking, setPicking] = useState(false);
+  // While set, the companion shows a 3D die; it stays briefly after landing.
+  const [dieRoll, setDieRoll] = useState<DieRoll | null>(null);
+  const rolls = useRef(0);
+  const hold = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(
+    () => () => {
+      if (hold.current) clearTimeout(hold.current);
+    },
+    [],
+  );
   const [target, setTarget] = useState<Point | null>(null);
   const sprite = useRef<HTMLDivElement>(null);
   const hud = useRef<HTMLElement>(null);
@@ -95,6 +155,7 @@ function ActiveCompanion({
     const root = document.documentElement;
     root.dataset.companion = "active";
     let frame = 0;
+    let pickTimer: ReturnType<typeof setTimeout> | undefined;
     let previous = 0;
     let direction = -1;
     let facing = 1;
@@ -111,7 +172,7 @@ function ActiveCompanion({
       width = window.innerWidth;
       height = window.innerHeight;
       floor = (hud.current?.offsetHeight ?? 70) + 16;
-      root.style.setProperty("--companion-floor", `${floor + 84}px`);
+      root.style.setProperty("--companion-floor", `${floor}px`);
       const rect = berth.current?.getBoundingClientRect();
       if (rect)
         home = {
@@ -160,6 +221,8 @@ function ActiveCompanion({
       if (returnTo.current === "rest") setMessage("resting");
     };
     const collectPixel = () => {
+      sfx.coin();
+      setPicking(false);
       setTarget(null);
       setPixels((count) => count + 1);
       setMessage("found");
@@ -206,7 +269,10 @@ function ActiveCompanion({
             position.current.y - destination.current.y,
           ) < 1;
         if (mode === "fetch" && target && arrived) {
-          collectPixel();
+          // Stop, peck the pixel up, then head home with it.
+          if (sprite.current) sprite.current.dataset.moving = "false";
+          setPicking(true);
+          pickTimer = setTimeout(collectPixel, PICK_MS);
           return;
         }
         if (mode === "return" && arrived) {
@@ -225,6 +291,7 @@ function ActiveCompanion({
     window.addEventListener("resize", resize);
     return () => {
       cancelAnimationFrame(frame);
+      clearTimeout(pickTimer);
       observer.disconnect();
       window.removeEventListener("pointermove", follow);
       window.removeEventListener("pointerdown", follow);
@@ -274,9 +341,28 @@ function ActiveCompanion({
     setMessage("fetching");
   }
   function interact() {
+    if (special !== "roll") {
+      if (special === "pet") sfx.cluck();
+      else sfx.sparkle();
+      setReaction((count) => count + 1);
+      setRoll(null);
+      setMessage(action.message);
+      return;
+    }
+    if (rolling) return;
+    const value = Math.floor(Math.random() * 20) + 1;
+    if (hold.current) clearTimeout(hold.current);
+    sfx.whoosh();
+    setRolling(true);
+    setDieRoll({ value, id: ++rolls.current, direction: 1 });
+  }
+  function landed({ value }: DieRoll) {
+    setRolling(false);
+    setFace(value);
+    setRoll(value);
     setReaction((count) => count + 1);
-    setRoll(special === "roll" ? Math.floor(Math.random() * 20) + 1 : null);
     setMessage(action.message);
+    hold.current = setTimeout(() => setDieRoll(null), 1200);
   }
   const reactionArt = reaction > 0 && (
     <span
@@ -293,6 +379,8 @@ function ActiveCompanion({
         className={`companion-world pet-${item.id}`}
         data-motion={docked ? "off" : "on"}
         data-mode={mode}
+        data-picking={picking}
+        data-rolling={rolling}
       >
         {target && !reduced && (
           <span
@@ -312,7 +400,12 @@ function ActiveCompanion({
           <span className="pet-shadow" aria-hidden="true" />
           <span className="pet-sprite">
             <span className="pet-body">
-              <RewardArt reward={item} />
+              <PetArt
+                item={item}
+                face={face}
+                roll={docked ? null : dieRoll}
+                onLanded={landed}
+              />
             </span>
           </span>
           {reactionArt}
@@ -338,7 +431,18 @@ function ActiveCompanion({
             aria-label={`${c[special]}: ${item.name[language]}`}
           >
             {docked ? (
-              <RewardArt reward={item} />
+              <span
+                className="hud-pet-art pet-idle"
+                data-pet={item.id}
+                data-rolling={rolling}
+              >
+                <PetArt
+                  item={item}
+                  face={face}
+                  roll={dieRoll}
+                  onLanded={landed}
+                />
+              </span>
             ) : (
               <Footprints size={22} aria-hidden="true" />
             )}
