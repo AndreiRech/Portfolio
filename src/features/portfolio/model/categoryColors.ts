@@ -1,5 +1,5 @@
 // src/lib/categoryColors.ts
-import type { ProjectCategory } from '@/types';
+import type { ProjectCategory } from "@/features/portfolio/model/types";
 
 /** A category's block color, plus the text color that reads on top of it when
     the block is used as a fill. No single text color works on all four at full
@@ -17,10 +17,10 @@ export interface CategoryColor {
     `Record<ProjectCategory, …>` makes the mapping exhaustive at compile time:
     adding a category to the union breaks the build here until it gets a color. */
 const CATEGORY_COLORS: Record<ProjectCategory, CategoryColor> = {
-  iOS: { block: 'var(--color-block-blue)', on: 'var(--color-paper)' },
-  University: { block: 'var(--color-block-green)', on: 'var(--color-ink)' },
-  Personal: { block: 'var(--color-block-red)', on: 'var(--color-paper)' },
-  Others: { block: 'var(--color-block-yellow)', on: 'var(--color-ink)' },
+  iOS: { block: "var(--color-block-blue)", on: "var(--color-paper)" },
+  University: { block: "var(--color-block-green)", on: "var(--color-ink)" },
+  Personal: { block: "var(--color-block-red)", on: "var(--color-paper)" },
+  Others: { block: "var(--color-block-yellow)", on: "var(--color-ink)" },
 };
 
 /** The colors for a category, as consumed by the `--category-color` /

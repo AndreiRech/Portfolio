@@ -2,7 +2,7 @@
 import { useLayoutEffect, useRef } from "react";
 import Image from "next/image";
 import { X } from "lucide-react";
-import { useSettings } from "@/context/SettingsContext";
+import { useSettings } from "@/shared/i18n/SettingsContext";
 export interface ImagePreview {
   src: string;
   opener: HTMLButtonElement;

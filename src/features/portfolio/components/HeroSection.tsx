@@ -1,31 +1,18 @@
 "use client";
-import Image from "next/image";
+import PixelPet from "@/features/companions/components/PixelPet";
 import Link from "next/link";
-import {
-  ArrowDownRight,
-  ArrowUpRight,
-  Trophy,
-  Footprints,
-  Gamepad2,
-} from "lucide-react";
-import { useSettings } from "@/context/SettingsContext";
-import { useCompanion } from "@/context/CompanionContext";
-import HeroDice from "@/components/interactions/HeroDice";
+import { ArrowDownRight, ArrowUpRight, Trophy, Footprints } from "lucide-react";
+import { useSettings } from "@/shared/i18n/SettingsContext";
+import HeroDice from "@/features/portfolio/components/HeroDice";
+import HeroName from "@/features/portfolio/components/HeroName";
 
 export default function HeroSection() {
   const { copy: c } = useSettings();
-  const { visit } = useCompanion();
   return (
     <section id="hero" className="hero container">
       <div className="hero-copy">
         <p className="hero-role">{c.intro}</p>
-        <h1>
-          Andrei
-          <br />
-          <span>
-            Rech<span className="hero-period">.</span>
-          </span>
-        </h1>
+        <HeroName />
         <p className="hero-description">{c.heroBody}</p>
         <div className="hero-links">
           <a href="#projects" className="button primary">
@@ -48,21 +35,15 @@ export default function HeroSection() {
           <ArrowUpRight size={16} />
         </Link>
         <div className="hero-sidequests">
-          <button onClick={() => visit("chicken")}>
-            <Image
-              src="/collectibles/companions/chicken.webp"
-              alt=""
-              width={38}
-              height={38}
-            />
-            <span>{c.releaseChicken}</span>
+          <Link href="/games?activity=companions">
+            <PixelPet id="chicken" className="hero-sidequest-pet" />
+            <span>{c.viewCompanions}</span>
             <Footprints size={17} />
-          </button>
-          <a href="#playground">
-            <Gamepad2 size={21} />
-            <span>{c.playMemory}</span>
+          </Link>
+          <Link href="/games">
+            <span>{c.games}</span>
             <ArrowDownRight size={17} />
-          </a>
+          </Link>
         </div>
       </div>
     </section>

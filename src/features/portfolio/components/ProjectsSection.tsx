@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useRef, useState, type KeyboardEvent } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -9,9 +9,12 @@ import {
   Trophy,
   Maximize2,
 } from "lucide-react";
-import { getProjects } from "@/data/projects";
-import { useSettings } from "@/context/SettingsContext";
-import ImageLightbox, { type ImagePreview } from "@/components/ImageLightbox";
+import { getProjects } from "@/features/portfolio/data/projects";
+import { useSettings } from "@/shared/i18n/SettingsContext";
+import { useUnlock } from "@/features/achievements/hooks/AchievementContext";
+import ImageLightbox, {
+  type ImagePreview,
+} from "@/features/portfolio/components/ImageLightbox";
 export default function ProjectsSection() {
   const { language, copy: c } = useSettings();
   const projects = getProjects(language);
@@ -25,8 +28,31 @@ export default function ProjectsSection() {
       ? (selected.cardImageUrl ?? selected.media[0])
       : selected.media[imageIndex - 1];
   const count = selected.media.length + 1;
+  const unlock = useUnlock();
+  const viewed = useRef(new Set([projects[0].id]));
+  const choices = useRef<(HTMLButtonElement | null)[]>([]);
   function moveImage(direction: number) {
     setImageIndex((value) => (value + direction + count) % count);
+  }
+  function select(id: string) {
+    setSelectedId(id);
+    setImageIndex(0);
+    viewed.current.add(id);
+    if (viewed.current.size === projects.length) unlock("inspector");
+  }
+  function moveSelection(event: KeyboardEvent<HTMLDivElement>) {
+    const step =
+      event.key === "ArrowDown" || event.key === "ArrowRight"
+        ? 1
+        : event.key === "ArrowUp" || event.key === "ArrowLeft"
+          ? -1
+          : 0;
+    if (!step || event.altKey || event.ctrlKey || event.metaKey) return;
+    event.preventDefault();
+    const current = projects.findIndex((project) => project.id === selected.id);
+    const next = (current + step + projects.length) % projects.length;
+    select(projects[next].id);
+    choices.current[next]?.focus();
   }
   return (
     <section id="projects" className="section container">
@@ -43,16 +69,21 @@ export default function ProjectsSection() {
         </span>
       </div>
       <div className="project-inspector">
-        <div className="project-list" role="group" aria-label={c.selectProject}>
-          {projects.map((project) => (
+        <div
+          className="project-list"
+          role="group"
+          aria-label={c.selectProject}
+          onKeyDown={moveSelection}
+        >
+          {projects.map((project, index) => (
             <button
               key={project.id}
+              ref={(element) => {
+                choices.current[index] = element;
+              }}
               aria-pressed={selected.id === project.id}
               className={`project-choice ${selected.id === project.id ? "selected" : ""}`}
-              onClick={() => {
-                setSelectedId(project.id);
-                setImageIndex(0);
-              }}
+              onClick={() => select(project.id)}
             >
               {project.logoUrl ? (
                 <Image src={project.logoUrl} alt="" width={48} height={48} />
@@ -68,7 +99,7 @@ export default function ProjectsSection() {
           ))}
         </div>
         <div className="project-stage" key={selected.id}>
-          <div className="project-preview">
+          <div className="project-preview pixel-corners">
             <button
               className="preview-image-button"
               onClick={(event) =>
@@ -81,6 +112,7 @@ export default function ProjectsSection() {
                 alt={`${selected.name} ${c.image.toLowerCase()} ${imageIndex + 1}`}
                 fill
                 sizes="(max-width: 700px) 90vw, 65vw"
+                loading="eager"
                 className={
                   imageIndex === 0 ? "project-cover" : "project-screen"
                 }

@@ -4,9 +4,11 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft, ArrowUpRight, Trophy } from "lucide-react";
-import { getProjects } from "@/data/projects";
-import { useSettings } from "@/context/SettingsContext";
-import ImageLightbox, { type ImagePreview } from "@/components/ImageLightbox";
+import { getProjects } from "@/features/portfolio/data/projects";
+import { useSettings } from "@/shared/i18n/SettingsContext";
+import ImageLightbox, {
+  type ImagePreview,
+} from "@/features/portfolio/components/ImageLightbox";
 export default function ProjectDetails({ projectId }: { projectId: string }) {
   const { language, copy: c, t } = useSettings();
   const project = getProjects(language).find((item) => item.id === projectId);

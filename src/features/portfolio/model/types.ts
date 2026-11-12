@@ -4,10 +4,15 @@ import type { ReactNode } from "react";
 
 /** Source of truth for the category union — a runtime value so callers can
     iterate the categories (filter lists, exhaustiveness checks). */
-export const PROJECT_CATEGORIES = ['iOS', 'University', 'Personal', 'Others'] as const;
+export const PROJECT_CATEGORIES = [
+  "iOS",
+  "University",
+  "Personal",
+  "Others",
+] as const;
 
 export type ProjectCategory = (typeof PROJECT_CATEGORIES)[number];
-export type FilterType = 'All Projects' | ProjectCategory;
+export type FilterType = "All Projects" | ProjectCategory;
 
 export interface ProjectLinks {
   github?: string;
@@ -41,7 +46,7 @@ export interface Project {
   media: string[];
   logoUrl?: string;
   cardImageUrl?: string;
-  orientation?: 'horizontal' | 'vertical';
+  orientation?: "horizontal" | "vertical";
   team: Contributor[];
   awards?: Award[];
 }
@@ -86,6 +91,7 @@ export interface Experience {
   role: string;
   company: string;
   period: string;
+  current?: boolean;
   description: string | ReactNode;
   technologies: string[];
 }

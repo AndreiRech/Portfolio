@@ -1,12 +1,12 @@
 "use client";
 import { useRef, useState, type KeyboardEvent } from "react";
 import { ArrowUpRight } from "lucide-react";
-import snapshot from "@/data/contributions.json";
-import { useSettings } from "@/context/SettingsContext";
+import snapshot from "@/features/portfolio/data/contributions.json";
+import { useSettings } from "@/shared/i18n/SettingsContext";
 import {
   contributionLevel,
   CONTRIBUTION_RANGES,
-} from "@/lib/contributionLevels";
+} from "@/features/portfolio/model/contributionLevels";
 interface Day {
   date: string;
   count: number;
