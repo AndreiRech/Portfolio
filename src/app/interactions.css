@@ -349,7 +349,7 @@ html[data-companion="active"] {
   animation: pet-walk 0.32s steps(2, end) infinite;
 }
 :is(.pet-d20, .pet-gold-d20) .world-pet[data-moving="true"] .pet-body {
-  animation: pet-roll 0.85s steps(8, end) infinite;
+  animation: pet-walk 0.36s steps(2, end) infinite;
 }
 .pet-medallion .world-pet[data-moving="true"] .pet-body {
   animation: pet-hover 0.9s steps(8, end) infinite;
