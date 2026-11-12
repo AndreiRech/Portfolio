@@ -7,9 +7,9 @@ import {
   useSyncExternalStore,
   type ReactNode,
 } from "react";
-import { en, type TranslationKey } from "@/locales/en";
-import { pt } from "@/locales/pt";
-import { interfaceCopy } from "@/locales/interface";
+import { en, type TranslationKey } from "@/shared/i18n/en";
+import { pt } from "@/shared/i18n/pt";
+import { interfaceCopy } from "@/shared/i18n/interface";
 type Language = "en" | "pt";
 const dictionaries = { en, pt };
 function createLanguageStore() {
