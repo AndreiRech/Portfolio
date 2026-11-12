@@ -1,49 +1,63 @@
-name: Deploy Next.js to GitHub Pages
+name: Validate and deploy portfolio
 
 on:
   push:
-    branches: ["main"]
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: "23 7 * * *"
   workflow_dispatch:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 concurrency:
-  group: "pages"
+  group: portfolio-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout do código
-        uses: actions/checkout@v4
-
-      - name: Configurar Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: "20"
-          
-      - name: Instalar dependências
-        run: npm install
-        
-      - name: Gerar build estático
-        run: npm run build
-        
-      - name: Fazer upload do artefato (pasta out)
-        uses: actions/upload-pages-artifact@v3
+          node-version: "24"
+          cache: npm
+      - run: npm ci
+      - uses: actions/cache/restore@v4
+        with:
+          path: .cache/contributions.json
+          key: contributions-${{ github.run_id }}
+          restore-keys: contributions-
+      - name: Refresh public GitHub contributions
+        run: node scripts/update-contributions.mjs
+      - name: Save last verified contribution snapshot
+        if: github.event_name != 'pull_request' && hashFiles('.cache/contributions.json') != ''
+        uses: actions/cache/save@v4
+        with:
+          path: .cache/contributions.json
+          key: contributions-${{ github.run_id }}
+      - run: npm run lint
+      - run: npm test
+      - run: npm run build
+      - uses: actions/upload-pages-artifact@v3
+        if: github.event_name != 'pull_request'
         with:
           path: ./out
 
   deploy:
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    permissions:
+      pages: write
+      id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     needs: build
     steps:
-      - name: Fazer deploy no GitHub Pages
+      - name: Deploy static portfolio
         id: deployment
         uses: actions/deploy-pages@v4

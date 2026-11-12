@@ -7,22 +7,27 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "node --test \"src/**/*.test.mts\""
+    "test": "node --test \"src/**/*.test.mts\" \"scripts/*.test.mts\"",
+    "refresh:contributions": "node scripts/update-contributions.mjs",
+    "refresh:songs": "node scripts/update-songs.mjs",
+    "verify": "prettier --check src scripts && npm run lint && npm test && npm run build"
   },
   "dependencies": {
-    "framer-motion": "^12.38.0",
     "lucide-react": "^1.7.0",
-    "next": "16.2.2",
+    "next": "16.4.6",
     "react": "19.2.4",
-    "react-dom": "19.2.4"
+    "react-dom": "19.2.4",
+    "three": "^0.181.0"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/three": "^0.181.0",
     "eslint": "^9",
-    "eslint-config-next": "16.2.2",
+    "eslint-config-next": "16.4.6",
+    "prettier": "^3.10.1",
     "tailwindcss": "^4",
     "typescript": "^5"
   }
