@@ -2,7 +2,7 @@ import { readFile, writeFile, mkdir, rename } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import { parseCalendar, validSnapshot, PROFILE } from "./contributions.mjs";
 const root = new URL("../", import.meta.url);
-const target = new URL("src/data/contributions.json", root);
+const target = new URL("src/features/portfolio/data/contributions.json", root);
 const cache = new URL(".cache/contributions.json", root);
 let previous;
 for (const path of [cache, target]) {
