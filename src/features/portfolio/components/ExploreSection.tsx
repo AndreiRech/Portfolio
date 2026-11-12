@@ -81,9 +81,9 @@ export default function ExploreSection() {
             ["conexo", play.conexoTab],
             ["crossword", play.cwTab],
             ["rarity", play.rarityTab],
+            ["sudoku", play.sudokuTab],
             ["songs", play.songsTab],
             ["higher-lower", play.animeTab],
-            ["sudoku", play.sudokuTab],
             ["duel", play.duelTab],
           ] as const
         ).map(([id, label]) => (

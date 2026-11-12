@@ -23,8 +23,8 @@ type ArcadePage = GameActivity | "cases" | "inventory";
 
 /** Games that share one tab, with a second strip to pick among them. */
 export const GAME_GROUPS = {
-  daily: ["termo", "conexo", "crossword", "rarity"],
-  infinite: ["songs", "higher-lower", "sudoku"],
+  daily: ["termo", "conexo", "crossword", "rarity", "sudoku"],
+  infinite: ["songs", "higher-lower"],
 } as const satisfies Record<string, readonly GameActivity[]>;
 type GameGroup = keyof typeof GAME_GROUPS;
 const groupOf = (page: ArcadePage) =>
