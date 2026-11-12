@@ -36,7 +36,15 @@ const skills = (language: Language) => [
   },
   {
     category: "Tools & DevOps",
-    items: ["GitHub Actions", "AWS", "Figma", "Azure", "Prisma", "Claude", "Codex"],
+    items: [
+      "GitHub Actions",
+      "AWS",
+      "Figma",
+      "Azure",
+      "Prisma",
+      "Claude",
+      "Codex",
+    ],
   },
   {
     category: language === "pt" ? "Idiomas" : "Languages",
