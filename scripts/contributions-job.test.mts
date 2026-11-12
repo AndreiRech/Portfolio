@@ -15,10 +15,10 @@ import { join } from "node:path";
 async function prepareJob() {
   const root = await mkdtemp(join(tmpdir(), "portfolio-contributions-"));
   await mkdir(join(root, "scripts"));
-  await mkdir(join(root, "src/data"), { recursive: true });
+  await mkdir(join(root, "src/features/portfolio/data"), { recursive: true });
   for (const file of ["contributions.mjs", "update-contributions.mjs"])
     await copyFile(
-      new URL(`../../scripts/${file}`, import.meta.url),
+      new URL(`./${file}`, import.meta.url),
       join(root, "scripts", file),
     );
   return root;
@@ -28,7 +28,10 @@ test("a failed refresh restores the last verified cached data, including its ori
   try {
     const previous = JSON.parse(
       await readFile(
-        new URL("../data/contributions.json", import.meta.url),
+        new URL(
+          "../src/features/portfolio/data/contributions.json",
+          import.meta.url,
+        ),
         "utf8",
       ),
     );
@@ -37,7 +40,10 @@ test("a failed refresh restores the last verified cached data, including its ori
       join(root, ".cache/contributions.json"),
       JSON.stringify(previous),
     );
-    await writeFile(join(root, "src/data/contributions.json"), "{broken");
+    await writeFile(
+      join(root, "src/features/portfolio/data/contributions.json"),
+      "{broken",
+    );
     execFileSync(
       process.execPath,
       [
@@ -48,7 +54,10 @@ test("a failed refresh restores the last verified cached data, including its ori
       { stdio: "pipe" },
     );
     const result = JSON.parse(
-      await readFile(join(root, "src/data/contributions.json"), "utf8"),
+      await readFile(
+        join(root, "src/features/portfolio/data/contributions.json"),
+        "utf8",
+      ),
     );
     assert.deepEqual(result, previous);
   } finally {
@@ -58,7 +67,10 @@ test("a failed refresh restores the last verified cached data, including its ori
 test("a first failed refresh without usable history produces an unavailable state, not invented counts", async () => {
   const root = await prepareJob();
   try {
-    await writeFile(join(root, "src/data/contributions.json"), "{broken");
+    await writeFile(
+      join(root, "src/features/portfolio/data/contributions.json"),
+      "{broken",
+    );
     execFileSync(
       process.execPath,
       [
@@ -69,7 +81,10 @@ test("a first failed refresh without usable history produces an unavailable stat
       { stdio: "pipe" },
     );
     const result = JSON.parse(
-      await readFile(join(root, "src/data/contributions.json"), "utf8"),
+      await readFile(
+        join(root, "src/features/portfolio/data/contributions.json"),
+        "utf8",
+      ),
     );
     assert.deepEqual(result, {
       profile: "AndreiRech",

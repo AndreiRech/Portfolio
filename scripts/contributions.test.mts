@@ -1,10 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import {
-  dateRange,
-  parseCalendar,
-  validSnapshot,
-} from "../../scripts/contributions.mjs";
+import { dateRange, parseCalendar, validSnapshot } from "./contributions.mjs";
 const now = new Date("2026-11-11T12:00:00Z");
 test("a rolling year ending on leap day retains March 1 of the previous year", () => {
   assert.deepEqual(dateRange(new Date("2024-02-29T12:00:00Z")), {
