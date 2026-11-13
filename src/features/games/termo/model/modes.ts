@@ -26,8 +26,8 @@ export const CONFIG: Record<TermoMode, { boards: number; tries: number }> = {
   quarteto: { boards: 4, tries: 9 },
   counts: { boards: 1, tries: 8 },
   locked: { boards: 1, tries: 6 },
-  between: { boards: 1, tries: 14 },
-  liar: { boards: 1, tries: 6 },
+  between: { boards: 1, tries: 16 },
+  liar: { boards: 1, tries: 7 },
 };
 export type ModeState = {
   guesses: string[];
@@ -79,7 +79,10 @@ export function colorCounts(guess: string, answer: string) {
     wrong: marks.filter((mark) => mark === "wrong").length,
   };
 }
-/** One false mark per unsuccessful guess. A solved word is always all green. */
+/**
+ * One false mark per unsuccessful guess. A solved word is always all green,
+ * and only a solved word is: the lie never turns the last non-green tile green.
+ */
 export function feedback(
   puzzle: ModePuzzle,
   guess: string,
@@ -91,8 +94,11 @@ export function feedback(
     return marks;
   const random = seededRandom(gameSeed(`termo-liar-${puzzle.day}`, row));
   const index = Math.floor(random() * 5);
+  const othersGreen = marks.every(
+    (mark, col) => col === index || mark === "right",
+  );
   const alternatives = (["right", "place", "wrong"] as const).filter(
-    (mark) => mark !== marks[index],
+    (mark) => mark !== marks[index] && !(mark === "right" && othersGreen),
   );
   marks[index] = alternatives[Math.floor(random() * alternatives.length)];
   return marks;
@@ -125,6 +131,17 @@ export function betweenBounds(puzzle: ModePuzzle, state: ModeState) {
     remaining: Math.max(0, high - low - 1),
   };
 }
+/** A valid guess at or beyond the current best bounds cannot narrow them. */
+export function outsideInterval(
+  puzzle: ModePuzzle,
+  state: ModeState,
+  word: string,
+): boolean {
+  if (puzzle.mode !== "between") return false;
+  const index = puzzle.lexicon.indexOf(stripAccents(word));
+  const { low, high } = betweenBounds(puzzle, state);
+  return index >= 0 && (index <= low || index >= high);
+}
 export function lockedLetters(puzzle: ModePuzzle, state: ModeState): string[] {
   const locks = Array<string>(5).fill("");
   if (puzzle.mode === "locked") {
@@ -135,6 +152,38 @@ export function lockedLetters(puzzle: ModePuzzle, state: ModeState): string[] {
       });
   }
   return locks;
+}
+/**
+ * Fixed mode: every letter revealed green or yellow must reappear in the next
+ * guesses, as many times as it was revealed in a single guess.
+ */
+export function requiredLetters(
+  puzzle: ModePuzzle,
+  state: ModeState,
+): Map<string, number> {
+  const required = new Map<string, number>();
+  if (puzzle.mode !== "locked") return required;
+  for (const guess of state.guesses) {
+    const key = stripAccents(guess);
+    const found = new Map<string, number>();
+    scoreGuess(guess, puzzle.answers[0]).forEach((mark, index) => {
+      if (mark !== "wrong")
+        found.set(key[index], (found.get(key[index]) ?? 0) + 1);
+    });
+    for (const [letter, count] of found)
+      required.set(letter, Math.max(required.get(letter) ?? 0, count));
+  }
+  return required;
+}
+export function missingLetters(
+  puzzle: ModePuzzle,
+  state: ModeState,
+  word: string,
+): string[] {
+  const key = [...stripAccents(word)];
+  return [...requiredLetters(puzzle, state)].flatMap(([letter, count]) =>
+    key.filter((used) => used === letter).length < count ? [letter] : [],
+  );
 }
 export function submitMode(
   state: ModeState,
@@ -157,6 +206,8 @@ export function submitMode(
     )
   )
     return { ok: false as const, reason: "locked" as const };
+  if (missingLetters(puzzle, state, key).length)
+    return { ok: false as const, reason: "yellow" as const };
   const guesses = [...state.guesses, word];
   const won = puzzle.answers.every((answer) =>
     guesses.some((guess) => stripAccents(guess) === stripAccents(answer)),

@@ -12,8 +12,11 @@ import {
   feedback,
   freshMode,
   lockedLetters,
+  missingLetters,
   modeShare,
+  outsideInterval,
   parseMode,
+  requiredLetters,
   solvedBoard,
   submitMode,
   type ModePuzzle,
@@ -43,6 +46,8 @@ test("every mode has deterministic, distinct, valid daily answers", () => {
     }
   assert.equal(CONFIG.dueto.tries, 7);
   assert.equal(CONFIG.quarteto.tries, 9);
+  assert.equal(CONFIG.between.tries, 16);
+  assert.equal(CONFIG.liar.tries, 7);
 });
 
 test("shared guesses solve each Dueto and Quarteto board independently and survive reload", () => {
@@ -143,7 +148,7 @@ test("Between starts at AAAAA/ZZZZZ with 50 percent, accepts outside words and o
 test("Liar changes one mark on incorrect guesses and all winning letters stay green", () => {
   const puzzle = buildModePuzzle(words.answers, dictionary, "liar", 17);
   for (const guess of ["arara", "tento", "conta", puzzle.answers[0]])
-    for (let row = 0; row < 6; row++) {
+    for (let row = 0; row < CONFIG.liar.tries; row++) {
       const truth = scoreGuess(guess, puzzle.answers[0]);
       const shown = feedback(puzzle, guess, puzzle.answers[0], row);
       assert.equal(
@@ -241,5 +246,116 @@ test("Between keeps the closest word on both sides after worse and repeated gues
     const bounds = betweenBounds(puzzle, state);
     assert.equal(bounds.lower, "corda");
     if (state.guesses.length > 1) assert.equal(bounds.upper, "tento");
+  }
+});
+
+test("Fixed mode requires every yellow letter in the next guess", () => {
+  const puzzle: ModePuzzle = {
+    mode: "locked",
+    answers: ["conta"],
+    lexicon: [...dictionary.keys()].sort(),
+    day: 1,
+  };
+  const first = submitMode(freshMode(), "tento", puzzle, dictionary);
+  assert.ok(first.ok);
+  assert.deepEqual(scoreGuess("tento", "conta")[4], "place");
+  const keys = [...dictionary.keys()];
+  const withoutO = keys.find(
+    (key) => /^..nt.$/.test(key) && !key.includes("o"),
+  )!;
+  const withO = keys.find(
+    (key) => /^..nt.$/.test(key) && key.includes("o") && key !== "conta",
+  )!;
+  assert.deepEqual(missingLetters(puzzle, first.state, withoutO), ["o"]);
+  assert.deepEqual(submitMode(first.state, withoutO, puzzle, dictionary), {
+    ok: false,
+    reason: "yellow",
+  });
+  const second = submitMode(first.state, withO, puzzle, dictionary);
+  assert.ok(second.ok);
+  assert.deepEqual(parseMode(second.state, puzzle, dictionary), second.state);
+  const fabricated = { ...first.state, guesses: ["tento", withoutO] };
+  assert.equal(
+    parseMode(
+      { ...fabricated, notes: [Array(5).fill(null), Array(5).fill(null)] },
+      puzzle,
+      dictionary,
+    ),
+    null,
+  );
+});
+
+test("Fixed mode counts repeated revealed letters", () => {
+  const puzzle: ModePuzzle = {
+    mode: "locked",
+    answers: ["arara"],
+    lexicon: [...dictionary.keys()].sort(),
+    day: 1,
+  };
+  const state: ModeState = {
+    guesses: ["banal"],
+    notes: [Array(5).fill(null)],
+    status: "playing",
+  };
+  assert.deepEqual(scoreGuess("banal", "arara"), [
+    "wrong",
+    "place",
+    "wrong",
+    "place",
+    "wrong",
+  ]);
+  assert.equal(requiredLetters(puzzle, state).get("a"), 2);
+  assert.deepEqual(missingLetters(puzzle, state, "xxxax"), ["a"]);
+  assert.deepEqual(missingLetters(puzzle, state, "axxax"), []);
+  const other: ModePuzzle = { ...puzzle, mode: "classic" };
+  assert.equal(requiredLetters(other, state).size, 0);
+});
+
+test("Between flags guesses at or beyond the current bounds", () => {
+  const lexicon = ["abrir", "antes", "carta", "termo", "zebra"];
+  const puzzle: ModePuzzle = {
+    mode: "between",
+    answers: ["carta"],
+    lexicon,
+    day: 1,
+  };
+  const dictionary = buildDictionary(lexicon);
+  assert.equal(outsideInterval(puzzle, freshMode(), "abrir"), false);
+  let state = freshMode();
+  for (const guess of ["antes", "termo"]) {
+    const result = submitMode(state, guess, puzzle, dictionary);
+    assert.ok(result.ok);
+    state = result.state;
+  }
+  for (const guess of ["abrir", "antes", "termo", "zebra"])
+    assert.equal(outsideInterval(puzzle, state, guess), true, guess);
+  assert.equal(outsideInterval(puzzle, state, "carta"), false);
+  const liar: ModePuzzle = { ...puzzle, mode: "liar" };
+  assert.equal(outsideInterval(liar, state, "zebra"), false);
+});
+
+test("Liar never shows a wrong guess as all green", () => {
+  for (let day = 1; day <= 60; day++) {
+    const puzzle = buildModePuzzle(words.answers, dictionary, "liar", day);
+    const answer = stripAccents(puzzle.answers[0]);
+    const nearMisses = [...dictionary.keys()].filter(
+      (key) =>
+        key !== answer &&
+        [...key].filter((letter, index) => letter !== answer[index]).length ===
+          1,
+    );
+    for (const guess of nearMisses)
+      for (let row = 0; row < CONFIG.liar.tries; row++) {
+        const shown = feedback(puzzle, guess, puzzle.answers[0], row);
+        assert.ok(
+          shown.some((mark) => mark !== "right"),
+          `${guess} ${day}`,
+        );
+        const truth = scoreGuess(guess, puzzle.answers[0]);
+        assert.equal(
+          shown.filter((mark, index) => mark !== truth[index]).length,
+          1,
+        );
+      }
   }
 });
