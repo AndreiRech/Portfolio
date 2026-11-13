@@ -802,10 +802,10 @@
   image-rendering: pixelated;
   filter: drop-shadow(4px 5px 0 #0005);
 }
-/* The chicken faces left; in the duel it turns to face the monster. */
+/* Side-view pets face left; in the duel they turn to face the monster. */
 .duel-fighter[data-side="player"]
   .duel-sprite
-  > .pixel-pet[data-pet="chicken"] {
+  > .pixel-pet[data-facing="left"] {
   transform: scaleX(-1);
 }
 .duel-floor {
@@ -1468,6 +1468,10 @@
 .pet-idle:is([data-pet="d20"], [data-pet="gold-d20"]) {
   animation: pet-die-idle 2.2s steps(10, end) infinite;
 }
+.pet-ghost.companion-world .world-pet:not([data-moving="true"]) .pet-body,
+.pet-idle[data-pet="ghost"] {
+  animation: pet-float 2.4s steps(12, end) infinite;
+}
 .pet-idle[data-pet="medallion"] {
   transform-origin: 50% 0;
   animation: pet-sway 2.4s steps(12, end) infinite;
@@ -1627,6 +1631,90 @@
 }
 .hero-dice-art[data-mode="3d"] > .die-3d {
   visibility: visible;
+}
+/* Four-beat pets hold each walk frame for a quarter of their cycle. */
+.pixel-pet {
+  --walk-cycle: 0.48s;
+}
+.pixel-pet[data-pet="frog"] {
+  --walk-cycle: 0.72s;
+}
+.pixel-pet[data-pet="ghost"] {
+  --walk-cycle: 0.8s;
+}
+:is(
+    .world-pet[data-moving="true"],
+    .duel-sprite[data-anim="attack"],
+    .duel-sprite[data-anim="dodge"]
+  )
+  .pixel-pet[data-steps="4"]
+  .frame-walkA {
+  animation: frame-q1 var(--walk-cycle) steps(1, end) infinite;
+}
+:is(
+    .world-pet[data-moving="true"],
+    .duel-sprite[data-anim="attack"],
+    .duel-sprite[data-anim="dodge"]
+  )
+  .pixel-pet[data-steps="4"]
+  .frame-walkB {
+  animation: frame-q2 var(--walk-cycle) steps(1, end) infinite;
+}
+:is(
+    .world-pet[data-moving="true"],
+    .duel-sprite[data-anim="attack"],
+    .duel-sprite[data-anim="dodge"]
+  )
+  .pixel-pet[data-steps="4"]
+  .frame-walkC {
+  animation: frame-q3 var(--walk-cycle) steps(1, end) infinite;
+}
+:is(
+    .world-pet[data-moving="true"],
+    .duel-sprite[data-anim="attack"],
+    .duel-sprite[data-anim="dodge"]
+  )
+  .pixel-pet[data-steps="4"]
+  .frame-walkD {
+  animation: frame-q4 var(--walk-cycle) steps(1, end) infinite;
+}
+@keyframes frame-q1 {
+  0% {
+    visibility: visible;
+  }
+  25% {
+    visibility: hidden;
+  }
+}
+@keyframes frame-q2 {
+  0% {
+    visibility: hidden;
+  }
+  25% {
+    visibility: visible;
+  }
+  50% {
+    visibility: hidden;
+  }
+}
+@keyframes frame-q3 {
+  0% {
+    visibility: hidden;
+  }
+  50% {
+    visibility: visible;
+  }
+  75% {
+    visibility: hidden;
+  }
+}
+@keyframes frame-q4 {
+  0% {
+    visibility: hidden;
+  }
+  75% {
+    visibility: visible;
+  }
 }
 .hero-dice-art[data-mode="3d"] > .hero-dice-pet {
   visibility: hidden;

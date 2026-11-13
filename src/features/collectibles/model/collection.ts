@@ -20,6 +20,12 @@ const validCount = (count: unknown): count is number =>
   count > 0 &&
   count <= 1_000_000;
 
+// ASVS 1.5.2, 2.2.1: accept only known legacy ids; validate counts and slots below.
+const LEGACY_REWARDS = [
+  { from: "wolf", to: "medallion" },
+  { from: "pool", to: "coral" },
+] as const;
+
 /** Companion activation follows the same ownership rule as equipment. */
 export function canUseCompanion(collection: Collection, id: string): boolean {
   return (
@@ -43,8 +49,10 @@ export function parseCollection(raw: string | null): Collection {
     if (candidate.counts && typeof candidate.counts === "object") {
       for (const item of REWARDS) {
         const current = candidate.counts[item.id];
-        const legacy =
-          item.id === "medallion" ? candidate.counts.wolf : undefined;
+        const legacyId = LEGACY_REWARDS.find(
+          (alias) => alias.to === item.id,
+        )?.from;
+        const legacy = legacyId ? candidate.counts[legacyId] : undefined;
         const count = Math.min(
           (validCount(current) ? current : 0) +
             (validCount(legacy) ? legacy : 0),
@@ -57,7 +65,8 @@ export function parseCollection(raw: string | null): Collection {
     if (candidate.equipped && typeof candidate.equipped === "object") {
       for (const kind of ["palette", "cursor", "companion"] as const) {
         const stored: unknown = candidate.equipped[kind];
-        const id = stored === "wolf" ? "medallion" : stored;
+        const id =
+          LEGACY_REWARDS.find((alias) => alias.from === stored)?.to ?? stored;
         if (
           typeof id === "string" &&
           getReward(id)?.kind === kind &&

@@ -85,6 +85,7 @@ test("a day scores the rarity of each answer, skips score zero", () => {
     shareText(state, 1),
     new RegExp(`^Raridade #1 · ${rare.points}/50`),
   );
+  assert.match(shareText(state, 1), new RegExp(`\nAndar ${rare.points}\n`));
   assert.deepEqual(parseRarity(state), state);
   assert.equal(parseRarity({ rounds: [{ answer: "x", points: 11 }] }), null);
 });

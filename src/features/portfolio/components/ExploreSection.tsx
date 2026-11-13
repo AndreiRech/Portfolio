@@ -4,10 +4,8 @@ import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import { useSettings } from "@/shared/i18n/SettingsContext";
 import { playCopy } from "@/shared/i18n/play";
-import SignGlyph, { SIGNS } from "@/features/games/memory/components/SignGlyph";
-
-const signColor = (id: string) => SIGNS.find((sign) => sign.id === id)?.color;
 import PixelPet from "@/features/companions/components/PixelPet";
+import DailyGamesArt from "./DailyGamesArt";
 
 export default function ExploreSection() {
   const { copy: c, language } = useSettings();
@@ -24,24 +22,13 @@ export default function ExploreSection() {
         </div>
       </div>
       <div className="games-teasers">
-        <Link
-          href="/games?activity=memory"
-          className="game-teaser teaser-memory"
-        >
-          <div className="teaser-art teaser-signs" aria-hidden="true">
-            <span style={{ color: signColor("aard") }}>
-              <SignGlyph id="aard" />
-            </span>
-            <span style={{ color: signColor("igni") }}>
-              <SignGlyph id="igni" />
-            </span>
-            <span style={{ color: signColor("quen") }}>
-              <SignGlyph id="quen" />
-            </span>
+        <Link href="/games?activity=termo" className="game-teaser teaser-daily">
+          <div className="teaser-art teaser-calendar" aria-hidden="true">
+            <DailyGamesArt language={language} />
           </div>
           <div className="teaser-copy">
-            <h3>{play.memoryTab}</h3>
-            <p>{c.memoryTeaser}</p>
+            <h3>{play.dailyGamesTab}</h3>
+            <p>{c.dailyGamesTeaser}</p>
             <ArrowUpRight size={22} aria-hidden="true" />
           </div>
         </Link>
@@ -91,6 +78,7 @@ export default function ExploreSection() {
             ["songs", play.songsTab],
             ["higher-lower", play.animeTab],
             ["duel", play.duelTab],
+            ["memory", play.memoryTab],
           ] as const
         ).map(([id, label]) => (
           <Link key={id} href={`/games?activity=${id}`}>

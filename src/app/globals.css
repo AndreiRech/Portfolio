@@ -22,11 +22,24 @@
   --raised: #2c2e32;
   --fg: #e6e7eb;
   --muted: #b2b5bd;
-  --accent: #e56d68;
+  --accent: #65d9df;
   --blue: #5967ff;
   --line: #3c3e44;
   --font-heading: var(--font-pixel);
   --font-body: var(--font-dm);
+}
+:root[data-palette="coral"] {
+  --accent: #e56d68;
+}
+:root[data-palette="rose"] {
+  --bg: #291b25;
+  --surface: #36232f;
+  --raised: #432d3b;
+  --fg: #f9e7f0;
+  --muted: #d1b5c5;
+  --accent: #f395bf;
+  --blue: #ce83bd;
+  --line: #654357;
 }
 :root[data-palette="forest"] {
   --bg: #18231e;
@@ -1279,6 +1292,21 @@ svg {
   html[data-cursor="knife"] button {
     cursor:
       url("/collectibles/cursors/knife.svg") 3 3,
+      auto;
+  }
+  html[data-cursor="paw"] :is(body, a, button, input, select, textarea) {
+    cursor:
+      url("/collectibles/cursors/paw.svg") 7 3,
+      auto;
+  }
+  html[data-cursor="wand"] :is(body, a, button, input, select, textarea) {
+    cursor:
+      url("/collectibles/cursors/wand.svg") 6 6,
+      auto;
+  }
+  html[data-cursor="crystal"] :is(body, a, button, input, select, textarea) {
+    cursor:
+      url("/collectibles/cursors/crystal.svg") 12 2,
       auto;
   }
 }

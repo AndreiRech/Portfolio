@@ -841,16 +841,8 @@
   right: 24px;
   color: var(--accent);
 }
-.teaser-signs {
-  gap: clamp(16px, 3vw, 30px);
-  padding-inline: 28px;
-}
-.teaser-signs > span {
-  display: inline-block;
-  flex: 0 1 88px;
-}
-.teaser-signs svg {
-  width: 100%;
+.daily-games-art {
+  width: min(80%, 220px);
   height: auto;
 }
 .teaser-pets :is(img, svg) {
@@ -871,7 +863,7 @@
 }
 @media (prefers-reduced-motion: no-preference) {
   .teaser-art img,
-  .teaser-signs > span,
+  .daily-games-art,
   .teaser-copy > svg {
     transition: transform 0.28s cubic-bezier(0.2, 0.7, 0.2, 1);
   }
@@ -884,14 +876,8 @@
   .game-teaser:is(:hover, :focus-visible) .teaser-pet-dice {
     transform: translate(10px, -8px) rotate(-14deg);
   }
-  .game-teaser:is(:hover, :focus-visible) .teaser-signs > span:nth-child(1) {
-    transform: translate(-4px, -10px) rotate(-9deg);
-  }
-  .game-teaser:is(:hover, :focus-visible) .teaser-signs > span:nth-child(2) {
-    transform: translateY(-18px);
-  }
-  .game-teaser:is(:hover, :focus-visible) .teaser-signs > span:nth-child(3) {
-    transform: translate(4px, -10px) rotate(9deg);
+  .game-teaser:is(:hover, :focus-visible) .daily-games-art {
+    transform: translateY(-10px) rotate(-4deg);
   }
   .game-teaser:is(:hover, :focus-visible) .teaser-copy > svg {
     transform: translate(3px, -3px);
@@ -1117,13 +1103,6 @@
   .teaser-pet-dice {
     width: 46px;
     height: 46px;
-  }
-  .teaser-signs {
-    gap: 8px;
-    padding-inline: 12px;
-  }
-  .teaser-signs > span {
-    flex: 1 1 0;
   }
   .contact-layout {
     grid-template-columns: 1fr;

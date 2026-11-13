@@ -5,6 +5,10 @@ import {
   type Answer,
   type Theme,
 } from "../model/rarity.ts";
+import { CULTURE, ANIMAL_LETTERS } from "./culture.ts";
+import { AWARD_THEMES } from "./awards.ts";
+import { GEEK } from "./geek.ts";
+import { REVIEWED } from "./reviewed.ts";
 import { SUPPLEMENTAL } from "./supplemental.ts";
 
 const ELEMENTS =
@@ -67,7 +71,8 @@ export function expandThemes(bank: Theme[]): Theme[] {
   for (const theme of themes)
     for (const answer of theme.answers)
       answer.points = recalibrate[answer.points];
-  for (const theme of SUPPLEMENTAL) add(theme.name, theme.answers);
+  for (const theme of [...SUPPLEMENTAL, ...REVIEWED])
+    add(theme.name, theme.answers);
 
   // Names accidentally present in unrelated old categories.
   const remove: Record<string, string[]> = {
@@ -155,6 +160,126 @@ Pokémon | Bidoof:5, Klefki:8, Luvdisc:8, Lucario:4, Greninja:4, Mudkip:5, Torch
       );
       if (answer) answer.points = revised.points;
     }
+  }
+  // Register new themes and extend existing ones without sharing mutable answers.
+  for (const category of [...GEEK, ...CULTURE, ...AWARD_THEMES]) {
+    if (!byName.has(category.name)) {
+      const theme: Theme = { name: category.name, answers: [] };
+      themes.push(theme);
+      byName.set(theme.name, theme);
+    }
+    add(category.name, category.answers);
+  }
+  // Pokémon console/handheld releases also belong in Nintendo; mobile/PC-only
+  // services are deliberately excluded from this platform category.
+  const mobilePokemon = new Set([
+    "Pokémon Go",
+    "Pokémon Sleep",
+    "Pokémon Masters EX",
+    "Pokémon Rumble Rush",
+    "Pokémon Trading Card Game Online",
+    "Pokémon Trading Card Game Live",
+    "Pokémon Trading Card Game Pocket",
+  ]);
+  add(
+    "Jogos de Nintendo",
+    byName
+      .get("Jogos de Pokémon")!
+      .answers.filter((answer) => !mobilePokemon.has(answer.name)),
+  );
+  // Every specialized game/movie title is also valid in the broad category.
+  for (const name of [
+    "Jogos FPS",
+    "Jogos RPG",
+    "Jogos de Pokémon",
+    "Jogos de Nintendo",
+    "Jogos de PlayStation",
+    "Jogos de Xbox",
+  ])
+    add("Jogos de videogame", byName.get(name)!.answers);
+  for (const name of ["Filmes da Pixar", "Filmes de animação"])
+    add("Filmes", byName.get(name)!.answers);
+  add("Séries", byName.get("Animes")!.answers);
+  add("Desenhos animados", byName.get("Animes")!.answers);
+  // Restore real dinosaur genera and remove fictional/misclassified old entries.
+  const notDinosaurs = new Set(
+    ["Pterodáctilo", "Mosassauro", "Plesiossauro", "Indominus"].map(answerKey),
+  );
+  byName.get("Dinossauros")!.answers = byName
+    .get("Dinossauros")!
+    .answers.filter((answer) => !notDinosaurs.has(answerKey(answer.name)));
+  byName.get("Animais")!.answers = byName
+    .get("Animais")!
+    .answers.filter((answer) => !answer.keys.includes(answerKey("Indominus")));
+  add("Animais", byName.get("Dinossauros")!.answers);
+  add("Filmes", byName.get("Filmes premiados pelo Oscar")!.answers);
+  // The winning bands are all rock bands, except electronic duo Daft Punk.
+  add(
+    "Bandas de rock",
+    byName
+      .get("Bandas que ganharam Grammy")!
+      .answers.filter((answer) => answer.name !== "Daft Punk"),
+  );
+
+  // Letter questions use Portuguese labels, not the scientific aliases from taxa.
+  const animals = byName.get("Animais")!;
+  const labels = new Map(
+    animals.answers.map((answer) => [answerKey(answer.name), answer.name]),
+  );
+  for (const taxon of external.taxa)
+    for (const name of taxon.names) labels.set(answerKey(name), name);
+  for (const name of [
+    "Cão",
+    "Asno",
+    "Jumento",
+    "Serpente",
+    "Chita",
+    "Suçuarana",
+    "Onça-parda",
+    "Anta",
+    "Cervo",
+    "Koala",
+  ])
+    labels.set(answerKey(name), name);
+  const familiar: Record<string, string> = {
+    A: "Abelha",
+    B: "Borboleta",
+    C: "Cachorro",
+    F: "Formiga",
+    G: "Gato",
+    L: "Leão",
+    M: "Macaco",
+    P: "Porco",
+    S: "Sapo",
+    T: "Tigre",
+  };
+  for (const letter of ANIMAL_LETTERS) {
+    const prefix = letter.toLowerCase();
+    const theme: Theme = {
+      name: `Animais que começam com ${letter}`,
+      answers: animals.answers.flatMap((answer) => {
+        const keys = answer.keys.filter(
+          (key) => key.startsWith(prefix) && labels.has(key),
+        );
+        if (!keys.length) return [];
+        return [
+          {
+            name: keys.includes(answerKey(answer.name))
+              ? answer.name
+              : labels.get(keys[0])!,
+            keys: [...keys],
+            points: keys.includes(answerKey(familiar[letter]))
+              ? 1
+              : answer.points,
+          },
+        ];
+      }),
+    };
+    // Rebuilding the derived theme also makes repeated expansion safe.
+    const existing = themes.findIndex((item) => item.name === theme.name);
+    if (existing >= 0) themes[existing] = theme;
+    else themes.push(theme);
+    byName.set(theme.name, theme);
   }
   return themes;
 }

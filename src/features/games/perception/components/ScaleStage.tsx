@@ -1,5 +1,5 @@
 import { Minus, Plus } from "lucide-react";
-import Silhouette from "./Silhouette";
+import Silhouette, { aspectOf } from "./Silhouette";
 import type { ObjectSize } from "../model/perception";
 type Props = {
   pt: boolean;
@@ -18,7 +18,12 @@ export default function ScaleStage({
   onChange,
 }: Props) {
   const actual = target.meters / reference.meters;
-  const unit = 200 / Math.max(1, ratio, result ? actual : 1);
+  // Keep wide silhouettes and the revealed outline inside their own half.
+  const maxRatio = Math.max(ratio, result ? actual : 0);
+  const unit = Math.min(
+    200 / Math.max(1, maxRatio),
+    300 / Math.max(aspectOf(reference), aspectOf(target) * maxRatio),
+  );
   const name = (o: ObjectSize) => (pt ? o.pt : o.en);
   const number = (n: number) =>
     n.toLocaleString(pt ? "pt-BR" : "en-US", { maximumFractionDigits: 2 });
@@ -32,15 +37,10 @@ export default function ScaleStage({
           aria-label={`${name(reference)}, ${name(target)}`}
         >
           <path d="M24 258H696" className="size-ground" />
-          <Silhouette shape={reference.shape} height={unit} x={180} />
-          <Silhouette shape={target.shape} height={unit * ratio} x={540} />
+          <Silhouette sprite={reference} height={unit} x={180} />
+          <Silhouette sprite={target} height={unit * ratio} x={540} />
           {result ? (
-            <Silhouette
-              shape={target.shape}
-              height={unit * actual}
-              x={540}
-              ghost
-            />
+            <Silhouette sprite={target} height={unit * actual} x={540} ghost />
           ) : null}
         </svg>
         <div className="size-labels">

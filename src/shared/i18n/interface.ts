@@ -92,7 +92,7 @@ const en = {
   play: "Play",
   games: "Games",
   gamesIntro: "A little break between projects. Pick something to play.",
-  memoryTeaser: "Remember the signs. Beat your best round.",
+  dailyGamesTeaser: "Words, colors and more. New challenges every day.",
   casesTeaser: "Open a case and discover something for your collection.",
   companionsTeaser: "Unlock a companion and let it explore.",
   contactBody:
@@ -219,7 +219,7 @@ const pt: typeof en = {
   play: "Jogar",
   games: "Jogos",
   gamesIntro: "Uma pausa entre projetos. Escolha o que jogar.",
-  memoryTeaser: "Lembre os sinais. Supere seu recorde.",
+  dailyGamesTeaser: "Palavras, cores e mais. Novos desafios todo dia.",
   casesTeaser: "Abra uma caixa e descubra algo para sua coleção.",
   companionsTeaser: "Libere um companheiro e deixe ele explorar.",
   contactBody:
