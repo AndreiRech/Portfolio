@@ -1,4 +1,9 @@
 import { gameSeed, seededRandom, shuffled } from "../../daily/model/daily.ts";
+import { CHARACTERS } from "../data/scale/characters.ts";
+import { CREATURES } from "../data/scale/creatures.ts";
+import { LANDMARKS } from "../data/scale/landmarks.ts";
+import { EVERYDAY } from "../data/scale/objects.ts";
+import type { ScaleSprite } from "./pixelSilhouette.ts";
 export type HSL = [number, number, number];
 export function dailyColors(day: number): HSL[] {
   const random = seededRandom(gameSeed("color-v1", day));
@@ -36,64 +41,34 @@ export function colorScore(guess: HSL, target: HSL): number {
     Math.max(0, 100 - Math.hypot(...a.map((v, i) => v - b[i])) * 200),
   );
 }
-export type Shape =
-  | "human"
-  | "elephant"
-  | "giraffe"
-  | "cat"
-  | "bottle"
-  | "door"
-  | "basketball"
-  | "bear";
-export type ObjectSize = {
-  shape: Shape;
-  pt: string;
-  en: string;
-  meters: number;
-};
-/** Representative adult heights; bottle, door and ball use nominal standard sizes. */
+export type ObjectSize = ScaleSprite;
+/** Every silhouette is original pixel art; heights are approximate typical sizes. */
 export const OBJECTS: readonly ObjectSize[] = [
-  { shape: "human", pt: "Pessoa adulta", en: "Adult human", meters: 1.7 },
-  {
-    shape: "elephant",
-    pt: "Elefante africano",
-    en: "African elephant",
-    meters: 3.2,
-  },
-  { shape: "giraffe", pt: "Girafa adulta", en: "Adult giraffe", meters: 5 },
-  { shape: "cat", pt: "Gato doméstico", en: "House cat", meters: 0.25 },
-  {
-    shape: "bottle",
-    pt: "Garrafa de 1 litro",
-    en: "One-liter bottle",
-    meters: 0.3,
-  },
-  { shape: "door", pt: "Porta padrão", en: "Standard door", meters: 2.1 },
-  {
-    shape: "basketball",
-    pt: "Bola de basquete",
-    en: "Basketball",
-    meters: 0.24,
-  },
-  {
-    shape: "bear",
-    pt: "Urso-pardo em pé",
-    en: "Standing brown bear",
-    meters: 2.4,
-  },
+  ...LANDMARKS,
+  ...CHARACTERS,
+  ...CREATURES,
+  ...EVERYDAY,
 ];
-export function dailyPairs(day: number) {
-  const random = seededRandom(gameSeed("scale-v1", day));
-  const pairs = OBJECTS.flatMap((reference) =>
-    OBJECTS.filter(
+/** Unordered pairs only: swapping the sides must not create a second round. */
+export const SCALE_PAIRS = OBJECTS.flatMap((reference, index) =>
+  OBJECTS.slice(index + 1)
+    .filter(
       (target) =>
-        target.shape !== reference.shape &&
         Math.max(target.meters, reference.meters) /
           Math.min(target.meters, reference.meters) <=
-          8,
-    ).map((target) => ({ reference, target })),
-  );
-  return shuffled(pairs, random).slice(0, 5);
+        8,
+    )
+    .map((target) => ({ reference, target })),
+);
+export function dailyPairs(day: number) {
+  const random = seededRandom(gameSeed("scale-v3", day));
+  return shuffled(SCALE_PAIRS, random)
+    .slice(0, 5)
+    .map(({ reference, target }) =>
+      random() < 0.5
+        ? { reference, target }
+        : { reference: target, target: reference },
+    );
 }
 export const scaleScore = (guess: number, actual: number) =>
   Math.round(Math.max(0, 100 - Math.abs(Math.log2(guess / actual)) * 70));

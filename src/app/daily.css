@@ -1643,8 +1643,14 @@ button.termo-tile {
 .size-ghost {
   fill: var(--mark-right);
   fill-opacity: 0.35;
+}
+/* Traces only the pixel edges, so runs inside the sprite get no seams. */
+.size-ghost-outline {
+  fill: none;
   stroke: var(--mark-right);
   stroke-width: 1.5;
+  stroke-linecap: square;
+  vector-effect: non-scaling-stroke;
 }
 .size-ground {
   stroke: var(--line);

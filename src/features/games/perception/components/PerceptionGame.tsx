@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useSettings } from "@/shared/i18n/SettingsContext";
 import { playCopy } from "@/shared/i18n/play";
 import { useDailyProgress, useToday } from "../../daily/hooks/useDaily";
@@ -61,7 +62,7 @@ function Challenge({
   const colors = useMemo(() => dailyColors(day), [day]);
   const pairs = useMemo(() => dailyPairs(day), [day]);
   const [progress, setProgress] = useDailyProgress(
-    `perception-${kind}-v1`,
+    color ? "perception-color-v1" : "perception-scale-v3",
     date,
     freshPerception,
     (value) => parsePerception(value, kind),
@@ -69,6 +70,8 @@ function Challenge({
   const [hsl, setHsl] = useState<HSL>([180, 50, 50]);
   const [ratio, setRatio] = useState(1);
   const [seconds, setSeconds] = useState(5);
+  /** After the fifth round, which round's guess is on the stage. */
+  const [reviewed, setReviewed] = useState(4);
   useEffect(() => {
     if (progress?.phase !== "preview") return;
     const end = Date.now() + 5000;
@@ -105,9 +108,32 @@ function Challenge({
     if (finished) unlock(color ? "color-five" : "scale-five");
     if (precise) unlock(color ? "color-eye" : "scale-eye");
   }, [finished, color, precise, unlock]);
+  useEffect(() => {
+    if (!finished) return;
+    const onKey = (event: KeyboardEvent) => {
+      const target = event.target as HTMLElement | null;
+      if (
+        event.altKey ||
+        event.ctrlKey ||
+        event.metaKey ||
+        target?.closest("input, textarea, select, [contenteditable]")
+      )
+        return;
+      const step =
+        event.key === "ArrowLeft" ? -1 : event.key === "ArrowRight" ? 1 : 0;
+      if (!step) return;
+      event.preventDefault();
+      setReviewed((current) => Math.max(0, Math.min(4, current + step)));
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [finished]);
   if (!progress) return <div role="status">...</div>;
   const result = progress.phase === "result";
-  const round = Math.min(4, progress.guesses.length - (result ? 1 : 0));
+  const round = finished
+    ? reviewed
+    : Math.min(4, progress.guesses.length - (result ? 1 : 0));
+  const roundWord = pt ? "Rodada" : "Round";
   const pair = pairs[round];
   const shownRatio = result ? progress.guesses[round][0] : ratio;
   const next = () => {
@@ -129,7 +155,7 @@ function Challenge({
           {playCopy[language].dailyLabel.replace("{n}", String(day))}
         </span>
         <span className="memory-best">
-          {pt ? "Rodada" : "Round"} <strong>{round + 1}/5</strong>
+          {roundWord} <strong>{round + 1}/5</strong>
         </span>
       </div>
       <h2 id="perception-title">{title}</h2>
@@ -193,6 +219,31 @@ function Challenge({
               role="status"
               aria-live="polite"
             >
+              {finished ? (
+                <div className="perception-review">
+                  <button
+                    type="button"
+                    className="perception-review-arrow"
+                    aria-label={pt ? "Rodada anterior" : "Previous round"}
+                    disabled={round === 0}
+                    onClick={() => setReviewed(round - 1)}
+                  >
+                    <ChevronLeft size={20} aria-hidden="true" />
+                  </button>
+                  <span>
+                    {roundWord} {round + 1} {pt ? "de" : "of"} 5
+                  </span>
+                  <button
+                    type="button"
+                    className="perception-review-arrow"
+                    aria-label={pt ? "Próxima rodada" : "Next round"}
+                    disabled={round === 4}
+                    onClick={() => setReviewed(round + 1)}
+                  >
+                    <ChevronRight size={20} aria-hidden="true" />
+                  </button>
+                </div>
+              ) : null}
               <strong>{scores[round]}/100</strong>
               <p>
                 {scoreLabels[language][scoreBand(scores[round])]} ·{" "}
@@ -215,18 +266,49 @@ function Challenge({
           className="perception-scores"
           aria-label={pt ? "Pontuação por rodada" : "Round scores"}
         >
-          {scores.map((score, i) => (
-            <li key={i} data-score-band={scoreBand(score)}>
-              <span>
-                {pt ? "Rodada" : "Round"} {i + 1}
-              </span>
+          {scores.map((score, i) => {
+            const body = (
+              <>
+                <span>
+                  {roundWord} {i + 1}
+                </span>
+                <b>
+                  {score}
+                  <small>/100</small>
+                </b>
+                <em>{scoreLabels[language][scoreBand(score)]}</em>
+              </>
+            );
+            return (
+              <li
+                key={i}
+                data-score-band={scoreBand(score)}
+                data-active={finished && i === round}
+              >
+                {finished ? (
+                  <button
+                    type="button"
+                    aria-pressed={i === round}
+                    onClick={() => setReviewed(i)}
+                  >
+                    {body}
+                  </button>
+                ) : (
+                  body
+                )}
+              </li>
+            );
+          })}
+          {finished ? (
+            <li className="perception-mean" data-score-band={scoreBand(mean)}>
+              <span>{pt ? "Média" : "Average"}</span>
               <b>
-                {score}
+                {mean}
                 <small>/100</small>
               </b>
-              <em>{scoreLabels[language][scoreBand(score)]}</em>
+              <em>{scoreLabels[language][scoreBand(mean)]}</em>
             </li>
-          ))}
+          ) : null}
         </ol>
       ) : null}
       {finished ? (
