@@ -339,7 +339,7 @@ html[data-companion="active"] {
   display: block;
   transform: scaleX(var(--facing, 1));
 }
-:is(.pet-d20, .pet-gold-d20, .pet-medallion) .pet-sprite {
+:is(.pet-d20, .pet-gold-d20, .pet-medallion, .pet-ghost) .pet-sprite {
   transform: none;
 }
 .pet-body {
@@ -353,6 +353,132 @@ html[data-companion="active"] {
 }
 .pet-medallion .world-pet[data-moving="true"] .pet-body {
   animation: pet-hover 0.9s steps(8, end) infinite;
+}
+/* Four-beat pets: the body motion shares the frame cycle (--walk-cycle in
+   games.css) and starts with it, so steps, hops and bobs stay in time. */
+.pet-cat .world-pet[data-moving="true"] .pet-body {
+  animation: pet-trot 0.24s step-end infinite;
+}
+.pet-frog .world-pet[data-moving="true"] .pet-body {
+  animation: pet-hop 0.72s steps(3, end) infinite;
+}
+.pet-ghost .world-pet[data-moving="true"] .pet-body {
+  animation: pet-float 1.6s steps(8, end) infinite;
+}
+.reaction-hop {
+  color: #a2cc98;
+}
+.reaction-boo {
+  color: #c8b5ef;
+}
+.pet-emote {
+  display: block;
+  line-height: 0;
+}
+@media (prefers-reduced-motion: no-preference) {
+  /* The frog hops twice on the spot, playing its jump frames. */
+  .emote-frog {
+    animation: pet-hop 0.72s steps(3, end) 2;
+  }
+  /* After the emote, the usual blink loop resumes. */
+  .emote-frog .pixel-pet .frame-idle {
+    animation:
+      frame-off 1.44s steps(1, end),
+      pet-eyes-open 3.6s steps(1, end) 1.44s infinite;
+  }
+  .emote-frog .pixel-pet .frame-blink {
+    animation:
+      frame-off 1.44s steps(1, end),
+      pet-eyes-shut 3.6s steps(1, end) 1.44s infinite;
+  }
+  .emote-frog .pixel-pet .frame-walkA {
+    animation: frame-q1 0.72s steps(1, end) 2;
+  }
+  .emote-frog .pixel-pet .frame-walkB {
+    animation: frame-q2 0.72s steps(1, end) 2;
+  }
+  .emote-frog .pixel-pet .frame-walkC {
+    animation: frame-q3 0.72s steps(1, end) 2;
+  }
+  .emote-frog .pixel-pet .frame-walkD {
+    animation: frame-q4 0.72s steps(1, end) 2;
+  }
+  /* The cat closes its eyes and purrs. */
+  .emote-cat {
+    transform-origin: 50% 100%;
+    animation: pet-purr 0.12s steps(2, end) 8;
+  }
+  .emote-cat .pixel-pet .frame-idle {
+    animation:
+      frame-off 1.2s steps(1, end),
+      pet-eyes-open 3.6s steps(1, end) 1.2s infinite;
+  }
+  .emote-cat .pixel-pet .frame-blink {
+    animation:
+      frame-on 1.2s steps(1, end),
+      pet-eyes-shut 3.6s steps(1, end) 1.2s infinite;
+  }
+  .emote-ghost {
+    animation: ghost-boo 0.8s steps(5, end);
+  }
+}
+@keyframes ghost-boo {
+  50% {
+    opacity: 0.35;
+    transform: translateY(-12px) scale(1.15);
+  }
+}
+/* Crouch, push off, fly, land: one value per quarter of the frog's cycle. */
+@keyframes pet-hop {
+  0%,
+  100% {
+    transform: translateY(0) scale(1.06, 0.94);
+  }
+  25% {
+    transform: translateY(0) scale(1, 1);
+  }
+  50% {
+    transform: translateY(-16px);
+  }
+  75% {
+    transform: translateY(-10px);
+  }
+}
+/* The cat's body rises a little on each passing step. */
+@keyframes pet-trot {
+  0% {
+    transform: translateY(0);
+  }
+  50%,
+  100% {
+    transform: translateY(-2px);
+  }
+}
+@keyframes pet-float {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-3deg);
+  }
+  50% {
+    transform: translateY(-7px) rotate(3deg);
+  }
+}
+@keyframes pet-purr {
+  50% {
+    transform: translateX(1px) scale(1.02, 0.98);
+  }
+}
+@keyframes frame-on {
+  0%,
+  100% {
+    visibility: visible;
+  }
+}
+@keyframes frame-off {
+  0%,
+  100% {
+    visibility: hidden;
+  }
 }
 .companion-world[data-motion="off"] .pet-body {
   animation: none;

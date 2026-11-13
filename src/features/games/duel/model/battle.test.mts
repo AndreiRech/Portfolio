@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { ENEMIES, PET_STATS } from "../data/fighters.ts";
+import { REWARDS } from "../../../collectibles/data/collectibles.ts";
 import {
   canUse,
   chooseEnemyMove,
@@ -204,12 +205,12 @@ test("every companion and monster has sensible stats", () => {
     assert.ok(stats.ac >= 10 && stats.ac <= 16, stats.id);
     assert.ok(stats.special.cooldown >= 1, stats.id);
   }
-  assert.deepEqual(Object.keys(PET_STATS).sort(), [
-    "chicken",
-    "d20",
-    "gold-d20",
-    "medallion",
-  ]);
+  assert.deepEqual(
+    Object.keys(PET_STATS).sort(),
+    REWARDS.filter((reward) => reward.kind === "companion")
+      .map((reward) => reward.id)
+      .sort(),
+  );
 });
 
 test("the d20 verdict comes first, then the thrown damage dice decide the damage", async () => {

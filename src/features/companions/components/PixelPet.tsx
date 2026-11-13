@@ -1,4 +1,5 @@
 import {
+  FACES_LEFT,
   PET_SPRITES,
   type PetFrames,
 } from "@/features/companions/data/petSprites";
@@ -17,13 +18,21 @@ const DIGITS: Record<string, string[]> = {
   "8": ["###", "#.#", "###", "#.#", "###"],
   "9": ["###", "#.#", "###", "..#", "###"],
 };
-const FRAMES: (keyof PetFrames)[] = ["idle", "blink", "walkA", "walkB"];
+const FRAMES: (keyof PetFrames)[] = [
+  "idle",
+  "blink",
+  "walkA",
+  "walkB",
+  "walkC",
+  "walkD",
+];
 
 export const hasPixelPet = (id: string) => id in PET_SPRITES;
 
 /**
  * A companion drawn as real pixel art. Every frame is in the SVG and CSS
- * shows one at a time: blinking while idle, stepping while walking.
+ * shows one at a time: blinking while idle, stepping while walking. Pets with
+ * four walk frames (`data-steps="4"`) play a full four-beat cycle.
  */
 export default function PixelPet({
   id,
@@ -44,18 +53,23 @@ export default function PixelPet({
     <svg
       className={["pixel-pet", className].filter(Boolean).join(" ")}
       data-pet={id}
+      data-steps={sprite.frames.walkC ? 4 : 2}
+      data-facing={FACES_LEFT.has(id) ? "left" : undefined}
       viewBox={`0 0 ${size} ${size}`}
       shapeRendering="crispEdges"
       aria-hidden="true"
     >
-      {FRAMES.map((frame) => (
-        <PixelFrame
-          key={frame}
-          rows={sprite.frames[frame]}
-          palette={sprite.palette}
-          className={`pet-frame frame-${frame}`}
-        />
-      ))}
+      {FRAMES.map((frame) => {
+        const rows = sprite.frames[frame];
+        return rows ? (
+          <PixelFrame
+            key={frame}
+            rows={rows}
+            palette={sprite.palette}
+            className={`pet-frame frame-${frame}`}
+          />
+        ) : null;
+      })}
       {digits.map((digit, index) => (
         <PixelFrame
           key={`${index}-${digit}`}

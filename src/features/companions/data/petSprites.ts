@@ -7,6 +7,9 @@ export type PetFrames = {
   blink: string[];
   walkA: string[];
   walkB: string[];
+  /** Optional third and fourth beats for a four-step cycle. */
+  walkC?: string[];
+  walkD?: string[];
 };
 export type PetSprite = { palette: Record<string, string>; frames: PetFrames };
 
@@ -311,8 +314,321 @@ const MEDALLION: PetSprite = {
   },
 };
 
+// Shared helpers for the side-view pets -------------------------------------
+const blankGrid = () =>
+  Array.from({ length: SIZE }, () => Array<string>(SIZE).fill("."));
+/** Copies the non-transparent pixels of `rows` onto `grid` at (x, y). */
+function stamp(grid: string[][], rows: string[], x = 0, y = 0) {
+  rows.forEach((row, dy) =>
+    [...row].forEach((key, dx) => {
+      if (key !== "." && grid[y + dy]?.[x + dx]) grid[y + dy][x + dx] = key;
+    }),
+  );
+  return grid;
+}
+const toRows = (grid: string[][]) => grid.map((row) => row.join(""));
+
+// Cat ------------------------------------------------------------------------
+// Side view facing left, like the chicken. Short, sturdy legs grow out of the
+// belly (they replace its outline, so they stay attached) and walk in four
+// beats: near and far legs swing in opposition while the tail sways.
+const CAT_BODY = [
+  "..o....o................",
+  ".opo..opo...............",
+  ".oppooppo...............",
+  "oaaaaaaaao..............",
+  "oaaaaaaaaao.............",
+  "okwaaakwaao.............",
+  "okkaaakkaao.............",
+  "oaawpwaaaaoooooooooo....",
+  "oawwwwaasaaasaasaasao...",
+  ".owwwwaaasaasaasaasaao..",
+  "..oowwaaaaaaaaaaaaaaao..",
+  "....owwaaaaaaaaaaaaaao..",
+  "....owwwwaaaaaaaaaaaso..",
+  ".....ooooooooooooooooo..",
+];
+const CAT_TOP = 5;
+const CAT_BELLY = CAT_TOP + CAT_BODY.length - 1;
+const CAT_TAILS = [
+  ["...oo", "..oaao", "..oaso", ".oao", ".oso", "oao", "oso", "oao"],
+  ["oo", "oaao", ".oaso", "..oao", "..oso", "..oao", ".oso", ".oao"],
+];
+/** A leg two pixels wide; its paw shifts by `dx` as it swings. */
+type CatLeg = { x: number; dx?: number; lift?: boolean };
+type CatLegs = { front: [CatLeg, CatLeg]; back: [CatLeg, CatLeg] };
+function catLeg(grid: string[][], fill: string, { x, dx = 0, lift }: CatLeg) {
+  const foot = lift ? 21 : 22;
+  for (let y = CAT_BELLY; y <= foot; y++) {
+    const cx = x + Math.round((dx * (y - CAT_BELLY)) / (foot - CAT_BELLY));
+    if (y === CAT_BELLY) {
+      // Joined to the belly: fill over its outline, no seam.
+      grid[y][cx] = fill;
+      grid[y][cx + 1] = fill;
+    } else if (y === foot) {
+      for (let px = cx - 1; px <= cx + 2; px++) grid[y][px] = "o";
+    } else {
+      grid[y][cx - 1] = "o";
+      grid[y][cx] = fill;
+      grid[y][cx + 1] = fill;
+      grid[y][cx + 2] = "o";
+      if (y === foot - 1) {
+        // The paw: toes reach one pixel forward.
+        grid[y][cx - 2] = "o";
+        grid[y][cx - 1] = fill;
+      }
+    }
+  }
+}
+/** Each pair lists the far leg (darker, peeking out behind) then the near one. */
+function catFrame({ front, back }: CatLegs, { tail = 0, blink = false } = {}) {
+  const grid = blankGrid();
+  const body = blink
+    ? CAT_BODY.map((row, y) =>
+        y === 5
+          ? row.replace(/[kw]/g, "a")
+          : y === 6
+            ? row.replace(/k/g, "o")
+            : row,
+      )
+    : CAT_BODY;
+  stamp(grid, CAT_TAILS[tail], 18, CAT_TOP - 1);
+  stamp(grid, body, 0, CAT_TOP);
+  catLeg(grid, "s", { ...front[0], x: 8 });
+  catLeg(grid, "s", { ...back[0], x: 18 });
+  catLeg(grid, "a", { ...front[1], x: 6 });
+  catLeg(grid, "a", { ...back[1], x: 16 });
+  return toRows(grid);
+}
+type CatPose = [CatLeg, CatLeg, CatLeg, CatLeg];
+/** Far front, near front, far back, near back (x is filled in by catFrame). */
+const catPose = ([farFront, nearFront, farBack, nearBack]: CatPose) => ({
+  front: [farFront, nearFront] as [CatLeg, CatLeg],
+  back: [farBack, nearBack] as [CatLeg, CatLeg],
+});
+const CAT_STAND = catPose([{ x: 0 }, { x: 0 }, { x: 0 }, { x: 0 }]);
+const CAT: PetSprite = {
+  palette: {
+    o: "#4d2b28",
+    a: "#edaa64",
+    s: "#c87c4b",
+    p: "#f3a4b3",
+    k: "#292735",
+    w: "#fff2d4",
+  },
+  frames: {
+    idle: catFrame(CAT_STAND),
+    blink: catFrame(CAT_STAND, { blink: true }),
+    // Contact: the near legs reach apart while the far legs cross under.
+    walkA: catFrame(
+      catPose([
+        { x: 0, dx: 1 },
+        { x: 0, dx: -1 },
+        { x: 0, dx: -1 },
+        { x: 0, dx: 1 },
+      ]),
+    ),
+    // Passing: the far front and near back paws lift as they swing through.
+    walkB: catFrame(
+      catPose([{ x: 0, lift: true }, { x: 0 }, { x: 0 }, { x: 0, lift: true }]),
+      { tail: 1 },
+    ),
+    // Contact, mirrored: now the far legs reach apart.
+    walkC: catFrame(
+      catPose([
+        { x: 0, dx: -1 },
+        { x: 0, dx: 1 },
+        { x: 0, dx: 1 },
+        { x: 0, dx: -1 },
+      ]),
+      { tail: 1 },
+    ),
+    walkD: catFrame(
+      catPose([{ x: 0 }, { x: 0, lift: true }, { x: 0, lift: true }, { x: 0 }]),
+    ),
+  },
+};
+
+// Frog -----------------------------------------------------------------------
+// Side view facing left. Walking is a hop in four poses (crouch, push off,
+// stretch in the air, land) kept in time with the hop in the CSS.
+const FROG_SIT = [
+  "....ooo.................",
+  "...owwwo................",
+  "...owkwoooooo...........",
+  "..oggggggggggoo.........",
+  ".oggggggggggggggo.......",
+  "ogggggggggggdgggggo.....",
+  "ommmmmgggggggggdggo.....",
+  "olllllmgggggggoooggo....",
+  ".olllllgggggoggggoggo...",
+  "..ollllggggogggggggo....",
+  "..ogoollgggoggggggo.....",
+  "..ogo.olllgooooooooo....",
+  ".oggo..ooooooggggggo....",
+];
+const FROG_PUSH = [
+  "..ooo...................",
+  ".owwwo..................",
+  ".owkwooooo..............",
+  "oggggggggggoo...........",
+  "ogggggggggggggo.........",
+  "ommmmgggggggdgggo.......",
+  "olllllmggggggggggo......",
+  ".olllllgggggggdggo......",
+  "..oogllllggggggggoo.....",
+  "...oggoolllgggggggo.....",
+  "...ogo..oooooggggggo....",
+  "...ogo.......ooogggo....",
+  "..oggo.........oogggo...",
+];
+const FROG_AIR = [
+  "........................",
+  "...ooo..................",
+  "..owwwo.................",
+  "..owkwoooooo............",
+  ".ogggggggggggoo.........",
+  "ommmmggggggdggggoo......",
+  "olllllmgggggggggggoo....",
+  ".ollllllgggggggdggggoo..",
+  "..oogolllllgggggggoooggo",
+  "...ogo..ooooooooooo.oggo",
+  "...oo................ogo",
+  "......................oo",
+  "........................",
+];
+const FROG_LAND = [
+  "........................",
+  "....ooo.................",
+  "...owwwo................",
+  "...owkwoooooo...........",
+  "..oggggggggggoo.........",
+  ".ogggggggggggdggo.......",
+  "ommmmmgggggggggggo......",
+  "olllllmgggggggggggo.....",
+  ".olllllgggggggoooggoo...",
+  "..ogoollgggggogggggggo..",
+  "..ogo.olllllgooooooggo..",
+  "..ogo..ooooooo....oggo..",
+  ".oggo............oggggo.",
+];
+const frogFrame = (rows: string[], blink = false) =>
+  toRows(
+    stamp(
+      blankGrid(),
+      blink
+        ? rows.map((row) =>
+            row.replace("owkwo", "ommmo").replace("owwwo", "ogggo"),
+          )
+        : rows,
+      0,
+      10,
+    ),
+  );
+const FROG: PetSprite = {
+  palette: {
+    o: "#28483c",
+    g: "#8fc978",
+    d: "#5f9e5b",
+    l: "#d4df9b",
+    m: "#3b6b4f",
+    k: "#203b39",
+    w: "#f2f7d9",
+  },
+  frames: {
+    idle: frogFrame(FROG_SIT),
+    blink: frogFrame(FROG_SIT, true),
+    walkA: frogFrame(FROG_SIT),
+    walkB: frogFrame(FROG_PUSH),
+    walkC: frogFrame(FROG_AIR),
+    walkD: frogFrame(FROG_LAND),
+  },
+};
+
+// Ghost ----------------------------------------------------------------------
+// Faces the viewer and floats: the hem ripples in four phases while the
+// little arms paddle.
+const GHOST_TOP = [
+  ".........oooooo.........",
+  ".......oowwwwwwoo.......",
+  "......owwwwwwwwwwo......",
+  ".....owwwwwwwwwwwso.....",
+  ".....owwwwwwwwwwwso.....",
+  "....owwwwwwwwwwwwwso....",
+  "....owwkkwwwwwwkkwso....",
+  "....owwkkwwwwwwkkwso....",
+  "....owpwwwwkkwwwwpso....",
+  "....owwwwwwwwwwwwwso....",
+];
+const GHOST_ARMS = [
+  [
+    "...o................o...",
+    "..owo..............owo..",
+    "...o................o...",
+  ],
+  [
+    "........................",
+    "..oo................oo..",
+    ".owo................owo.",
+  ],
+];
+function ghostFrame(phase: number, blink = false) {
+  const grid = blankGrid();
+  const top = blink
+    ? GHOST_TOP.map((row, y) =>
+        y === 6
+          ? row.replace(/k/g, "w")
+          : y === 7
+            ? row.replace(/kk/g, "oo")
+            : row,
+      )
+    : GHOST_TOP;
+  stamp(grid, top, 0, 3);
+  for (let y = 13; y < 18; y++) stamp(grid, ["....owwwwwwwwwwwwwso...."], 0, y);
+  // A wave along the hem: each column hangs to its own depth.
+  for (let x = 4; x <= 19; x++) {
+    const depth =
+      19 + Math.round(1 + Math.sin(((x + phase * 2) * Math.PI) / 4));
+    for (let y = 18; y < depth; y++)
+      grid[y][x] = x === 4 || x === 19 ? "o" : x >= 18 ? "s" : "w";
+    grid[depth][x] = "o";
+  }
+  stamp(grid, GHOST_ARMS[phase % 2], 0, 14);
+  return toRows(grid);
+}
+const GHOST: PetSprite = {
+  palette: {
+    o: "#665785",
+    w: "#e8e7ff",
+    s: "#b5acd6",
+    p: "#e5abd0",
+    k: "#46375f",
+  },
+  frames: {
+    idle: ghostFrame(0),
+    blink: ghostFrame(0, true),
+    walkA: ghostFrame(0),
+    walkB: ghostFrame(1),
+    walkC: ghostFrame(2),
+    walkD: ghostFrame(3),
+  },
+};
+
+/**
+ * Side-view art drawn facing left. Every scene that moves a pet mirrors these
+ * to face right; front-view pets are never mirrored.
+ */
+export const FACES_LEFT: ReadonlySet<string> = new Set([
+  "chicken",
+  "cat",
+  "frog",
+]);
+
 export const PET_SPRITES: Record<string, PetSprite> = {
   chicken: CHICKEN,
+  cat: CAT,
+  frog: FROG,
+  ghost: GHOST,
   medallion: MEDALLION,
   d20: dieSprite({
     o: "#2b0b4d",

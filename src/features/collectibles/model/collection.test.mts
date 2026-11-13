@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import test from "node:test";
 import assert from "node:assert/strict";
 import { drawReward, RARITIES, REWARDS } from "../data/collectibles.ts";
@@ -128,6 +129,22 @@ test("reloading restores collection and equipment; reverting appearance preserve
   assert.ok(values.has(COLLECTION_KEY));
   unsubscribe();
 });
+test("every catalogue reward can be collected, equipped and restored in its own slot", () => {
+  for (const reward of REWARDS) {
+    const empty = emptyCollection();
+    assert.equal(equipReward(empty, reward.id), empty);
+    const collected = grantReward(empty, `opening-${reward.id}`, reward.id);
+    const equipped = equipReward(collected, reward.id);
+    const restored = parseCollection(JSON.stringify(equipped));
+    assert.equal(restored.counts[reward.id], 1);
+    assert.equal(restored.equipped[reward.kind], reward.id);
+    // ASVS 2.2.1: a palette or cursor cannot activate the companion slot.
+    assert.equal(
+      canUseCompanion(restored, reward.id),
+      reward.kind === "companion",
+    );
+  }
+});
 test("blocked reads and failed writes preserve a usable in-session collection", () => {
   const store = createCollectionStore(() => {
     throw new Error("blocked");
@@ -200,4 +217,57 @@ test("legacy wolves migrate to medallions without losing ownership or equipment"
     ).counts.medallion,
     1_000_000,
   );
+});
+
+test("legacy pool rewards become coral without losing quantities or equipped state", () => {
+  const parsed = parseCollection(
+    JSON.stringify({
+      version: 1,
+      counts: { pool: 2, coral: 3, cat: 1 },
+      equipped: { palette: "pool", cursor: "pool", companion: "cat" },
+      lastOpening: "before-default-change",
+    }),
+  );
+  assert.deepEqual(parsed.counts, { coral: 5, cat: 1 });
+  assert.deepEqual(parsed.equipped, {
+    palette: "coral",
+    cursor: null,
+    companion: "cat",
+  });
+  assert.equal(parsed.lastOpening, "before-default-change");
+  assert.deepEqual(parseCollection(JSON.stringify(parsed)), parsed);
+  for (const invalid of [-1, 1.5, "2", null, 1_000_001]) {
+    assert.deepEqual(
+      parseCollection(
+        JSON.stringify({
+          version: 1,
+          counts: { pool: invalid },
+          equipped: { palette: "pool" },
+        }),
+      ),
+      emptyCollection(),
+    );
+  }
+  assert.equal(
+    parseCollection(
+      JSON.stringify({ version: 1, counts: { pool: 999999, coral: 2 } }),
+    ).counts.coral,
+    1_000_000,
+  );
+});
+
+test("every palette reward has its own colors in the stylesheet and nothing else does", () => {
+  const css = readFileSync(
+    new URL("../../../app/globals.css", import.meta.url),
+    "utf8",
+  );
+  const styled = [...css.matchAll(/:root\[data-palette="([^"]+)"\]/g)].map(
+    ([, id]) => id,
+  );
+  const palettes = REWARDS.filter((reward) => reward.kind === "palette").map(
+    (reward) => reward.id,
+  );
+  assert.deepEqual(new Set(styled), new Set(palettes));
+  // Restoring the default removes the palette, so the bare :root is the default.
+  assert.match(css, /:root \{[^}]*--accent: #65d9df;/);
 });

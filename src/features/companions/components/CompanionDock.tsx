@@ -43,6 +43,9 @@ const companionActions = {
   roll: { Icon: Dices, message: "rolled", art: null },
   shine: { Icon: Sparkles, message: "shining", art: "✦" },
   pet: { Icon: Heart, message: "affection", art: "♥" },
+  purr: { Icon: Heart, message: "purring", art: "♥" },
+  hop: { Icon: Footprints, message: "hopping", art: "♪" },
+  boo: { Icon: Sparkles, message: "haunting", art: "!" },
 } as const;
 /** Time the companion spends picking up a pixel before heading home. */
 const PICK_MS = 900;
@@ -52,15 +55,25 @@ const isDie = (id: string) => id === "d20" || id === "gold-d20";
 function PetArt({
   item,
   face,
+  reaction,
   roll,
   onLanded,
 }: {
   item: Reward;
   face: number;
+  reaction: number;
   roll?: DieRoll | null;
   onLanded?: (roll: DieRoll) => void;
 }) {
-  if (!isDie(item.id)) return <RewardArt reward={item} />;
+  if (!isDie(item.id))
+    return (
+      <span
+        key={reaction}
+        className={`pet-emote${reaction > 0 ? ` emote-${item.id}` : ""}`}
+      >
+        <RewardArt reward={item} />
+      </span>
+    );
   return (
     <span className="pet-die" data-die={item.id} data-mode={roll ? "3d" : "2d"}>
       <PixelPet id={item.id} face={face} className="companion-art" />
@@ -146,7 +159,13 @@ function ActiveCompanion({
     ? "roll"
     : item.id === "medallion"
       ? "shine"
-      : "pet";
+      : item.id === "cat"
+        ? "purr"
+        : item.id === "frog"
+          ? "hop"
+          : item.id === "ghost"
+            ? "boo"
+            : "pet";
   const docked = mode === "rest" || reduced;
   const action = companionActions[special];
   const ActionIcon = action.Icon;
@@ -403,6 +422,7 @@ function ActiveCompanion({
               <PetArt
                 item={item}
                 face={face}
+                reaction={reaction}
                 roll={docked ? null : dieRoll}
                 onLanded={landed}
               />
@@ -439,6 +459,7 @@ function ActiveCompanion({
                 <PetArt
                   item={item}
                   face={face}
+                  reaction={reaction}
                   roll={dieRoll}
                   onLanded={landed}
                 />

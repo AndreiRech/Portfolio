@@ -29,6 +29,12 @@ export const REWARDS = [
     name: { en: "Pixel arrow", pt: "Seta pixel" },
   },
   {
+    id: "coral",
+    kind: "palette",
+    rarity: "consumer",
+    name: { en: "Coral red", pt: "Vermelho coral" },
+  },
+  {
     id: "violet",
     kind: "palette",
     rarity: "industrial",
@@ -41,10 +47,28 @@ export const REWARDS = [
     name: { en: "Crosshair", pt: "Mira" },
   },
   {
+    id: "paw",
+    kind: "cursor",
+    rarity: "industrial",
+    name: { en: "Paw", pt: "Patinha" },
+  },
+  {
     id: "chicken",
     kind: "companion",
     rarity: "milspec",
     name: { en: "Chicken", pt: "Galinha" },
+  },
+  {
+    id: "cat",
+    kind: "companion",
+    rarity: "milspec",
+    name: { en: "Cat", pt: "Gato" },
+  },
+  {
+    id: "frog",
+    kind: "companion",
+    rarity: "milspec",
+    name: { en: "Frog", pt: "Sapo" },
   },
   {
     id: "campfire",
@@ -53,16 +77,40 @@ export const REWARDS = [
     name: { en: "Campfire", pt: "Fogueira" },
   },
   {
+    id: "rose",
+    kind: "palette",
+    rarity: "restricted",
+    name: { en: "Rose", pt: "Rosa" },
+  },
+  {
     id: "sword",
     kind: "cursor",
     rarity: "restricted",
     name: { en: "Sword", pt: "Espada" },
   },
   {
+    id: "wand",
+    kind: "cursor",
+    rarity: "restricted",
+    name: { en: "Magic wand", pt: "Varinha mágica" },
+  },
+  {
     id: "medallion",
     kind: "companion",
     rarity: "classified",
     name: { en: "Wolf School medallion", pt: "Medalhão da Escola do Lobo" },
+  },
+  {
+    id: "ghost",
+    kind: "companion",
+    rarity: "classified",
+    name: { en: "Ghost", pt: "Fantasma" },
+  },
+  {
+    id: "crystal",
+    kind: "cursor",
+    rarity: "classified",
+    name: { en: "Crystal", pt: "Cristal" },
   },
   {
     id: "aurora",
@@ -91,9 +139,11 @@ export const REWARDS = [
 ] as const satisfies readonly Reward[];
 export type RewardId = (typeof REWARDS)[number]["id"];
 export const PALETTE_SWATCHES: Record<string, readonly string[]> = {
+  coral: ["#1c1d1f", "#e6e7eb", "#e56d68", "#5967ff"],
   forest: ["#18231e", "#c9dbc1", "#a2d692", "#629f85"],
   violet: ["#211d2c", "#e4daf4", "#c8a1ed", "#9587e9"],
   campfire: ["#26201c", "#f4e1c8", "#efb569", "#d6906c"],
+  rose: ["#291b25", "#f9e7f0", "#f395bf", "#ce83bd"],
   aurora: ["#18252e", "#e1eff2", "#70d8d4", "#e999cb"],
 };
 export const getReward = (id: string): Reward | undefined =>
