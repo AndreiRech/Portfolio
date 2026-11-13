@@ -30,7 +30,9 @@ import {
   feedback,
   freshMode,
   lockedLetters,
+  missingLetters,
   modeShare,
+  outsideInterval,
   parseMode,
   solvedBoard,
   submitMode,
@@ -103,7 +105,8 @@ export default function VariantTermoGame({
       if (!editable.length) return;
       const current = locks[cursor] ? editable[0] : cursor;
       if (key === "enter") {
-        const result = submitMode(state, letters.join(""), puzzle, DICTIONARY);
+        const word = letters.join("");
+        const result = submitMode(state, word, puzzle, DICTIONARY);
         if (!result.ok) {
           sfx.wrong();
           setNotice(
@@ -111,10 +114,17 @@ export default function VariantTermoGame({
               ? c.termoShort
               : result.reason === "unknown"
                 ? c.termoUnknown
-                : c.termoLockedError,
+                : result.reason === "yellow"
+                  ? fill(c.termoYellowError, {
+                      letters: missingLetters(puzzle, state, word)
+                        .map((letter) => letter.toUpperCase())
+                        .join(", "),
+                    })
+                  : c.termoLockedError,
           );
           return;
         }
+        const outside = outsideInterval(puzzle, state, word);
         setRevealing(state.guesses.length);
         setState(result.state);
         const nextLocks = lockedLetters(puzzle, result.state);
@@ -125,7 +135,11 @@ export default function VariantTermoGame({
             nextLocks.findIndex((letter) => !letter),
           ),
         );
-        setNotice(null);
+        setNotice(
+          outside && result.state.status === "playing"
+            ? fill(c.termoRangeError, { word: word.toUpperCase() })
+            : null,
+        );
         if (result.state.status === "won") sfx.roundClear();
         else if (result.state.status === "lost") sfx.wrong();
         else sfx.tick();

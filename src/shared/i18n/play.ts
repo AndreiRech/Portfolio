@@ -268,7 +268,7 @@ const en = {
     dueto: "Guess both words.",
     quarteto: "Guess all four words.",
     counts: "Make every color count.",
-    locked: "Keep the green letters.",
+    locked: "Reuse every green and yellow letter.",
     between: "Narrow down the word.",
     liar: "Find the word. Spot the lie.",
   },
@@ -287,13 +287,15 @@ const en = {
     counts:
       "Eight tries. Only color totals are revealed. Click a submitted letter to cycle your own green, yellow and red notes.",
     locked:
-      "Six tries. Every green letter stays fixed in its position for the following guesses.",
+      "Six tries. Every green letter stays fixed in its position, and every yellow letter must appear somewhere in your next guess.",
     between:
-      "Fourteen tries. The word is alphabetically between the two bounds. Percentages show each bound’s distance as a share of the local dictionary; the dot shows which side is closer. The first guess starts at 50%. Valid words outside the interval are accepted; only closer bounds replace the endpoints.",
-    liar: "Six tries. Exactly one color in each unsuccessful guess is false. A correct word turns all green. The keyboard stays neutral.",
+      "Sixteen tries. The word is alphabetically between the two bounds. Percentages show each bound’s distance as a share of the local dictionary; the dot shows which side is closer. The first guess starts at 50%. Valid words outside the interval are accepted with a warning and use a try; only closer bounds replace the endpoints.",
+    liar: "Seven tries. Exactly one color in each unsuccessful guess is false. A correct word turns all green. The keyboard stays neutral.",
   },
-  termoRangeError: "Choose a word alphabetically inside the current interval.",
+  termoRangeError:
+    "{word} is outside the current interval, so the bounds did not change.",
   termoLockedError: "Keep the fixed letters in their positions.",
+  termoYellowError: "Use the revealed letters: {letters}.",
   termoFixed: "fixed letter",
   termoInterval: "Alphabetical interval",
   termoRemaining: "{n} words remain in the interval.",
@@ -684,7 +686,7 @@ const pt: typeof en = {
     dueto: "Descubra as duas palavras.",
     quarteto: "Descubra as quatro palavras.",
     counts: "Cada cor conta.",
-    locked: "Mantenha as letras verdes.",
+    locked: "Reaproveite as verdes e as amarelas.",
     between: "Aproxime-se da palavra.",
     liar: "Descubra a palavra e a mentira.",
   },
@@ -705,14 +707,15 @@ const pt: typeof en = {
     counts:
       "Oito tentativas. Você vê apenas os totais de cada cor. Clique nas letras dos chutes para alternar suas anotações entre verde, amarelo e vermelho.",
     locked:
-      "Seis tentativas. Cada letra verde fica fixa na posição para os próximos chutes.",
+      "Seis tentativas. Cada letra verde fica fixa na posição, e cada letra amarela precisa aparecer em algum lugar do próximo chute.",
     between:
-      "Quatorze tentativas. A palavra está em ordem alfabética entre os dois limites. As porcentagens mostram a distância de cada limite em relação ao dicionário local; o ponto indica o lado mais próximo. O primeiro chute começa em 50%. Palavras válidas fora do intervalo são aceitas; apenas limites mais próximos substituem as pontas.",
-    liar: "Seis tentativas. Exatamente uma cor por chute errado é falsa. Ao acertar a palavra, todas ficam verdes. O teclado permanece neutro.",
+      "Dezesseis tentativas. A palavra está em ordem alfabética entre os dois limites. As porcentagens mostram a distância de cada limite em relação ao dicionário local; o ponto indica o lado mais próximo. O primeiro chute começa em 50%. Palavras válidas fora do intervalo são aceitas com um aviso e gastam uma tentativa; apenas limites mais próximos substituem as pontas.",
+    liar: "Sete tentativas. Exatamente uma cor por chute errado é falsa. Ao acertar a palavra, todas ficam verdes. O teclado permanece neutro.",
   },
   termoRangeError:
-    "Escolha uma palavra em ordem alfabética dentro do intervalo atual.",
+    "{word} está fora do intervalo atual, então os limites não mudaram.",
   termoLockedError: "Mantenha as letras fixas nas posições indicadas.",
+  termoYellowError: "Use as letras reveladas: {letters}.",
   termoFixed: "letra fixa",
   termoInterval: "Intervalo alfabético",
   termoRemaining: "Restam {n} palavras no intervalo.",

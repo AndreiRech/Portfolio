@@ -1,4 +1,5 @@
 import external from "./external.json" with { type: "json" };
+import snapshot from "./catalogs.json" with { type: "json" };
 import {
   answerKey,
   parseBank,
@@ -8,6 +9,7 @@ import {
 import { CULTURE, ANIMAL_LETTERS } from "./culture.ts";
 import { AWARD_THEMES } from "./awards.ts";
 import { GEEK } from "./geek.ts";
+import { REQUESTED } from "./requested.ts";
 import { REVIEWED } from "./reviewed.ts";
 import { SUPPLEMENTAL } from "./supplemental.ts";
 
@@ -71,7 +73,7 @@ export function expandThemes(bank: Theme[]): Theme[] {
   for (const theme of themes)
     for (const answer of theme.answers)
       answer.points = recalibrate[answer.points];
-  for (const theme of [...SUPPLEMENTAL, ...REVIEWED])
+  for (const theme of [...SUPPLEMENTAL, ...REVIEWED, ...REQUESTED])
     add(theme.name, theme.answers);
 
   // Names accidentally present in unrelated old categories.
@@ -170,6 +172,49 @@ Pokémon | Bidoof:5, Klefki:8, Luvdisc:8, Lucario:4, Greninja:4, Mudkip:5, Torch
     }
     add(category.name, category.answers);
   }
+  // Player-reported gaps also reach themes registered just above. Editorial
+  // scores are merged first, so catalog imports only fill what is missing.
+  for (const theme of REQUESTED) add(theme.name, theme.answers);
+  const catalogs: Record<string, (string | number)[][]> = snapshot.catalogs;
+  for (const [name, rows] of Object.entries(catalogs))
+    add(
+      name,
+      rows.map(([label, points, ...aliases]) =>
+        entry(String(label), Number(points), aliases.map(String)),
+      ),
+    );
+  // Zoos keep vertebrates of every land group; flying animals come from birds
+  // that fly, bats, flying squirrels and fish, and insects with wings.
+  const animalByKey = new Map(
+    byName
+      .get("Animais")!
+      .answers.flatMap((answer) =>
+        answer.keys.map((key) => [key, answer] as const),
+      ),
+  );
+  const flightless =
+    /^(Struthio|Rhea|Dromaius|Casuarius|Apteryx|Aptenodytes|Pygoscelis|Spheniscus|Eudyptes|Eudyptula|Megadyptes|Strigops|Porphyrio hochstetteri|Gallirallus australis)/;
+  const wingless = /^(formiga|pulga|piolho|traça|bicho-pau|tesourinha)/i;
+  const zoo: Answer[] = [];
+  const flying: Answer[] = [];
+  for (const taxon of external.taxa) {
+    const answer = animalByKey.get(answerKey(taxon.names[0]));
+    if (!answer) continue;
+    const copy = { ...answer, keys: [...answer.keys] };
+    if (["Mammalia", "Reptilia", "Amphibia", "Aves"].includes(taxon.category))
+      zoo.push(copy);
+    const named = (pattern: RegExp) =>
+      taxon.names.some((name) => pattern.test(name));
+    if (
+      (taxon.category === "Aves" && !flightless.test(taxon.scientific)) ||
+      (taxon.category === "Mammalia" && named(/morcego/i)) ||
+      (taxon.category === "Insecta" && !named(wingless)) ||
+      named(/voador|voadora/i)
+    )
+      flying.push({ ...answer, keys: [...answer.keys] });
+  }
+  add("Coisas que têm no zoológico", zoo);
+  add("Coisas que voam", flying);
   // Pokémon console/handheld releases also belong in Nintendo; mobile/PC-only
   // services are deliberately excluded from this platform category.
   const mobilePokemon = new Set([
@@ -197,6 +242,9 @@ Pokémon | Bidoof:5, Klefki:8, Luvdisc:8, Lucario:4, Greninja:4, Mudkip:5, Torch
     "Jogos de Xbox",
   ])
     add("Jogos de videogame", byName.get(name)!.answers);
+  // Every Olympic sport is a sport and every Pixar film is an animated film.
+  add("Esportes", byName.get("Esportes olímpicos")!.answers);
+  add("Filmes de animação", byName.get("Filmes da Pixar")!.answers);
   for (const name of ["Filmes da Pixar", "Filmes de animação"])
     add("Filmes", byName.get(name)!.answers);
   add("Séries", byName.get("Animes")!.answers);
