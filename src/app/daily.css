@@ -272,6 +272,7 @@ button.termo-tile {
 .termo-key.termo-wide {
   flex-grow: 1.6;
   max-width: 72px;
+  font-size: 13px;
 }
 .termo-key[data-mark="right"] {
   background: var(--mark-right);
@@ -624,6 +625,9 @@ button.termo-tile {
   .termo-key {
     height: 48px;
     font-size: 14px;
+  }
+  .termo-key.termo-wide {
+    font-size: 11px;
   }
   .sudoku-pad {
     gap: 4px;
@@ -1302,10 +1306,10 @@ button.termo-tile {
   background: var(--mark-place);
 }
 .termo-counts [data-mark="wrong"] {
-  background: var(--accent);
+  background: var(--mark-wrong);
 }
 .termo-variant[data-mode="counts"] .termo-tile[data-mark="wrong"] {
-  --tile-bg: var(--accent);
+  --tile-bg: var(--mark-wrong);
   --tile-fg: var(--mark-ink);
 }
 .termo-tile[data-locked="true"] {

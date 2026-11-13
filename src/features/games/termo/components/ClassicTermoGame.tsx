@@ -1,6 +1,6 @@
 "use client";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { CornerDownLeft, Delete } from "lucide-react";
+import { Delete } from "lucide-react";
 import GameHelp from "../../components/GameHelp";
 import { useSettings } from "@/shared/i18n/SettingsContext";
 import { playCopy } from "@/shared/i18n/play";
@@ -162,8 +162,13 @@ export default function ClassicTermoGame() {
         key === "arrowright" ||
         /^[a-zç]$/.test(key)
       ) {
-        // Enter on a focused keyboard button would otherwise press it too.
-        if (key === "enter" && target?.closest("button:not(.termo-tile)"))
+        // Enter always submits from the board or the on-screen keyboard; other
+        // focused buttons (help, share) keep their own Enter behaviour.
+        if (
+          key === "enter" &&
+          target?.closest("button") &&
+          !target.closest(".termo-tile, .termo-key")
+        )
           return;
         event.preventDefault();
         press(key);
@@ -280,7 +285,12 @@ export default function ClassicTermoGame() {
           share={shareText(state, answer, today.number)}
         />
       ) : (
-        <div className="termo-keyboard" aria-label={c.termoKeyboard}>
+        <div
+          className="termo-keyboard"
+          aria-label={c.termoKeyboard}
+          // Clicked keys never keep focus, so a physical Enter can't re-press them.
+          onMouseDown={(event) => event.preventDefault()}
+        >
           {KEYS.map((row, index) => (
             <div key={row} className="termo-keys">
               {index === 2 ? (
@@ -289,7 +299,7 @@ export default function ClassicTermoGame() {
                   onClick={() => press("enter")}
                   aria-label={c.termoEnter}
                 >
-                  <CornerDownLeft size={18} aria-hidden="true" />
+                  Enter
                 </button>
               ) : null}
               {[...row].map((key) => (
