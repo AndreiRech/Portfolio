@@ -1,4 +1,5 @@
 import external from "./external.json" with { type: "json" };
+import snapshot from "./catalogs.json" with { type: "json" };
 import {
   answerKey,
   parseBank,
@@ -170,6 +171,15 @@ Pokémon | Bidoof:5, Klefki:8, Luvdisc:8, Lucario:4, Greninja:4, Mudkip:5, Torch
     }
     add(category.name, category.answers);
   }
+  // Catalog snapshots only fill what the editorial lists are missing.
+  const catalogs: Record<string, (string | number)[][]> = snapshot.catalogs;
+  for (const [name, rows] of Object.entries(catalogs))
+    add(
+      name,
+      rows.map(([label, points, ...aliases]) =>
+        entry(String(label), Number(points), aliases.map(String)),
+      ),
+    );
   // Pokémon console/handheld releases also belong in Nintendo; mobile/PC-only
   // services are deliberately excluded from this platform category.
   const mobilePokemon = new Set([
