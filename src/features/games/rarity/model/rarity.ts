@@ -218,6 +218,7 @@ export function shareText(state: RarityState, day: number): string {
   );
   return [
     `Raridade #${day} · ${totalPoints(state)}/${THEMES_PER_DAY * MAX_POINTS}`,
+    `Andar ${totalPoints(state)}`,
     rows.join("  "),
   ].join("\n");
 }

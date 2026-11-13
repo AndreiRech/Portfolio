@@ -11,6 +11,16 @@ import {
   useToday,
 } from "@/features/games/daily/hooks/useDaily";
 import PixelRain from "./PixelRain";
+import DungeonScene from "./DungeonScene";
+import { useCollection } from "@/features/collectibles/hooks/CollectionContext";
+import { useCompanion } from "@/features/companions/hooks/CompanionContext";
+import {
+  REVEAL_DELAY_SECONDS,
+  biomeOf,
+  depthAfter,
+  depthBefore,
+  pickCompanion,
+} from "@/features/games/rarity/model/descent";
 import { useRecordDailyResult } from "@/features/games/daily/hooks/useHistory";
 import DailyFinish from "@/features/games/daily/components/DailyFinish";
 import PortugueseOnly from "@/features/games/daily/components/PortugueseOnly";
@@ -60,6 +70,9 @@ export default function RarityGame() {
   const { language } = useSettings();
   const c = playCopy[language];
   const today = useToday();
+  const { data: collection } = useCollection();
+  const { preview } = useCompanion();
+  const companion = pickCompanion(collection, preview);
   const themes = useMemo(
     () => (today ? themesFor(THEMES, today.number) : []),
     [today],
@@ -263,6 +276,13 @@ export default function RarityGame() {
               {revealed.timedOut ? c.rarityTimeUp : c.rarityPassed}
             </p>
           )}
+          <DungeonScene
+            from={revealed.answer ? depthBefore(state) : depthAfter(state)}
+            to={depthAfter(state)}
+            companion={companion}
+            delay={revealed.answer ? REVEAL_DELAY_SECONDS : 0}
+            floorLabel={c.rarityFloor}
+          />
           <button className="button primary" onClick={next} autoFocus>
             {over ? c.rarityResults : c.rarityNext}
             <ArrowRight size={18} aria-hidden="true" />
@@ -270,6 +290,19 @@ export default function RarityGame() {
         </div>
       ) : over ? (
         <>
+          <DungeonScene
+            from={depthAfter(state)}
+            to={depthAfter(state)}
+            companion={companion}
+            delay={0}
+            floorLabel={c.rarityFloor}
+          />
+          <p className="dungeon-reached">
+            {fill(c.rarityReached, {
+              n: depthAfter(state),
+              biome: c.rarityBiomes[biomeOf(depthAfter(state))],
+            })}
+          </p>
           <ol className="rarity-summary">
             {themes.map((item, position) => {
               const round = state.rounds[position];

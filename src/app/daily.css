@@ -794,6 +794,41 @@ button.termo-tile {
   font: 400 18px var(--font-heading);
   text-align: right;
 }
+/* Descida na masmorra: a 192 × 108 canvas scaled up with crisp pixels. */
+.dungeon-scene {
+  position: relative;
+  width: 100%;
+  max-width: 512px;
+  margin: 0 auto;
+  border: 2px solid var(--line);
+  background: #0e0d14;
+  transition:
+    opacity 0.4s steps(4, end),
+    filter 0.4s steps(4, end);
+}
+.dungeon-scene[data-dim="true"] {
+  opacity: 0.35;
+  filter: grayscale(0.6);
+}
+.dungeon-scene canvas {
+  display: block;
+  width: 100%;
+  height: auto;
+  image-rendering: pixelated;
+}
+.dungeon-hud {
+  position: absolute;
+  top: 8px;
+  left: 10px;
+  color: #fff7d6;
+  font: 400 15px/1 var(--font-heading);
+  text-shadow: 2px 2px 0 #000;
+}
+.dungeon-reached {
+  margin: 12px 0 16px;
+  font: 400 18px/1.2 var(--font-heading);
+  text-align: center;
+}
 @media (max-width: 640px) {
   .rarity-input {
     flex-direction: column;
@@ -807,6 +842,9 @@ button.termo-tile {
   .rarity-theme,
   .rarity-input[data-shake="true"] {
     animation: none;
+  }
+  .dungeon-scene {
+    transition: none;
   }
 }
 
