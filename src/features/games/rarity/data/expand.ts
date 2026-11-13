@@ -9,6 +9,7 @@ import {
 import { CULTURE, ANIMAL_LETTERS } from "./culture.ts";
 import { AWARD_THEMES } from "./awards.ts";
 import { GEEK } from "./geek.ts";
+import { REQUESTED } from "./requested.ts";
 import { REVIEWED } from "./reviewed.ts";
 import { SUPPLEMENTAL } from "./supplemental.ts";
 
@@ -72,7 +73,7 @@ export function expandThemes(bank: Theme[]): Theme[] {
   for (const theme of themes)
     for (const answer of theme.answers)
       answer.points = recalibrate[answer.points];
-  for (const theme of [...SUPPLEMENTAL, ...REVIEWED])
+  for (const theme of [...SUPPLEMENTAL, ...REVIEWED, ...REQUESTED])
     add(theme.name, theme.answers);
 
   // Names accidentally present in unrelated old categories.
@@ -171,7 +172,9 @@ Pokémon | Bidoof:5, Klefki:8, Luvdisc:8, Lucario:4, Greninja:4, Mudkip:5, Torch
     }
     add(category.name, category.answers);
   }
-  // Catalog snapshots only fill what the editorial lists are missing.
+  // Player-reported gaps also reach themes registered just above. Editorial
+  // scores are merged first, so catalog imports only fill what is missing.
+  for (const theme of REQUESTED) add(theme.name, theme.answers);
   const catalogs: Record<string, (string | number)[][]> = snapshot.catalogs;
   for (const [name, rows] of Object.entries(catalogs))
     add(
