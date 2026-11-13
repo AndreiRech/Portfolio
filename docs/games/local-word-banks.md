@@ -9,10 +9,12 @@ Todos os jogos usam apenas arquivos do projeto durante a partida. Nenhuma valida
 - **Animais:** [API do iNaturalist](https://api.inaturalist.org/v1/docs/), endpoint `/v1/taxa`. Foram consultadas as primeiras 10.000 espécies ativas de Animalia, ordenadas pela quantidade de observações. O instantâneo retém 3.902 espécies com ao menos um nome válido em português, seus nomes científicos, identificação e grupo taxonômico. Só importa nomes declarados em português pela fonte, sem usar o nome inglês que a API pode devolver como fallback. Não importa imagens nem observações de usuários. A quantidade de observações serve somente para ordenar a coleta, nunca como estatística de popularidade de respostas.
 - **Pokémon:** [PokéAPI](https://pokeapi.co/docs/v2#pokemon-species), `/api/v2/pokemon-species?limit=2000`. Instantâneo com 1.025 espécies, sem contar formas alternativas como espécies diferentes. Os nomes usados em português coincidem com a grafia internacional dessas espécies; aliases corrigem pontuação, gênero de Nidoran e nomes especiais.
 - **Elementos químicos:** lista finita de 118 elementos, com nomes em português e variantes ortográficas. Referência para identidade e quantidade: [tabela da IUPAC](https://iupac.org/what-we-do/periodic-table-of-elements/).
-- **Demais temas de Raridade:** banco editorial existente e `supplemental.ts`, com nomes regionais, compostos e variantes. Categorias abertas, como profissões, objetos, comidas e personagens, continuam sendo listas extensíveis. Não há promessa de cobertura universal.
+- **Demais temas de Raridade:** banco editorial existente, `supplemental.ts`, `reviewed.ts` e `geek.ts`, com nomes regionais, compostos e variantes. Categorias abertas, como profissões, objetos, comidas e personagens, continuam sendo listas extensíveis. Não há promessa de cobertura universal.
 - **Conexo e palavra cruzada:** conteúdo editorial próprio. As novas pistas de cruzada ficam em `crossword/data/challenging.ts`; as pistas introdutórias são preservadas em `clues.ts` como referência, sem participar da seleção diária atual.
 
 `npm run refresh:rarity` atualiza países, animais e Pokémon em `rarity/data/external.json`. Faz requisições com timeout, tentativas limitadas e intervalo entre páginas. Só substitui o arquivo depois de validar todas as fontes, sem escrever um instantâneo parcial. A fonte é um ponto de partida: nomes populares podem variar regionalmente ou designar espécies diferentes. Os aliases são unificados antes da partida para evitar pontuações diferentes para a mesma resposta.
+
+A [revisão por categoria do Raridade](rarity-bank-review.md) registra os acréscimos às 106 categorias, os nomes regionais e a cobertura antes e depois.
 
 ## Pontuação de Raridade
 
@@ -50,4 +52,14 @@ Entre usa a ordem das grafias normalizadas do dicionário local completo. Os ext
 
 Mentiroso altera exatamente uma das cinco marcações verdadeiras para outra cor em cada chute errado, com sorteio determinístico por data e tentativa. O teclado permanece neutro. Uma resposta exata vence com todas as letras verdes. Compartilhamentos de Contagem contêm apenas totais; os de Mentiroso usam as cores exibidas.
 
-Raridade usa o save `rarity-timed-v1`, independente da versão anterior sem relógio. O botão Começar inicia o primeiro prazo de vinte segundos. Responder ou pular pausa o jogo até avançar, quando começa outro prazo. Um prazo absoluto salvo no navegador impede reiniciar os vinte segundos ao recarregar; expirar marca uma única pergunta como zero, inclusive se o usuário estava em outra aba. O histórico anterior é preservado.
+Raridade usa o save `rarity-timed-v3`, independente da versão anterior sem relógio. O botão Começar inicia o primeiro prazo de vinte segundos. Responder ou pular pausa o jogo até avançar, quando começa outro prazo. Um prazo absoluto salvo no navegador impede reiniciar os vinte segundos ao recarregar; expirar marca uma única pergunta como zero, inclusive se o usuário estava em outra aba. O histórico anterior é preservado.
+
+
+## Expansão geek
+
+A [expansão de jogos, filmes, séries e animes](rarity-geek-expansion.md) acrescenta 16 temas, incluindo Pokémon, FPS, RPG, plataformas e profissionais e mapas de Counter-Strike. A lista de mapas cobre a tabela fornecida pelo usuário, incluindo mapas históricos e de operações. O progresso temporário usa `rarity-timed-v2`, pois os novos temas alteram o sorteio diário; o histórico de resultados é preservado.
+
+
+## Cultura e conhecimentos gerais
+
+A [expansão de futebol, dinossauros, mitologias e premiados](rarity-culture-expansion.md) acrescenta 20 categorias, incluindo animais por letra e comidas por sabor. Os iniciais continuam com 29 espécies, incluindo Pikachu e Eevee; suas famílias evolutivas recebem uma categoria com 93 espécies. Grammy e Oscar têm registros de referência em `awards.json`. O progresso temporário passa a `rarity-timed-v3` devido ao novo sorteio de temas, preservando o histórico.
