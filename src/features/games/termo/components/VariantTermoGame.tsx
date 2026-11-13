@@ -6,7 +6,7 @@ import {
   useState,
   type CSSProperties,
 } from "react";
-import { CornerDownLeft, Delete, LockKeyhole } from "lucide-react";
+import { Delete, LockKeyhole } from "lucide-react";
 import { useSettings } from "@/shared/i18n/SettingsContext";
 import { playCopy } from "@/shared/i18n/play";
 import { sfx } from "@/shared/lib/sfx";
@@ -193,10 +193,14 @@ export default function VariantTermoGame({
         /^[a-zç]$/.test(key) ||
         ["enter", "backspace", "arrowleft", "arrowright"].includes(key)
       ) {
+        // Enter always submits from the active row or the on-screen keyboard;
+        // other focused buttons (counts notes, help, share) keep their own.
+        const target = event.target as HTMLElement | null;
         if (
           key === "enter" &&
-          (event.target as HTMLElement)?.closest(
-            "button:not(.termo-tile), .termo-count-row button",
+          target?.closest("button") &&
+          !target.closest(
+            '.termo-row[data-active="true"] .termo-tile, .termo-key',
           )
         )
           return;
@@ -465,7 +469,12 @@ export default function VariantTermoGame({
           share={modeShare(state, puzzle, label)}
         />
       ) : (
-        <div className="termo-keyboard" aria-label={c.termoKeyboard}>
+        <div
+          className="termo-keyboard"
+          aria-label={c.termoKeyboard}
+          // Clicked keys never keep focus, so a physical Enter can't re-press them.
+          onMouseDown={(event) => event.preventDefault()}
+        >
           {KEYS.map((row, index) => (
             <div className="termo-keys" key={row}>
               {index === 2 ? (
@@ -474,7 +483,7 @@ export default function VariantTermoGame({
                   onClick={() => press("enter")}
                   aria-label={c.termoEnter}
                 >
-                  <CornerDownLeft size={18} />
+                  Enter
                 </button>
               ) : null}
               {[...row].map((letter) => (
