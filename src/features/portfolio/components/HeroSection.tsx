@@ -40,7 +40,7 @@ export default function HeroSection() {
             <span>{c.viewCompanions}</span>
             <Footprints size={17} />
           </Link>
-          <Link href="/games">
+          <Link href="/cases">
             <span>{c.games}</span>
             <ArrowDownRight size={17} />
           </Link>

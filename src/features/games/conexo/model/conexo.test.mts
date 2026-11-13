@@ -74,6 +74,10 @@ test("guesses report solved groups, near misses and repeats", () => {
   assert.ok(isFinished(done));
   assert.deepEqual(done.solved, [0, 1, 2, 3]);
   assert.match(shareText(result.state, puzzle, 1), /^Conexo #1 · 2 tentativas/);
+  assert.match(
+    shareText(result.state, puzzle, 1, "en"),
+    /^Connected #1 · 2 attempts/,
+  );
 });
 
 test("saved progress is validated", () => {
@@ -107,4 +111,28 @@ test("progress saved for another puzzle is dropped instead of crashing", () => {
 test("days before launch still get a puzzle", () => {
   for (let day = -3; day <= 0; day++)
     assert.equal(buildPuzzle(GROUPS, day).order.length, 16);
+});
+
+test("puzzles favor misleading category overlaps without cycles that allow swaps", () => {
+  let total = 0;
+  for (let day = 1; day <= 60; day++) {
+    const puzzle = buildPuzzle(GROUPS, day);
+    const sources = puzzle.groups.map((group) =>
+      GROUPS.find((item) => item.name === group.name)!,
+    );
+    const edges = puzzle.groups.map((group, i) =>
+      sources.flatMap((source, j) =>
+        i !== j &&
+        group.words.some((word) => source.words.map(key).includes(key(word)))
+          ? [j]
+          : [],
+      ),
+    );
+    const cycle = (node: number, path: Set<number>): boolean =>
+      path.has(node) ||
+      edges[node].some((next) => cycle(next, new Set(path).add(node)));
+    assert.ok(!edges.some((_, i) => cycle(i, new Set())), `day ${day}`);
+    total += edges.reduce((sum, edge) => sum + edge.length, 0);
+  }
+  assert.ok(total >= 90, `${total} misleading category links over 60 days`);
 });

@@ -1076,15 +1076,6 @@
   }
 }
 
-.arcade-tabs {
-  overflow-x: auto;
-  scrollbar-width: thin;
-}
-.arcade-tabs a {
-  flex-shrink: 0;
-  white-space: nowrap;
-  min-height: 48px;
-}
 @media (max-width: 800px) {
   #main > .section {
     padding-block: 52px;
@@ -1167,9 +1158,6 @@
   .footer-inner {
     gap: 24px;
     padding-block: 32px 24px;
-  }
-  .arcade-tabs {
-    gap: 22px;
   }
 }
 @media (max-width: 420px) {

@@ -1,3 +1,4 @@
+import { CHALLENGING_CLUES } from "./challenging.ts";
 import type { ClueEntry } from "../model/crossword.ts";
 
 /**
@@ -838,9 +839,11 @@ ARQUIVO|Documento salvo
 PASTA|Guarda arquivos ou creme dental
 `;
 
-export const CLUES: ClueEntry[] = BANK.trim()
+export const INTRODUCTORY_CLUES: ClueEntry[] = BANK.trim()
   .split("\n")
   .map((line) => {
     const [answer, clue] = line.split("|");
     return { answer, clue };
   });
+
+export const CLUES: ClueEntry[] = CHALLENGING_CLUES;

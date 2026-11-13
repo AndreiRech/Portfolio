@@ -1,6 +1,7 @@
 "use client";
 import { useMemo, useRef, useState } from "react";
 import { Eye, SpellCheck } from "lucide-react";
+import GameHelp from "../../components/GameHelp";
 import { useSettings } from "@/shared/i18n/SettingsContext";
 import { playCopy } from "@/shared/i18n/play";
 import { sfx } from "@/shared/lib/sfx";
@@ -9,6 +10,7 @@ import {
   useDailyProgress,
   useToday,
 } from "@/features/games/daily/hooks/useDaily";
+import { useRecordDailyResult } from "@/features/games/daily/hooks/useHistory";
 import DailyFinish from "@/features/games/daily/components/DailyFinish";
 import PortugueseOnly from "@/features/games/daily/components/PortugueseOnly";
 import {
@@ -18,7 +20,8 @@ import {
   isSolved,
   parseCrossword,
   wordCells,
-  wrongCells,
+  checkEntries,
+  validateCrossword,
   type CrosswordState,
   type Direction,
   type Placed,
@@ -30,6 +33,7 @@ const fresh = (): CrosswordState => ({
   entries: emptyEntries(),
   revealed: false,
   checks: 0,
+  validated: false,
 });
 const at = (row: number, col: number) => row * SIZE + col;
 
@@ -42,7 +46,7 @@ export default function CrosswordGame() {
     [today],
   );
   const [state, setState] = useDailyProgress(
-    "crossword",
+    "crossword-v2",
     today?.key ?? null,
     fresh,
     parseCrossword,
@@ -52,6 +56,7 @@ export default function CrosswordGame() {
     col: number;
     direction: Direction;
   } | null>(null);
+  const [feedback, setFeedback] = useState<string | null>(null);
   const [checked, setChecked] = useState<Set<number>>(new Set());
   const input = useRef<HTMLInputElement>(null);
 
@@ -66,6 +71,18 @@ export default function CrosswordGame() {
     return map;
   }, [puzzle]);
 
+  useRecordDailyResult(
+    "crossword",
+    today?.key ?? null,
+    state && puzzle
+      ? state.revealed
+        ? "lost"
+        : state.validated !== false && isSolved(puzzle, state.entries)
+          ? "won"
+          : null
+      : null,
+  );
+
   if (!today || !puzzle || !state)
     return (
       <div className="game-loading" role="status">
@@ -73,7 +90,8 @@ export default function CrosswordGame() {
       </div>
     );
 
-  const solved = isSolved(puzzle, state.entries);
+  const solved = state.validated !== false && isSolved(puzzle, state.entries);
+  const filled = checkEntries(puzzle, state.entries).empty === 0;
   const done = solved || state.revealed;
   const entries = state.revealed
     ? puzzle.cells.flat().map((letter) => letter ?? "")
@@ -169,7 +187,8 @@ export default function CrosswordGame() {
     const key = at(cursor.row, cursor.col);
     const next = [...state.entries];
     next[key] = letter;
-    setState({ ...state, entries: next });
+    setState({ ...state, entries: next, validated: false });
+    setFeedback(null);
     setChecked((current) => {
       if (!current.has(key)) return current;
       const copy = new Set(current);
@@ -178,10 +197,6 @@ export default function CrosswordGame() {
     });
     if (letter) {
       sfx.tick();
-      if (puzzle && isSolved(puzzle, next)) {
-        sfx.reveal(2);
-        return;
-      }
       moveWithin(1);
     }
   }
@@ -203,7 +218,13 @@ export default function CrosswordGame() {
         if (previous && !done) {
           const next = [...state.entries];
           next[at(previous.row, previous.col)] = "";
-          setState({ ...state, entries: next });
+          setState({ ...state, entries: next, validated: false });
+          setFeedback(null);
+          setChecked((current) => {
+            const copy = new Set(current);
+            copy.delete(at(previous.row, previous.col));
+            return copy;
+          });
         }
       }
       return;
@@ -282,11 +303,25 @@ export default function CrosswordGame() {
         </span>
       </div>
       <h2 id="cw-title">{c.cwTitle}</h2>
+      <GameHelp>
+        {language === "pt"
+          ? "Selecione uma pista e preencha a palavra na grade. Use as setas para navegar e Tab para trocar de pista. Conferir mostra as letras certas e erradas; revelar encerra o desafio."
+          : "Select a clue and fill in the Portuguese word. Use arrows to navigate and Tab to change clues. Check marks correct and incorrect letters; revealing ends the puzzle."}
+      </GameHelp>
       <PortugueseOnly />
 
       <div className="cw-layout">
         <div className="cw-play">
-          <p className="cw-current" aria-live="polite">
+          <p
+            className="cw-current"
+            aria-live="polite"
+            data-done={Boolean(
+              activeWord &&
+              wordCells(activeWord).every(
+                (cell) => entries[at(cell.row, cell.col)],
+              ),
+            )}
+          >
             {activeWord ? (
               <>
                 <b>
@@ -296,7 +331,9 @@ export default function CrosswordGame() {
                       : c.cwDownShort
                   }`}
                 </b>
-                {activeWord.clue}
+                <span>
+                  {activeWord.clue} <small>({activeWord.answer.length})</small>
+                </span>
               </>
             ) : (
               c.cwPick
@@ -376,17 +413,25 @@ export default function CrosswordGame() {
           ) : (
             <div className="daily-actions">
               <button
-                className="memory-replay"
+                className={filled ? "button primary" : "memory-replay"}
                 onClick={() => {
-                  const wrong = wrongCells(puzzle, state.entries);
+                  const { wrong, correct, empty } = checkEntries(
+                    puzzle,
+                    state.entries,
+                  );
+                  setFeedback(
+                    fill(c.cwChecked, { correct, wrong: wrong.size, empty }),
+                  );
                   setChecked(wrong);
-                  setState({ ...state, checks: state.checks + 1 });
+                  const next = validateCrossword(puzzle, state);
+                  setState(next);
                   if (wrong.size) sfx.wrong();
+                  else if (next.validated) sfx.reveal(2);
                   else sfx.roundClear();
                 }}
               >
                 <SpellCheck size={15} aria-hidden="true" />
-                {c.cwCheck}
+                {filled ? c.cwSubmit : c.cwCheck}
               </button>
               <button
                 className="memory-replay daily-giveup"
@@ -398,11 +443,7 @@ export default function CrosswordGame() {
             </div>
           )}
           <p className="song-status" role="status" aria-live="polite">
-            {checked.size === 1
-              ? c.cwWrongOne
-              : checked.size
-                ? fill(c.cwWrong, { n: checked.size })
-                : " "}
+            {feedback ?? " "}
           </p>
         </div>
         <div className="cw-lists">

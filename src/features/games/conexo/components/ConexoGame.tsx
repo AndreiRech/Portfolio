@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
 import { Eye, Shuffle } from "lucide-react";
+import GameHelp from "../../components/GameHelp";
 import { useSettings } from "@/shared/i18n/SettingsContext";
 import { playCopy } from "@/shared/i18n/play";
 import { sfx } from "@/shared/lib/sfx";
@@ -10,6 +11,7 @@ import {
   useDailyProgress,
   useToday,
 } from "@/features/games/daily/hooks/useDaily";
+import { useRecordDailyResult } from "@/features/games/daily/hooks/useHistory";
 import DailyFinish from "@/features/games/daily/components/DailyFinish";
 import PortugueseOnly from "@/features/games/daily/components/PortugueseOnly";
 import {
@@ -41,6 +43,11 @@ export default function ConexoGame() {
     initialConexo,
     // Read once the day is known, so the puzzle is built by then.
     (value) => (puzzle ? matchPuzzle(parseConexo(value), puzzle) : null),
+  );
+  useRecordDailyResult(
+    "conexo",
+    today?.key ?? null,
+    state && isFinished(state) ? (state.gaveUp ? "lost" : "won") : null,
   );
   const [selected, setSelected] = useState<string[]>([]);
   // Shuffling only rearranges the board for this visit.
@@ -116,6 +123,11 @@ export default function ConexoGame() {
         </span>
       </div>
       <h2 id="conexo-title">{c.conexoTitle}</h2>
+      <GameHelp>
+        {language === "pt"
+          ? "Encontre quatro grupos de quatro palavras relacionadas. Selecione quatro palavras e confirme. Você pode embaralhar as palavras ou revelar a resposta."
+          : "Find four groups of four related Portuguese words. Select four words and confirm. You can shuffle the board or reveal the answer."}
+      </GameHelp>
       <PortugueseOnly />
 
       <div className="conexo-board">
@@ -172,7 +184,9 @@ export default function ConexoGame() {
                 : fill(c.conexoWon, { n: state.attempts.length })
           }
           share={
-            state.gaveUp ? undefined : shareText(state, puzzle, today.number)
+            state.gaveUp
+              ? undefined
+              : shareText(state, puzzle, today.number, language)
           }
         />
       ) : (

@@ -79,6 +79,70 @@ export const ACHIEVEMENTS = [
       pt: "Digite um código clássico. Você sabe qual.",
     },
   },
+  {
+    id: "mine-clear",
+    title: { en: "Safe ground", pt: "Terreno seguro" },
+    hint: {
+      en: "Win a game of Minesweeper.",
+      pt: "Vença uma partida de Campo minado.",
+    },
+  },
+  {
+    id: "mine-expert",
+    title: { en: "Bomb disposal", pt: "Desarmador" },
+    hint: {
+      en: "Win Minesweeper on Hard.",
+      pt: "Vença o Campo minado no Difícil.",
+    },
+  },
+  {
+    id: "sudoku-solved",
+    title: { en: "One to nine", pt: "De um a nove" },
+    hint: {
+      en: "Solve a Sudoku without revealing the answer.",
+      pt: "Resolva um Sudoku sem revelar a resposta.",
+    },
+  },
+  {
+    id: "sudoku-clean",
+    title: { en: "Pure logic", pt: "Lógica pura" },
+    hint: {
+      en: "Solve a Hard Sudoku without mistakes or hints.",
+      pt: "Resolva um Sudoku Difícil sem erros nem dicas.",
+    },
+  },
+  {
+    id: "color-five",
+    title: { en: "Color memory", pt: "Memória de cores" },
+    hint: {
+      en: "Finish all five daily Color rounds.",
+      pt: "Conclua as cinco rodadas diárias de Cores.",
+    },
+  },
+  {
+    id: "color-eye",
+    title: { en: "An eye for color", pt: "Olho para cores" },
+    hint: {
+      en: "Score at least 95 in a Color round.",
+      pt: "Faça pelo menos 95 pontos em uma rodada de Cores.",
+    },
+  },
+  {
+    id: "scale-five",
+    title: { en: "A sense of scale", pt: "Noção de escala" },
+    hint: {
+      en: "Finish all five daily Size it up rounds.",
+      pt: "Conclua as cinco rodadas diárias de Escala.",
+    },
+  },
+  {
+    id: "scale-eye",
+    title: { en: "Made to measure", pt: "Sob medida" },
+    hint: {
+      en: "Score at least 95 in a Size it up round.",
+      pt: "Faça pelo menos 95 pontos em uma rodada de Escala.",
+    },
+  },
 ] as const;
 
 export type AchievementId = (typeof ACHIEVEMENTS)[number]["id"];

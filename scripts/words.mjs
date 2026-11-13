@@ -47,7 +47,7 @@ export const EXCLUDED = new Set(
  */
 export function buildWordLists(
   { lexicon, conjugations, frequency },
-  size = 900,
+  size = 1800,
 ) {
   const lexical = lexicon.filter((word) => WORD.test(word));
   const lexiconSet = new Set(lexicon);

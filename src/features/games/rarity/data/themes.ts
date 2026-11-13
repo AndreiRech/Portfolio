@@ -1,3 +1,4 @@
+import { expandThemes } from "./expand.ts";
 import { parseBank } from "../model/rarity.ts";
 
 /**
@@ -108,4 +109,4 @@ Coisas de praia de rio e cachoeira | Cachoeira:1, Rio:1, Pedra:2, Água gelada:2
 Tipos de dança | Samba:1, Forró:1, Funk:1, Balé:2, Valsa:2, Tango:2, Salsa:3, Axé:3, Hip-hop:3, Sertanejo:3, Zumba:4, Sapateado:4, Frevo:4, Bolero:5, Jazz:5, Break:5, Lambada:5, Quadrilha:4, Dança do ventre:4, Flamenco:5, Pagode:4, Zouk:6, Bachata:6, Merengue:6, Kizomba:7, Contemporânea:6, Swing:7, Carimbó:7, Maracatu:7, Xaxado:7, Catira:8, Polca:8, Twist:8, Charleston:8, Lundu:9, Maxixe:9, Fandango:8, Siriri:10, Jongo:9, Vogue:7
 `;
 
-export const THEMES = parseBank(BANK);
+export const THEMES = expandThemes(parseBank(BANK));

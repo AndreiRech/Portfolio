@@ -1,28 +1,4 @@
-/* Games: one bar for back link + tabs, one centred title for every tab. */
-.arcade-bar {
-  display: flex;
-  align-items: center;
-  gap: 32px;
-  margin-bottom: 32px;
-  border-bottom: 1px solid var(--line);
-}
-.arcade-bar > .back-link {
-  flex-shrink: 0;
-  margin-bottom: 0;
-  min-height: 48px;
-}
-.arcade-bar > .back-link:hover {
-  color: var(--fg);
-}
-.arcade-bar > .arcade-tabs {
-  flex: 1;
-  min-width: 0;
-  margin-bottom: 0;
-  border-bottom: 0;
-}
-.arcade-tabs a:not([aria-current]):hover {
-  color: var(--accent);
-}
+/* Games share pixel navigation and one centred title per activity. */
 .arcade-heading {
   text-align: center;
 }
@@ -60,16 +36,6 @@
   .arcade-subtabs a {
     padding: 0 10px;
     font-size: 12px;
-  }
-}
-@media (max-width: 800px) {
-  .arcade-bar {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 4px;
-  }
-  .arcade-bar > .back-link {
-    min-height: 36px;
   }
 }
 

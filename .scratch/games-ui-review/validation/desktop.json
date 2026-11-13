@@ -1,0 +1,211 @@
+[
+  {
+    "bodyFont": "\"DM Sans\", \"DM Sans Fallback\", sans-serif",
+    "buttonFont": null,
+    "headingFont": "\"Pixelify Sans\", \"Pixelify Sans Fallback\"",
+    "headingSize": "34px",
+    "help": true,
+    "overflow": false,
+    "panelWidth": 1200,
+    "target": "termo&mode=classic",
+    "title": "Guess the word."
+  },
+  {
+    "bodyFont": "\"DM Sans\", \"DM Sans Fallback\", sans-serif",
+    "buttonFont": null,
+    "headingFont": "\"Pixelify Sans\", \"Pixelify Sans Fallback\"",
+    "headingSize": "34px",
+    "help": true,
+    "overflow": false,
+    "panelWidth": 1200,
+    "target": "termo&mode=dueto",
+    "title": "Dueto"
+  },
+  {
+    "bodyFont": "\"DM Sans\", \"DM Sans Fallback\", sans-serif",
+    "buttonFont": null,
+    "headingFont": "\"Pixelify Sans\", \"Pixelify Sans Fallback\"",
+    "headingSize": "34px",
+    "help": true,
+    "overflow": false,
+    "panelWidth": 1200,
+    "target": "termo&mode=quarteto",
+    "title": "Quarteto"
+  },
+  {
+    "bodyFont": "\"DM Sans\", \"DM Sans Fallback\", sans-serif",
+    "buttonFont": null,
+    "headingFont": "\"Pixelify Sans\", \"Pixelify Sans Fallback\"",
+    "headingSize": "34px",
+    "help": true,
+    "overflow": false,
+    "panelWidth": 1200,
+    "target": "termo&mode=counts",
+    "title": "Counts"
+  },
+  {
+    "bodyFont": "\"DM Sans\", \"DM Sans Fallback\", sans-serif",
+    "buttonFont": null,
+    "headingFont": "\"Pixelify Sans\", \"Pixelify Sans Fallback\"",
+    "headingSize": "34px",
+    "help": true,
+    "overflow": false,
+    "panelWidth": 1200,
+    "target": "termo&mode=locked",
+    "title": "Fixed letters"
+  },
+  {
+    "bodyFont": "\"DM Sans\", \"DM Sans Fallback\", sans-serif",
+    "buttonFont": null,
+    "headingFont": "\"Pixelify Sans\", \"Pixelify Sans Fallback\"",
+    "headingSize": "34px",
+    "help": true,
+    "overflow": false,
+    "panelWidth": 1200,
+    "target": "termo&mode=between",
+    "title": "Between"
+  },
+  {
+    "bodyFont": "\"DM Sans\", \"DM Sans Fallback\", sans-serif",
+    "buttonFont": null,
+    "headingFont": "\"Pixelify Sans\", \"Pixelify Sans Fallback\"",
+    "headingSize": "34px",
+    "help": true,
+    "overflow": false,
+    "panelWidth": 1200,
+    "target": "termo&mode=liar",
+    "title": "Liar"
+  },
+  {
+    "bodyFont": "\"DM Sans\", \"DM Sans Fallback\", sans-serif",
+    "buttonFont": "\"DM Sans\", \"DM Sans Fallback\"",
+    "headingFont": "\"Pixelify Sans\", \"Pixelify Sans Fallback\"",
+    "headingSize": "34px",
+    "help": true,
+    "overflow": false,
+    "panelWidth": 1200,
+    "target": "conexo",
+    "title": "Find the four groups."
+  },
+  {
+    "bodyFont": "\"DM Sans\", \"DM Sans Fallback\", sans-serif",
+    "buttonFont": "\"DM Sans\", \"DM Sans Fallback\"",
+    "headingFont": "\"Pixelify Sans\", \"Pixelify Sans Fallback\"",
+    "headingSize": "34px",
+    "help": true,
+    "overflow": false,
+    "panelWidth": 1200,
+    "target": "crossword",
+    "title": "Fill the grid."
+  },
+  {
+    "bodyFont": "\"DM Sans\", \"DM Sans Fallback\", sans-serif",
+    "buttonFont": "\"DM Sans\", \"DM Sans Fallback\"",
+    "headingFont": "\"Pixelify Sans\", \"Pixelify Sans Fallback\"",
+    "headingSize": "34px",
+    "help": true,
+    "overflow": false,
+    "panelWidth": 1200,
+    "target": "rarity",
+    "title": "Think of what nobody would."
+  },
+  {
+    "bodyFont": "\"DM Sans\", \"DM Sans Fallback\", sans-serif",
+    "buttonFont": "\"DM Sans\", \"DM Sans Fallback\"",
+    "headingFont": "\"Pixelify Sans\", \"Pixelify Sans Fallback\"",
+    "headingSize": "34px",
+    "help": true,
+    "overflow": false,
+    "panelWidth": 1200,
+    "target": "color",
+    "title": "Color"
+  },
+  {
+    "bodyFont": "\"DM Sans\", \"DM Sans Fallback\", sans-serif",
+    "buttonFont": "\"DM Sans\", \"DM Sans Fallback\"",
+    "headingFont": "\"Pixelify Sans\", \"Pixelify Sans Fallback\"",
+    "headingSize": "34px",
+    "help": true,
+    "overflow": false,
+    "panelWidth": 1200,
+    "target": "scale",
+    "title": "Size it up"
+  },
+  {
+    "bodyFont": "\"DM Sans\", \"DM Sans Fallback\", sans-serif",
+    "buttonFont": "\"DM Sans\", \"DM Sans Fallback\"",
+    "headingFont": "\"Pixelify Sans\", \"Pixelify Sans Fallback\"",
+    "headingSize": "34px",
+    "help": true,
+    "overflow": false,
+    "panelWidth": 1200,
+    "target": "sudoku",
+    "title": "Sudoku"
+  },
+  {
+    "bodyFont": "\"DM Sans\", \"DM Sans Fallback\", sans-serif",
+    "buttonFont": "\"DM Sans\", \"DM Sans Fallback\"",
+    "headingFont": "\"Pixelify Sans\", \"Pixelify Sans Fallback\"",
+    "headingSize": "34px",
+    "help": true,
+    "overflow": false,
+    "panelWidth": 1200,
+    "target": "minesweeper",
+    "title": "Minesweeper"
+  },
+  {
+    "bodyFont": "\"DM Sans\", \"DM Sans Fallback\", sans-serif",
+    "buttonFont": "\"DM Sans\", \"DM Sans Fallback\"",
+    "headingFont": "\"Pixelify Sans\", \"Pixelify Sans Fallback\"",
+    "headingSize": "34px",
+    "help": true,
+    "overflow": false,
+    "panelWidth": 1200,
+    "target": "songs",
+    "title": "Name that song."
+  },
+  {
+    "bodyFont": "\"DM Sans\", \"DM Sans Fallback\", sans-serif",
+    "buttonFont": null,
+    "headingFont": "\"Pixelify Sans\", \"Pixelify Sans Fallback\"",
+    "headingSize": "34px",
+    "help": true,
+    "overflow": false,
+    "panelWidth": 1200,
+    "target": "higher-lower",
+    "title": "Which anime is more popular?"
+  },
+  {
+    "bodyFont": "\"DM Sans\", \"DM Sans Fallback\", sans-serif",
+    "buttonFont": "\"DM Sans\", \"DM Sans Fallback\"",
+    "headingFont": "\"Pixelify Sans\", \"Pixelify Sans Fallback\"",
+    "headingSize": "34px",
+    "help": true,
+    "overflow": false,
+    "panelWidth": 1200,
+    "target": "duel",
+    "title": "Choose your fighter."
+  },
+  {
+    "bodyFont": "\"DM Sans\", \"DM Sans Fallback\", sans-serif",
+    "buttonFont": "\"DM Sans\", \"DM Sans Fallback\"",
+    "headingFont": "\"Pixelify Sans\", \"Pixelify Sans Fallback\"",
+    "headingSize": "34px",
+    "help": true,
+    "overflow": false,
+    "panelWidth": 1200,
+    "target": "memory",
+    "title": "Remember the signs."
+  },
+  {
+    "bodyFont": "\"DM Sans\", \"DM Sans Fallback\", sans-serif",
+    "buttonFont": "\"DM Sans\", \"DM Sans Fallback\"",
+    "headingFont": "\"Pixelify Sans\", \"Pixelify Sans Fallback\"",
+    "headingSize": "34px",
+    "help": false,
+    "overflow": false,
+    "panelWidth": 1200,
+    "target": "companions",
+    "title": "Good company. More mischief."
+  }
+]

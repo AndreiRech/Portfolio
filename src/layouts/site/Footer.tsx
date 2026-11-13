@@ -20,7 +20,7 @@ export default function Footer() {
             <Link href="/#about">{c.about}</Link>
             <Link href="/#experience">{c.experience}</Link>
             <Link href="/#projects">{c.projects}</Link>
-            <Link href="/games">{c.games}</Link>
+            <Link href="/cases">{c.games}</Link>
             <Link href="/#contact">{c.contact}</Link>
           </nav>
         </div>

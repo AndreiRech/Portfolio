@@ -6,6 +6,7 @@ import "./hero.css";
 import "./polish.css";
 import "./games.css";
 import "./daily.css";
+import "./arcade-ui.css";
 import { SettingsProvider } from "@/shared/i18n/SettingsContext";
 import { CollectionProvider } from "@/features/collectibles/hooks/CollectionContext";
 import Navbar from "@/layouts/site/Navbar";

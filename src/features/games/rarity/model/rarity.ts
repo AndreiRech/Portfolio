@@ -15,6 +15,8 @@ export type Theme = { name: string; answers: Answer[] };
 /** Case, accents, spaces and punctuation do not matter; + and # do (C++, C#). */
 export const answerKey = (value: string) =>
   value
+    .replace(/♀/g, " f ")
+    .replace(/♂/g, " m ")
     .normalize("NFD")
     .replace(/[̀-ͯ]/g, "")
     .toLowerCase()
@@ -76,7 +78,7 @@ function oneEdit(a: string, b: string) {
  */
 export function findAnswer(theme: Theme, guess: string): Answer | null {
   const key = answerKey(guess);
-  if (!key) return null;
+  if (!key || guess.length > 100) return null;
   const exact = (candidate: string) =>
     theme.answers.find((answer) => answer.keys.includes(candidate));
   const found =
@@ -88,6 +90,61 @@ export function findAnswer(theme: Theme, guess: string): Answer | null {
         )
       : undefined);
   return found ?? null;
+}
+
+/** Edit distance for short, bounded answer keys, including swapped letters. */
+function editDistance(a: string, b: string): number {
+  const rows = Array.from({ length: a.length + 1 }, (_, i) => [
+    i,
+    ...Array<number>(b.length).fill(0),
+  ]);
+  for (let j = 0; j <= b.length; j++) rows[0][j] = j;
+  for (let i = 1; i <= a.length; i++)
+    for (let j = 1; j <= b.length; j++) {
+      rows[i][j] = Math.min(
+        rows[i - 1][j] + 1,
+        rows[i][j - 1] + 1,
+        rows[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1),
+      );
+      if (i > 1 && j > 1 && a[i - 1] === b[j - 2] && a[i - 2] === b[j - 1])
+        rows[i][j] = Math.min(rows[i][j], rows[i - 2][j - 2] + 1);
+    }
+  return rows[a.length][b.length];
+}
+
+/** Suggestions never submit an answer or reveal its score. */
+export function suggestAnswers(
+  theme: Theme,
+  guess: string,
+  limit = 1,
+): Answer[] {
+  if (guess.length > 100) return [];
+  const key = answerKey(guess);
+  if (
+    key.length < 3 ||
+    theme.answers.some((answer) => answer.keys.includes(key))
+  )
+    return [];
+  const candidates = theme.answers.flatMap((answer) => {
+    let rank = Infinity;
+    for (const spelling of answer.keys) {
+      if (spelling.startsWith(key))
+        rank = Math.min(rank, 0.5 + (spelling.length - key.length) / 100);
+      else if (key.length >= 4 && Math.abs(spelling.length - key.length) <= 2) {
+        const distance = editDistance(key, spelling);
+        if (distance <= (key.length >= 8 ? 2 : 1))
+          rank = Math.min(rank, distance);
+      }
+    }
+    return Number.isFinite(rank) ? [{ answer, rank }] : [];
+  });
+  return candidates
+    .sort(
+      (a, b) =>
+        a.rank - b.rank || a.answer.name.localeCompare(b.answer.name, "pt-BR"),
+    )
+    .slice(0, Math.max(0, Math.min(limit, 1)))
+    .map(({ answer }) => answer);
 }
 
 /**

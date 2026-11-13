@@ -7,6 +7,7 @@ import {
   type CSSProperties,
 } from "react";
 import { Play, ArrowRight } from "lucide-react";
+import GameHelp from "../../components/GameHelp";
 import { useSettings } from "@/shared/i18n/SettingsContext";
 import { playCopy } from "@/shared/i18n/play";
 import { useUnlock } from "@/features/achievements/hooks/AchievementContext";
@@ -179,6 +180,11 @@ export default function MemoryGame() {
         </span>
       </div>
       <h2 id="memory-title">{c.memory}</h2>
+      <GameHelp>
+        {language === "pt"
+          ? "Repita a sequência de sinais na ordem em que aparecem. Cada rodada acrescenta um sinal. Use os botões ou as teclas de 1 a 5."
+          : "Repeat the signs in the order shown. Each round adds a sign. Use the buttons or keys 1 to 5."}
+      </GameHelp>
       <div className="level-picker" role="group" aria-label={c.level}>
         {LEVEL_IDS.map((id) => (
           <button
