@@ -1502,6 +1502,8 @@
 }
 /* Rolling: the companion becomes a 3D die until it lands on its number. */
 .pet-die[data-mode="3d"] > .companion-art {
+  /* Opacity, not visibility: each pixel frame sets visibility: visible itself. */
+  opacity: 0;
   visibility: hidden;
 }
 .pet-die[data-mode="3d"] > .die-3d {
@@ -1717,6 +1719,8 @@
   }
 }
 .hero-dice-art[data-mode="3d"] > .hero-dice-pet {
+  /* Opacity, not visibility: each pixel frame sets visibility: visible itself. */
+  opacity: 0;
   visibility: hidden;
 }
 .hero-dice-art > .die-3d {
