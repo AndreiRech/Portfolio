@@ -1,0 +1,1472 @@
+{
+  "bands": [
+    {
+      "name": "Metallica",
+      "work": "One",
+      "year": 1990,
+      "points": 1,
+      "source": "https://www.grammy.com/awards/32nd-annual-grammy-awards"
+    },
+    {
+      "name": "Foo Fighters",
+      "work": "There Is Nothing Left to Lose",
+      "year": 2001,
+      "points": 2,
+      "source": "https://www.grammy.com/awards/43rd-annual-grammy-awards"
+    },
+    {
+      "name": "Linkin Park",
+      "work": "Crawling",
+      "year": 2002,
+      "points": 2,
+      "source": "https://www.grammy.com/awards/44th-annual-grammy-awards"
+    },
+    {
+      "name": "Nirvana",
+      "work": "MTV Unplugged in New York",
+      "year": 1996,
+      "points": 2,
+      "source": "https://www.grammy.com/awards/38th-annual-grammy-awards"
+    },
+    {
+      "name": "U2",
+      "work": "The Joshua Tree",
+      "year": 1988,
+      "points": 2,
+      "source": "https://www.grammy.com/awards/30th-annual-grammy-awards"
+    },
+    {
+      "name": "Coldplay",
+      "work": "Parachutes",
+      "year": 2002,
+      "points": 2,
+      "source": "https://www.grammy.com/awards/44th-annual-grammy-awards"
+    },
+    {
+      "name": "Muse",
+      "work": "The Resistance",
+      "year": 2011,
+      "points": 3,
+      "source": "https://www.grammy.com/awards/53rd-annual-grammy-awards"
+    },
+    {
+      "name": "Green Day",
+      "work": "Dookie",
+      "year": 1995,
+      "points": 2,
+      "source": "https://www.grammy.com/awards/37th-annual-grammy-awards"
+    },
+    {
+      "name": "Red Hot Chili Peppers",
+      "work": "Give It Away",
+      "year": 1993,
+      "points": 2,
+      "source": "https://www.grammy.com/awards/35th-annual-grammy-awards"
+    },
+    {
+      "name": "Pearl Jam",
+      "work": "Spin the Black Circle",
+      "year": 1996,
+      "points": 3,
+      "source": "https://www.grammy.com/awards/38th-annual-grammy-awards"
+    },
+    {
+      "name": "Soundgarden",
+      "work": "Black Hole Sun",
+      "year": 1995,
+      "points": 4,
+      "source": "https://www.grammy.com/awards/37th-annual-grammy-awards"
+    },
+    {
+      "name": "Evanescence",
+      "work": "Bring Me to Life",
+      "year": 2004,
+      "points": 3,
+      "source": "https://www.grammy.com/awards/46th-annual-grammy-awards"
+    },
+    {
+      "name": "Imagine Dragons",
+      "work": "Radioactive",
+      "year": 2014,
+      "points": 2,
+      "source": "https://www.grammy.com/awards/56th-annual-grammy-awards"
+    },
+    {
+      "name": "Maroon 5",
+      "work": "Best New Artist",
+      "year": 2005,
+      "points": 3,
+      "source": "https://www.grammy.com/awards/47th-annual-grammy-awards"
+    },
+    {
+      "name": "Arcade Fire",
+      "work": "The Suburbs",
+      "year": 2011,
+      "points": 5,
+      "source": "https://www.grammy.com/awards/53rd-annual-grammy-awards"
+    },
+    {
+      "name": "Radiohead",
+      "work": "OK Computer",
+      "year": 1998,
+      "points": 4,
+      "source": "https://www.grammy.com/awards/40th-annual-grammy-awards"
+    },
+    {
+      "name": "The White Stripes",
+      "work": "Elephant",
+      "year": 2004,
+      "points": 4,
+      "source": "https://www.grammy.com/awards/46th-annual-grammy-awards"
+    },
+    {
+      "name": "The Black Keys",
+      "work": "Brothers",
+      "year": 2011,
+      "points": 5,
+      "source": "https://www.grammy.com/awards/53rd-annual-grammy-awards"
+    },
+    {
+      "name": "Kings of Leon",
+      "work": "Use Somebody",
+      "year": 2010,
+      "points": 4,
+      "source": "https://www.grammy.com/awards/52nd-annual-grammy-awards"
+    },
+    {
+      "name": "Paramore",
+      "work": "This Is Why",
+      "year": 2024,
+      "points": 3,
+      "source": "https://www.grammy.com/awards/66th-annual-grammy-awards-2023/"
+    },
+    {
+      "name": "Wet Leg",
+      "work": "Wet Leg",
+      "year": 2023,
+      "points": 7,
+      "source": "https://www.grammy.com/awards/65th-annual-grammy-awards"
+    },
+    {
+      "name": "Alabama Shakes",
+      "work": "Sound and Color",
+      "year": 2016,
+      "points": 6,
+      "source": "https://www.grammy.com/awards/58th-annual-grammy-awards"
+    },
+    {
+      "name": "Fleetwood Mac",
+      "work": "Rumours",
+      "year": 1978,
+      "points": 4,
+      "source": "https://www.grammy.com/awards/20th-annual-grammy-awards"
+    },
+    {
+      "name": "Steely Dan",
+      "work": "Two Against Nature",
+      "year": 2001,
+      "points": 6,
+      "source": "https://www.grammy.com/awards/43rd-annual-grammy-awards"
+    },
+    {
+      "name": "Toto",
+      "work": "Rosanna",
+      "year": 1983,
+      "points": 5,
+      "source": "https://www.grammy.com/awards/25th-annual-grammy-awards"
+    },
+    {
+      "name": "Dire Straits",
+      "work": "Money for Nothing",
+      "year": 1986,
+      "points": 4,
+      "source": "https://www.grammy.com/awards/28th-annual-grammy-awards"
+    },
+    {
+      "name": "The Police",
+      "work": "Synchronicity II",
+      "year": 1984,
+      "points": 4,
+      "source": "https://www.grammy.com/awards/26th-annual-grammy-awards"
+    },
+    {
+      "name": "The Beatles",
+      "work": "Best New Artist",
+      "year": 1965,
+      "points": 1,
+      "source": "https://www.grammy.com/awards/7th-annual-grammy-awards"
+    },
+    {
+      "name": "The Rolling Stones",
+      "work": "Voodoo Lounge",
+      "year": 1995,
+      "points": 2,
+      "source": "https://www.grammy.com/awards/37th-annual-grammy-awards"
+    },
+    {
+      "name": "Eagles",
+      "work": "Hotel California",
+      "year": 1978,
+      "points": 3,
+      "source": "https://www.grammy.com/awards/20th-annual-grammy-awards"
+    },
+    {
+      "name": "Led Zeppelin",
+      "work": "Celebration Day",
+      "year": 2014,
+      "points": 3,
+      "source": "https://www.grammy.com/awards/56th-annual-grammy-awards"
+    },
+    {
+      "name": "Black Sabbath",
+      "work": "Iron Man",
+      "year": 2000,
+      "points": 3,
+      "source": "https://www.grammy.com/awards/42nd-annual-grammy-awards"
+    },
+    {
+      "name": "Judas Priest",
+      "work": "Dissident Aggressor",
+      "year": 2010,
+      "points": 4,
+      "source": "https://www.grammy.com/awards/52nd-annual-grammy-awards"
+    },
+    {
+      "name": "Iron Maiden",
+      "work": "El Dorado",
+      "year": 2011,
+      "points": 3,
+      "source": "https://www.grammy.com/awards/53rd-annual-grammy-awards"
+    },
+    {
+      "name": "Slayer",
+      "work": "Eyes of the Insane",
+      "year": 2007,
+      "points": 4,
+      "source": "https://www.grammy.com/awards/49th-annual-grammy-awards"
+    },
+    {
+      "name": "Megadeth",
+      "work": "Dystopia",
+      "year": 2017,
+      "points": 4,
+      "source": "https://www.grammy.com/awards/59th-annual-grammy-awards"
+    },
+    {
+      "name": "Ghost",
+      "work": "Cirice",
+      "year": 2016,
+      "points": 4,
+      "source": "https://www.grammy.com/awards/58th-annual-grammy-awards"
+    },
+    {
+      "name": "Tool",
+      "work": "Schism",
+      "year": 2002,
+      "points": 5,
+      "source": "https://www.grammy.com/awards/44th-annual-grammy-awards"
+    },
+    {
+      "name": "Slipknot",
+      "work": "Before I Forget",
+      "year": 2006,
+      "points": 3,
+      "source": "https://www.grammy.com/awards/48th-annual-grammy-awards"
+    },
+    {
+      "name": "Deftones",
+      "work": "Elite",
+      "year": 2001,
+      "points": 5,
+      "source": "https://www.grammy.com/awards/43rd-annual-grammy-awards"
+    },
+    {
+      "name": "Jethro Tull",
+      "work": "Crest of a Knave",
+      "year": 1989,
+      "points": 7,
+      "source": "https://www.grammy.com/awards/31st-annual-grammy-awards"
+    },
+    {
+      "name": "Yes",
+      "work": "Cinema",
+      "year": 1985,
+      "points": 6,
+      "source": "https://www.grammy.com/awards/27th-annual-grammy-awards"
+    },
+    {
+      "name": "Daft Punk",
+      "work": "Random Access Memories",
+      "year": 2014,
+      "points": 3,
+      "source": "https://www.grammy.com/awards/56th-annual-grammy-awards"
+    },
+    {
+      "name": "AC/DC",
+      "work": "War Machine",
+      "year": 2010,
+      "points": 2,
+      "source": "https://www.grammy.com/awards/52nd-annual-grammy-awards"
+    },
+    {
+      "name": "Aerosmith",
+      "work": "Janie's Got a Gun",
+      "year": 1991,
+      "points": 3,
+      "source": "https://www.grammy.com/awards/33rd-annual-grammy-awards"
+    },
+    {
+      "name": "Rage Against the Machine",
+      "work": "Tire Me",
+      "year": 1997,
+      "points": 4,
+      "source": "https://www.grammy.com/awards/39th-annual-grammy-awards"
+    },
+    {
+      "name": "The Smashing Pumpkins",
+      "work": "Bullet with Butterfly Wings",
+      "year": 1997,
+      "points": 5,
+      "source": "https://www.grammy.com/awards/39th-annual-grammy-awards"
+    },
+    {
+      "name": "Stone Temple Pilots",
+      "work": "Plush",
+      "year": 1994,
+      "points": 6,
+      "source": "https://www.grammy.com/awards/36th-annual-grammy-awards"
+    },
+    {
+      "name": "Weezer",
+      "work": "Pork and Beans",
+      "year": 2009,
+      "points": 5,
+      "source": "https://www.grammy.com/awards/51st-annual-grammy-awards"
+    },
+    {
+      "name": "OK Go",
+      "work": "Here It Goes Again",
+      "year": 2007,
+      "points": 7,
+      "source": "https://www.grammy.com/awards/49th-annual-grammy-awards"
+    },
+    {
+      "name": "Wolfmother",
+      "work": "Woman",
+      "year": 2007,
+      "points": 8,
+      "source": "https://www.grammy.com/awards/49th-annual-grammy-awards"
+    },
+    {
+      "name": "Portugal. The Man",
+      "work": "Feel It Still",
+      "year": 2018,
+      "points": 7,
+      "source": "https://www.grammy.com/awards/60th-annual-grammy-awards"
+    },
+    {
+      "name": "Cage the Elephant",
+      "work": "Tell Me I'm Pretty",
+      "year": 2017,
+      "points": 6,
+      "source": "https://www.grammy.com/awards/59th-annual-grammy-awards"
+    },
+    {
+      "name": "The Strokes",
+      "work": "The New Abnormal",
+      "year": 2021,
+      "points": 5,
+      "source": "https://www.grammy.com/awards/63rd-annual-grammy-awards"
+    }
+  ],
+  "films": [
+    {
+      "name": "Titanic",
+      "english": "Titanic",
+      "year": 1998,
+      "points": 1,
+      "source": "https://www.oscars.org/oscars/ceremonies/1998",
+      "category": "Melhor filme"
+    },
+    {
+      "name": "O Poderoso Chefão",
+      "english": "The Godfather",
+      "year": 1973,
+      "points": 2,
+      "source": "https://www.oscars.org/oscars/ceremonies/1973",
+      "category": "Melhor filme"
+    },
+    {
+      "name": "O Poderoso Chefão Parte II",
+      "english": "The Godfather Part II",
+      "year": 1975,
+      "points": 3,
+      "source": "https://www.oscars.org/oscars/ceremonies/1975",
+      "category": "Melhor filme"
+    },
+    {
+      "name": "O Senhor dos Anéis O Retorno do Rei",
+      "english": "The Lord of the Rings The Return of the King",
+      "year": 2004,
+      "points": 2,
+      "source": "https://www.oscars.org/oscars/ceremonies/2004",
+      "category": "Melhor filme"
+    },
+    {
+      "name": "Forrest Gump",
+      "english": "Forrest Gump",
+      "year": 1995,
+      "points": 2,
+      "source": "https://www.oscars.org/oscars/ceremonies/1995",
+      "category": "Melhor filme"
+    },
+    {
+      "name": "A Lista de Schindler",
+      "english": "Schindler's List",
+      "year": 1994,
+      "points": 3,
+      "source": "https://www.oscars.org/oscars/ceremonies/1994",
+      "category": "Melhor filme"
+    },
+    {
+      "name": "Gladiador",
+      "english": "Gladiator",
+      "year": 2001,
+      "points": 2,
+      "source": "https://www.oscars.org/oscars/ceremonies/2001",
+      "category": "Melhor filme"
+    },
+    {
+      "name": "Coração Valente",
+      "english": "Braveheart",
+      "year": 1996,
+      "points": 3,
+      "source": "https://www.oscars.org/oscars/ceremonies/1996",
+      "category": "Melhor filme"
+    },
+    {
+      "name": "Uma Mente Brilhante",
+      "english": "A Beautiful Mind",
+      "year": 2002,
+      "points": 4,
+      "source": "https://www.oscars.org/oscars/ceremonies/2002",
+      "category": "Melhor filme"
+    },
+    {
+      "name": "Chicago",
+      "english": "Chicago",
+      "year": 2003,
+      "points": 4,
+      "source": "https://www.oscars.org/oscars/ceremonies/2003",
+      "category": "Melhor filme"
+    },
+    {
+      "name": "Menina de Ouro",
+      "english": "Million Dollar Baby",
+      "year": 2005,
+      "points": 4,
+      "source": "https://www.oscars.org/oscars/ceremonies/2005",
+      "category": "Melhor filme"
+    },
+    {
+      "name": "Crash No Limite",
+      "english": "Crash",
+      "year": 2006,
+      "points": 5,
+      "source": "https://www.oscars.org/oscars/ceremonies/2006",
+      "category": "Melhor filme"
+    },
+    {
+      "name": "Os Infiltrados",
+      "english": "The Departed",
+      "year": 2007,
+      "points": 4,
+      "source": "https://www.oscars.org/oscars/ceremonies/2007",
+      "category": "Melhor filme"
+    },
+    {
+      "name": "Onde os Fracos Não Têm Vez",
+      "english": "No Country for Old Men",
+      "year": 2008,
+      "points": 4,
+      "source": "https://www.oscars.org/oscars/ceremonies/2008",
+      "category": "Melhor filme"
+    },
+    {
+      "name": "Quem Quer Ser um Milionário",
+      "english": "Slumdog Millionaire",
+      "year": 2009,
+      "points": 4,
+      "source": "https://www.oscars.org/oscars/ceremonies/2009",
+      "category": "Melhor filme"
+    },
+    {
+      "name": "Guerra ao Terror",
+      "english": "The Hurt Locker",
+      "year": 2010,
+      "points": 5,
+      "source": "https://www.oscars.org/oscars/ceremonies/2010",
+      "category": "Melhor filme"
+    },
+    {
+      "name": "O Discurso do Rei",
+      "english": "The King's Speech",
+      "year": 2011,
+      "points": 4,
+      "source": "https://www.oscars.org/oscars/ceremonies/2011",
+      "category": "Melhor filme"
+    },
+    {
+      "name": "O Artista",
+      "english": "The Artist",
+      "year": 2012,
+      "points": 5,
+      "source": "https://www.oscars.org/oscars/ceremonies/2012",
+      "category": "Melhor filme"
+    },
+    {
+      "name": "Argo",
+      "english": "Argo",
+      "year": 2013,
+      "points": 4,
+      "source": "https://www.oscars.org/oscars/ceremonies/2013",
+      "category": "Melhor filme"
+    },
+    {
+      "name": "12 Anos de Escravidão",
+      "english": "12 Years a Slave",
+      "year": 2014,
+      "points": 4,
+      "source": "https://www.oscars.org/oscars/ceremonies/2014",
+      "category": "Melhor filme"
+    },
+    {
+      "name": "Birdman",
+      "english": "Birdman",
+      "year": 2015,
+      "points": 5,
+      "source": "https://www.oscars.org/oscars/ceremonies/2015",
+      "category": "Melhor filme"
+    },
+    {
+      "name": "Spotlight Segredos Revelados",
+      "english": "Spotlight",
+      "year": 2016,
+      "points": 5,
+      "source": "https://www.oscars.org/oscars/ceremonies/2016",
+      "category": "Melhor filme"
+    },
+    {
+      "name": "Moonlight Sob a Luz do Luar",
+      "english": "Moonlight",
+      "year": 2017,
+      "points": 4,
+      "source": "https://www.oscars.org/oscars/ceremonies/2017",
+      "category": "Melhor filme"
+    },
+    {
+      "name": "A Forma da Água",
+      "english": "The Shape of Water",
+      "year": 2018,
+      "points": 4,
+      "source": "https://www.oscars.org/oscars/ceremonies/2018",
+      "category": "Melhor filme"
+    },
+    {
+      "name": "Green Book O Guia",
+      "english": "Green Book",
+      "year": 2019,
+      "points": 4,
+      "source": "https://www.oscars.org/oscars/ceremonies/2019",
+      "category": "Melhor filme"
+    },
+    {
+      "name": "Parasita",
+      "english": "Parasite",
+      "year": 2020,
+      "points": 2,
+      "source": "https://www.oscars.org/oscars/ceremonies/2020",
+      "category": "Melhor filme"
+    },
+    {
+      "name": "Nomadland",
+      "english": "Nomadland",
+      "year": 2021,
+      "points": 5,
+      "source": "https://www.oscars.org/oscars/ceremonies/2021",
+      "category": "Melhor filme"
+    },
+    {
+      "name": "No Ritmo do Coração",
+      "english": "CODA",
+      "year": 2022,
+      "points": 5,
+      "source": "https://www.oscars.org/oscars/ceremonies/2022",
+      "category": "Melhor filme"
+    },
+    {
+      "name": "Tudo em Todo o Lugar ao Mesmo Tempo",
+      "english": "Everything Everywhere All at Once",
+      "year": 2023,
+      "points": 3,
+      "source": "https://www.oscars.org/oscars/ceremonies/2023",
+      "category": "Melhor filme"
+    },
+    {
+      "name": "Oppenheimer",
+      "english": "Oppenheimer",
+      "year": 2024,
+      "points": 2,
+      "source": "https://www.oscars.org/oscars/ceremonies/2024",
+      "category": "Melhor filme"
+    },
+    {
+      "name": "Beleza Americana",
+      "english": "American Beauty",
+      "year": 2000,
+      "points": 4,
+      "source": "https://www.oscars.org/oscars/ceremonies/2000",
+      "category": "Melhor filme"
+    },
+    {
+      "name": "Shakespeare Apaixonado",
+      "english": "Shakespeare in Love",
+      "year": 1999,
+      "points": 5,
+      "source": "https://www.oscars.org/oscars/ceremonies/1999",
+      "category": "Melhor filme"
+    },
+    {
+      "name": "O Paciente Inglês",
+      "english": "The English Patient",
+      "year": 1997,
+      "points": 6,
+      "source": "https://www.oscars.org/oscars/ceremonies/1997",
+      "category": "Melhor filme"
+    },
+    {
+      "name": "Os Imperdoáveis",
+      "english": "Unforgiven",
+      "year": 1993,
+      "points": 5,
+      "source": "https://www.oscars.org/oscars/ceremonies/1993",
+      "category": "Melhor filme"
+    },
+    {
+      "name": "O Silêncio dos Inocentes",
+      "english": "The Silence of the Lambs",
+      "year": 1992,
+      "points": 3,
+      "source": "https://www.oscars.org/oscars/ceremonies/1992",
+      "category": "Melhor filme"
+    },
+    {
+      "name": "Dança com Lobos",
+      "english": "Dances with Wolves",
+      "year": 1991,
+      "points": 5,
+      "source": "https://www.oscars.org/oscars/ceremonies/1991",
+      "category": "Melhor filme"
+    },
+    {
+      "name": "Conduzindo Miss Daisy",
+      "english": "Driving Miss Daisy",
+      "year": 1990,
+      "points": 6,
+      "source": "https://www.oscars.org/oscars/ceremonies/1990",
+      "category": "Melhor filme"
+    },
+    {
+      "name": "Rain Man",
+      "english": "Rain Man",
+      "year": 1989,
+      "points": 4,
+      "source": "https://www.oscars.org/oscars/ceremonies/1989",
+      "category": "Melhor filme"
+    },
+    {
+      "name": "O Último Imperador",
+      "english": "The Last Emperor",
+      "year": 1988,
+      "points": 6,
+      "source": "https://www.oscars.org/oscars/ceremonies/1988",
+      "category": "Melhor filme"
+    },
+    {
+      "name": "Platoon",
+      "english": "Platoon",
+      "year": 1987,
+      "points": 5,
+      "source": "https://www.oscars.org/oscars/ceremonies/1987",
+      "category": "Melhor filme"
+    },
+    {
+      "name": "Entre Dois Amores",
+      "english": "Out of Africa",
+      "year": 1986,
+      "points": 6,
+      "source": "https://www.oscars.org/oscars/ceremonies/1986",
+      "category": "Melhor filme"
+    },
+    {
+      "name": "Amadeus",
+      "english": "Amadeus",
+      "year": 1985,
+      "points": 5,
+      "source": "https://www.oscars.org/oscars/ceremonies/1985",
+      "category": "Melhor filme"
+    },
+    {
+      "name": "Laços de Ternura",
+      "english": "Terms of Endearment",
+      "year": 1984,
+      "points": 6,
+      "source": "https://www.oscars.org/oscars/ceremonies/1984",
+      "category": "Melhor filme"
+    },
+    {
+      "name": "Gandhi",
+      "english": "Gandhi",
+      "year": 1983,
+      "points": 5,
+      "source": "https://www.oscars.org/oscars/ceremonies/1983",
+      "category": "Melhor filme"
+    },
+    {
+      "name": "Carruagens de Fogo",
+      "english": "Chariots of Fire",
+      "year": 1982,
+      "points": 6,
+      "source": "https://www.oscars.org/oscars/ceremonies/1982",
+      "category": "Melhor filme"
+    },
+    {
+      "name": "Gente como a Gente",
+      "english": "Ordinary People",
+      "year": 1981,
+      "points": 7,
+      "source": "https://www.oscars.org/oscars/ceremonies/1981",
+      "category": "Melhor filme"
+    },
+    {
+      "name": "Kramer vs. Kramer",
+      "english": "Kramer vs Kramer",
+      "year": 1980,
+      "points": 6,
+      "source": "https://www.oscars.org/oscars/ceremonies/1980",
+      "category": "Melhor filme"
+    },
+    {
+      "name": "O Franco-Atirador",
+      "english": "The Deer Hunter",
+      "year": 1979,
+      "points": 6,
+      "source": "https://www.oscars.org/oscars/ceremonies/1979",
+      "category": "Melhor filme"
+    },
+    {
+      "name": "Noivo Neurótico Noiva Nervosa",
+      "english": "Annie Hall",
+      "year": 1978,
+      "points": 6,
+      "source": "https://www.oscars.org/oscars/ceremonies/1978",
+      "category": "Melhor filme"
+    },
+    {
+      "name": "Rocky Um Lutador",
+      "english": "Rocky",
+      "year": 1977,
+      "points": 3,
+      "source": "https://www.oscars.org/oscars/ceremonies/1977",
+      "category": "Melhor filme"
+    },
+    {
+      "name": "Um Estranho no Ninho",
+      "english": "One Flew Over the Cuckoo's Nest",
+      "year": 1976,
+      "points": 5,
+      "source": "https://www.oscars.org/oscars/ceremonies/1976",
+      "category": "Melhor filme"
+    },
+    {
+      "name": "Golpe de Mestre",
+      "english": "The Sting",
+      "year": 1974,
+      "points": 6,
+      "source": "https://www.oscars.org/oscars/ceremonies/1974",
+      "category": "Melhor filme"
+    },
+    {
+      "name": "Operação França",
+      "english": "The French Connection",
+      "year": 1972,
+      "points": 6,
+      "source": "https://www.oscars.org/oscars/ceremonies/1972",
+      "category": "Melhor filme"
+    },
+    {
+      "name": "Patton Rebelde ou Herói",
+      "english": "Patton",
+      "year": 1971,
+      "points": 7,
+      "source": "https://www.oscars.org/oscars/ceremonies/1971",
+      "category": "Melhor filme"
+    },
+    {
+      "name": "Perdidos na Noite",
+      "english": "Midnight Cowboy",
+      "year": 1970,
+      "points": 7,
+      "source": "https://www.oscars.org/oscars/ceremonies/1970",
+      "category": "Melhor filme"
+    },
+    {
+      "name": "Oliver",
+      "english": "Oliver!",
+      "year": 1969,
+      "points": 7,
+      "source": "https://www.oscars.org/oscars/ceremonies/1969",
+      "category": "Melhor filme"
+    },
+    {
+      "name": "No Calor da Noite",
+      "english": "In the Heat of the Night",
+      "year": 1968,
+      "points": 7,
+      "source": "https://www.oscars.org/oscars/ceremonies/1968",
+      "category": "Melhor filme"
+    },
+    {
+      "name": "O Homem que Não Vendeu Sua Alma",
+      "english": "A Man for All Seasons",
+      "year": 1967,
+      "points": 8,
+      "source": "https://www.oscars.org/oscars/ceremonies/1967",
+      "category": "Melhor filme"
+    },
+    {
+      "name": "A Noviça Rebelde",
+      "english": "The Sound of Music",
+      "year": 1966,
+      "points": 4,
+      "source": "https://www.oscars.org/oscars/ceremonies/1966",
+      "category": "Melhor filme"
+    },
+    {
+      "name": "Minha Bela Dama",
+      "english": "My Fair Lady",
+      "year": 1965,
+      "points": 5,
+      "source": "https://www.oscars.org/oscars/ceremonies/1965",
+      "category": "Melhor filme"
+    },
+    {
+      "name": "As Aventuras de Tom Jones",
+      "english": "Tom Jones",
+      "year": 1964,
+      "points": 8,
+      "source": "https://www.oscars.org/oscars/ceremonies/1964",
+      "category": "Melhor filme"
+    },
+    {
+      "name": "Lawrence da Arábia",
+      "english": "Lawrence of Arabia",
+      "year": 1963,
+      "points": 5,
+      "source": "https://www.oscars.org/oscars/ceremonies/1963",
+      "category": "Melhor filme"
+    },
+    {
+      "name": "Amor Sublime Amor",
+      "english": "West Side Story",
+      "year": 1962,
+      "points": 5,
+      "source": "https://www.oscars.org/oscars/ceremonies/1962",
+      "category": "Melhor filme"
+    },
+    {
+      "name": "Se Meu Apartamento Falasse",
+      "english": "The Apartment",
+      "year": 1961,
+      "points": 7,
+      "source": "https://www.oscars.org/oscars/ceremonies/1961",
+      "category": "Melhor filme"
+    },
+    {
+      "name": "Ben-Hur",
+      "english": "Ben Hur",
+      "year": 1960,
+      "points": 4,
+      "source": "https://www.oscars.org/oscars/ceremonies/1960",
+      "category": "Melhor filme"
+    },
+    {
+      "name": "Gigi",
+      "english": "Gigi",
+      "year": 1959,
+      "points": 7,
+      "source": "https://www.oscars.org/oscars/ceremonies/1959",
+      "category": "Melhor filme"
+    },
+    {
+      "name": "A Ponte do Rio Kwai",
+      "english": "The Bridge on the River Kwai",
+      "year": 1958,
+      "points": 6,
+      "source": "https://www.oscars.org/oscars/ceremonies/1958",
+      "category": "Melhor filme"
+    },
+    {
+      "name": "A Volta ao Mundo em 80 Dias",
+      "english": "Around the World in 80 Days",
+      "year": 1957,
+      "points": 5,
+      "source": "https://www.oscars.org/oscars/ceremonies/1957",
+      "category": "Melhor filme"
+    },
+    {
+      "name": "Marty",
+      "english": "Marty",
+      "year": 1956,
+      "points": 8,
+      "source": "https://www.oscars.org/oscars/ceremonies/1956",
+      "category": "Melhor filme"
+    },
+    {
+      "name": "Sindicato de Ladrões",
+      "english": "On the Waterfront",
+      "year": 1955,
+      "points": 6,
+      "source": "https://www.oscars.org/oscars/ceremonies/1955",
+      "category": "Melhor filme"
+    },
+    {
+      "name": "A Um Passo da Eternidade",
+      "english": "From Here to Eternity",
+      "year": 1954,
+      "points": 7,
+      "source": "https://www.oscars.org/oscars/ceremonies/1954",
+      "category": "Melhor filme"
+    },
+    {
+      "name": "O Maior Espetáculo da Terra",
+      "english": "The Greatest Show on Earth",
+      "year": 1953,
+      "points": 8,
+      "source": "https://www.oscars.org/oscars/ceremonies/1953",
+      "category": "Melhor filme"
+    },
+    {
+      "name": "Sinfonia de Paris",
+      "english": "An American in Paris",
+      "year": 1952,
+      "points": 7,
+      "source": "https://www.oscars.org/oscars/ceremonies/1952",
+      "category": "Melhor filme"
+    },
+    {
+      "name": "A Malvada",
+      "english": "All About Eve",
+      "year": 1951,
+      "points": 6,
+      "source": "https://www.oscars.org/oscars/ceremonies/1951",
+      "category": "Melhor filme"
+    },
+    {
+      "name": "A Grande Ilusão",
+      "english": "All the King's Men",
+      "year": 1950,
+      "points": 8,
+      "source": "https://www.oscars.org/oscars/ceremonies/1950",
+      "category": "Melhor filme"
+    },
+    {
+      "name": "Hamlet",
+      "english": "Hamlet",
+      "year": 1949,
+      "points": 6,
+      "source": "https://www.oscars.org/oscars/ceremonies/1949",
+      "category": "Melhor filme"
+    },
+    {
+      "name": "A Luz é para Todos",
+      "english": "Gentleman's Agreement",
+      "year": 1948,
+      "points": 8,
+      "source": "https://www.oscars.org/oscars/ceremonies/1948",
+      "category": "Melhor filme"
+    },
+    {
+      "name": "Os Melhores Anos de Nossas Vidas",
+      "english": "The Best Years of Our Lives",
+      "year": 1947,
+      "points": 7,
+      "source": "https://www.oscars.org/oscars/ceremonies/1947",
+      "category": "Melhor filme"
+    },
+    {
+      "name": "Farrapo Humano",
+      "english": "The Lost Weekend",
+      "year": 1946,
+      "points": 8,
+      "source": "https://www.oscars.org/oscars/ceremonies/1946",
+      "category": "Melhor filme"
+    },
+    {
+      "name": "O Bom Pastor",
+      "english": "Going My Way",
+      "year": 1945,
+      "points": 8,
+      "source": "https://www.oscars.org/oscars/ceremonies/1945",
+      "category": "Melhor filme"
+    },
+    {
+      "name": "Casablanca",
+      "english": "Casablanca",
+      "year": 1944,
+      "points": 4,
+      "source": "https://www.oscars.org/oscars/ceremonies/1944",
+      "category": "Melhor filme"
+    },
+    {
+      "name": "Rosa de Esperança",
+      "english": "Mrs Miniver",
+      "year": 1943,
+      "points": 8,
+      "source": "https://www.oscars.org/oscars/ceremonies/1943",
+      "category": "Melhor filme"
+    },
+    {
+      "name": "Como Era Verde o Meu Vale",
+      "english": "How Green Was My Valley",
+      "year": 1942,
+      "points": 7,
+      "source": "https://www.oscars.org/oscars/ceremonies/1942",
+      "category": "Melhor filme"
+    },
+    {
+      "name": "Rebecca A Mulher Inesquecível",
+      "english": "Rebecca",
+      "year": 1941,
+      "points": 6,
+      "source": "https://www.oscars.org/oscars/ceremonies/1941",
+      "category": "Melhor filme"
+    },
+    {
+      "name": "E o Vento Levou",
+      "english": "Gone with the Wind",
+      "year": 1940,
+      "points": 4,
+      "source": "https://www.oscars.org/oscars/ceremonies/1940",
+      "category": "Melhor filme"
+    },
+    {
+      "name": "Do Mundo Nada se Leva",
+      "english": "You Can't Take It with You",
+      "year": 1939,
+      "points": 8,
+      "source": "https://www.oscars.org/oscars/ceremonies/1939",
+      "category": "Melhor filme"
+    },
+    {
+      "name": "A Vida de Emile Zola",
+      "english": "The Life of Emile Zola",
+      "year": 1938,
+      "points": 8,
+      "source": "https://www.oscars.org/oscars/ceremonies/1938",
+      "category": "Melhor filme"
+    },
+    {
+      "name": "Ziegfeld O Criador de Estrelas",
+      "english": "The Great Ziegfeld",
+      "year": 1937,
+      "points": 8,
+      "source": "https://www.oscars.org/oscars/ceremonies/1937",
+      "category": "Melhor filme"
+    },
+    {
+      "name": "O Grande Motim",
+      "english": "Mutiny on the Bounty",
+      "year": 1936,
+      "points": 7,
+      "source": "https://www.oscars.org/oscars/ceremonies/1936",
+      "category": "Melhor filme"
+    },
+    {
+      "name": "Aconteceu Naquela Noite",
+      "english": "It Happened One Night",
+      "year": 1935,
+      "points": 6,
+      "source": "https://www.oscars.org/oscars/ceremonies/1935",
+      "category": "Melhor filme"
+    },
+    {
+      "name": "Cavalgada",
+      "english": "Cavalcade",
+      "year": 1934,
+      "points": 8,
+      "source": "https://www.oscars.org/oscars/ceremonies/1934",
+      "category": "Melhor filme"
+    },
+    {
+      "name": "Grande Hotel",
+      "english": "Grand Hotel",
+      "year": 1932,
+      "points": 7,
+      "source": "https://www.oscars.org/oscars/ceremonies/1932",
+      "category": "Melhor filme"
+    },
+    {
+      "name": "Cimarron",
+      "english": "Cimarron",
+      "year": 1931,
+      "points": 8,
+      "source": "https://www.oscars.org/oscars/ceremonies/1931",
+      "category": "Melhor filme"
+    },
+    {
+      "name": "Sem Novidade no Front (1930)",
+      "english": "All Quiet on the Western Front (1930)",
+      "year": 1930,
+      "points": 6,
+      "source": "https://www.oscars.org/oscars/ceremonies/1930",
+      "category": "Melhor filme"
+    },
+    {
+      "name": "Melodia da Broadway",
+      "english": "The Broadway Melody",
+      "year": 1930,
+      "points": 8,
+      "source": "https://www.oscars.org/oscars/ceremonies/1930/F",
+      "category": "Melhor filme"
+    },
+    {
+      "name": "Asas",
+      "english": "Wings",
+      "year": 1929,
+      "points": 7,
+      "source": "https://www.oscars.org/oscars/ceremonies/1929",
+      "category": "Melhor filme"
+    },
+    {
+      "name": "Matrix",
+      "english": "The Matrix",
+      "year": 2000,
+      "category": "Efeitos visuais",
+      "points": 2,
+      "source": "https://www.oscars.org/oscars/ceremonies/2000"
+    },
+    {
+      "name": "Star Wars Uma Nova Esperança",
+      "english": "Star Wars A New Hope",
+      "year": 1978,
+      "category": "Trilha sonora original",
+      "points": 3,
+      "source": "https://www.oscars.org/oscars/ceremonies/1978"
+    },
+    {
+      "name": "Jurassic Park",
+      "english": "Jurassic Park",
+      "year": 1994,
+      "category": "Efeitos visuais",
+      "points": 2,
+      "source": "https://www.oscars.org/oscars/ceremonies/1994"
+    },
+    {
+      "name": "Avatar",
+      "english": "Avatar",
+      "year": 2010,
+      "category": "Efeitos visuais",
+      "points": 2,
+      "source": "https://www.oscars.org/oscars/ceremonies/2010"
+    },
+    {
+      "name": "Avatar O Caminho da Água",
+      "english": "Avatar The Way of Water",
+      "year": 2023,
+      "category": "Efeitos visuais",
+      "points": 3,
+      "source": "https://www.oscars.org/oscars/ceremonies/2023"
+    },
+    {
+      "name": "Interestelar",
+      "english": "Interstellar",
+      "year": 2015,
+      "category": "Efeitos visuais",
+      "points": 2,
+      "source": "https://www.oscars.org/oscars/ceremonies/2015"
+    },
+    {
+      "name": "A Origem",
+      "english": "Inception",
+      "year": 2011,
+      "category": "Efeitos visuais",
+      "points": 2,
+      "source": "https://www.oscars.org/oscars/ceremonies/2011"
+    },
+    {
+      "name": "Batman O Cavaleiro das Trevas",
+      "english": "The Dark Knight",
+      "year": 2009,
+      "category": "Ator coadjuvante",
+      "points": 3,
+      "source": "https://www.oscars.org/oscars/ceremonies/2009"
+    },
+    {
+      "name": "Pulp Fiction",
+      "english": "Pulp Fiction",
+      "year": 1995,
+      "category": "Roteiro original",
+      "points": 3,
+      "source": "https://www.oscars.org/oscars/ceremonies/1995"
+    },
+    {
+      "name": "Whiplash",
+      "english": "Whiplash",
+      "year": 2015,
+      "category": "Montagem",
+      "points": 4,
+      "source": "https://www.oscars.org/oscars/ceremonies/2015"
+    },
+    {
+      "name": "La La Land",
+      "english": "La La Land",
+      "year": 2017,
+      "category": "Trilha sonora original",
+      "points": 4,
+      "source": "https://www.oscars.org/oscars/ceremonies/2017"
+    },
+    {
+      "name": "Viva A Vida é uma Festa",
+      "english": "Coco",
+      "year": 2018,
+      "category": "Animação",
+      "points": 3,
+      "source": "https://www.oscars.org/oscars/ceremonies/2018"
+    },
+    {
+      "name": "A Viagem de Chihiro",
+      "english": "Spirited Away",
+      "year": 2003,
+      "category": "Animação",
+      "points": 3,
+      "source": "https://www.oscars.org/oscars/ceremonies/2003"
+    },
+    {
+      "name": "Frozen",
+      "english": "Frozen",
+      "year": 2014,
+      "category": "Animação",
+      "points": 2,
+      "source": "https://www.oscars.org/oscars/ceremonies/2014"
+    },
+    {
+      "name": "Toy Story 3",
+      "english": "Toy Story 3",
+      "year": 2011,
+      "category": "Animação",
+      "points": 3,
+      "source": "https://www.oscars.org/oscars/ceremonies/2011"
+    },
+    {
+      "name": "Toy Story 4",
+      "english": "Toy Story 4",
+      "year": 2020,
+      "category": "Animação",
+      "points": 4,
+      "source": "https://www.oscars.org/oscars/ceremonies/2020"
+    },
+    {
+      "name": "Procurando Nemo",
+      "english": "Finding Nemo",
+      "year": 2004,
+      "category": "Animação",
+      "points": 2,
+      "source": "https://www.oscars.org/oscars/ceremonies/2004"
+    },
+    {
+      "name": "Os Incríveis",
+      "english": "The Incredibles",
+      "year": 2005,
+      "category": "Animação",
+      "points": 3,
+      "source": "https://www.oscars.org/oscars/ceremonies/2005"
+    },
+    {
+      "name": "Ratatouille",
+      "english": "Ratatouille",
+      "year": 2008,
+      "category": "Animação",
+      "points": 3,
+      "source": "https://www.oscars.org/oscars/ceremonies/2008"
+    },
+    {
+      "name": "WALL-E",
+      "english": "WALL-E",
+      "year": 2009,
+      "category": "Animação",
+      "points": 3,
+      "source": "https://www.oscars.org/oscars/ceremonies/2009"
+    },
+    {
+      "name": "Up Altas Aventuras",
+      "english": "Up",
+      "year": 2010,
+      "category": "Animação",
+      "points": 3,
+      "source": "https://www.oscars.org/oscars/ceremonies/2010"
+    },
+    {
+      "name": "Divertida Mente",
+      "english": "Inside Out",
+      "year": 2016,
+      "category": "Animação",
+      "points": 2,
+      "source": "https://www.oscars.org/oscars/ceremonies/2016"
+    },
+    {
+      "name": "Soul",
+      "english": "Soul",
+      "year": 2021,
+      "category": "Animação",
+      "points": 4,
+      "source": "https://www.oscars.org/oscars/ceremonies/2021"
+    },
+    {
+      "name": "Encanto",
+      "english": "Encanto",
+      "year": 2022,
+      "category": "Animação",
+      "points": 3,
+      "source": "https://www.oscars.org/oscars/ceremonies/2022"
+    },
+    {
+      "name": "Pinóquio por Guillermo del Toro",
+      "english": "Guillermo del Toro's Pinocchio",
+      "year": 2023,
+      "category": "Animação",
+      "points": 5,
+      "source": "https://www.oscars.org/oscars/ceremonies/2023"
+    },
+    {
+      "name": "O Menino e a Garça",
+      "english": "The Boy and the Heron",
+      "year": 2024,
+      "category": "Animação",
+      "points": 5,
+      "source": "https://www.oscars.org/oscars/ceremonies/2024"
+    },
+    {
+      "name": "Ainda Estou Aqui",
+      "english": "I'm Still Here",
+      "year": 2025,
+      "category": "Filme internacional",
+      "points": 2,
+      "source": "https://www.oscars.org/oscars/ceremonies/2025"
+    },
+    {
+      "name": "Anora",
+      "english": "Anora",
+      "year": 2025,
+      "category": "Melhor filme",
+      "points": 4,
+      "source": "https://www.oscars.org/oscars/ceremonies/2025"
+    },
+    {
+      "name": "O Labirinto do Fauno",
+      "english": "Pan's Labyrinth",
+      "year": 2007,
+      "category": "Fotografia",
+      "points": 4,
+      "source": "https://www.oscars.org/oscars/ceremonies/2007"
+    },
+    {
+      "name": "A Vida é Bela",
+      "english": "Life Is Beautiful",
+      "year": 1999,
+      "category": "Filme estrangeiro",
+      "points": 4,
+      "source": "https://www.oscars.org/oscars/ceremonies/1999"
+    },
+    {
+      "name": "O Resgate do Soldado Ryan",
+      "english": "Saving Private Ryan",
+      "year": 1999,
+      "category": "Direção",
+      "points": 3,
+      "source": "https://www.oscars.org/oscars/ceremonies/1999"
+    },
+    {
+      "name": "O Exorcista",
+      "english": "The Exorcist",
+      "year": 1974,
+      "category": "Roteiro adaptado",
+      "points": 4,
+      "source": "https://www.oscars.org/oscars/ceremonies/1974"
+    },
+    {
+      "name": "Tubarão",
+      "english": "Jaws",
+      "year": 1976,
+      "category": "Trilha sonora original",
+      "points": 3,
+      "source": "https://www.oscars.org/oscars/ceremonies/1976"
+    },
+    {
+      "name": "Top Gun Maverick",
+      "english": "Top Gun Maverick",
+      "year": 2023,
+      "category": "Som",
+      "points": 3,
+      "source": "https://www.oscars.org/oscars/ceremonies/2023"
+    },
+    {
+      "name": "Godzilla Minus One",
+      "english": "Godzilla Minus One",
+      "year": 2024,
+      "category": "Efeitos visuais",
+      "points": 5,
+      "source": "https://www.oscars.org/oscars/ceremonies/2024"
+    },
+    {
+      "name": "Pobres Criaturas",
+      "english": "Poor Things",
+      "year": 2024,
+      "category": "Atriz",
+      "points": 5,
+      "source": "https://www.oscars.org/oscars/ceremonies/2024"
+    },
+    {
+      "name": "O Grande Hotel Budapeste",
+      "english": "The Grand Budapest Hotel",
+      "year": 2015,
+      "category": "Figurino",
+      "points": 5,
+      "source": "https://www.oscars.org/oscars/ceremonies/2015"
+    },
+    {
+      "name": "A Separação",
+      "english": "A Separation",
+      "year": 2012,
+      "category": "Filme estrangeiro",
+      "points": 7,
+      "source": "https://www.oscars.org/oscars/ceremonies/2012"
+    },
+    {
+      "name": "A Grande Beleza",
+      "english": "The Great Beauty",
+      "year": 2014,
+      "category": "Filme estrangeiro",
+      "points": 7,
+      "source": "https://www.oscars.org/oscars/ceremonies/2014"
+    },
+    {
+      "name": "O Segredo dos Seus Olhos",
+      "english": "The Secret in Their Eyes",
+      "year": 2010,
+      "category": "Filme estrangeiro",
+      "points": 6,
+      "source": "https://www.oscars.org/oscars/ceremonies/2010"
+    }
+  ]
+}

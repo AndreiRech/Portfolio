@@ -109,4 +109,16 @@ Coisas de praia de rio e cachoeira | Cachoeira:1, Rio:1, Pedra:2, Água gelada:2
 Tipos de dança | Samba:1, Forró:1, Funk:1, Balé:2, Valsa:2, Tango:2, Salsa:3, Axé:3, Hip-hop:3, Sertanejo:3, Zumba:4, Sapateado:4, Frevo:4, Bolero:5, Jazz:5, Break:5, Lambada:5, Quadrilha:4, Dança do ventre:4, Flamenco:5, Pagode:4, Zouk:6, Bachata:6, Merengue:6, Kizomba:7, Contemporânea:6, Swing:7, Carimbó:7, Maracatu:7, Xaxado:7, Catira:8, Polca:8, Twist:8, Charleston:8, Lundu:9, Maxixe:9, Fandango:8, Siriri:10, Jongo:9, Vogue:7
 `;
 
-export const THEMES = expandThemes(parseBank(BANK));
+const EXTRA_BANK = `
+Objetos de costura | Agulha:1, Linha:2, Tesoura:2, Botão:2, Zíper:3, Alfinete:3, Dedal:3, Fita métrica:3, Máquina de costura:4, Carretel:4, Bobina:4, Bastidor:4, Tecido:5, Feltro:5, Renda:5, Elástico:5, Viés:6, Entretela:6, Giz de alfaiate:6, Abridor de casas:6, Calcador:7, Overloque:7, Alfineteiro:7, Manequim:7, Agulha de crochê:8, Agulha de tricô:8, Passador de linha:8, Colchete:8, Ilhós:9, Sianinha:9
+Ferramentas de jardinagem | Pá:1, Regador:2, Mangueira:2, Tesoura de poda:2, Ancinho:3, Enxada:3, Luva:3, Vaso:3, Carrinho de mão:4, Pulverizador:4, Rastelo:4, Sacho:4, Enxadão:5, Foice:5, Facão:5, Serrote de poda:5, Aparador de cerca viva:6, Cortador de grama:6, Roçadeira:6, Plantador:6, Transplantador:7, Escarificador:7, Garfo de jardim:7, Aspersor:7, Gotejador:8, Tutor:8, Sementeira:8, Motocultivador:8, Podão:9, Tesoura de grama:9
+Formas de relevo | Montanha:1, Serra:2, Planalto:2, Planície:2, Vale:3, Morro:3, Colina:3, Depressão:3, Pico:4, Chapada:4, Cordilheira:4, Escarpa:4, Cânion:5, Duna:5, Falésia:5, Penhasco:5, Inselberg:6, Cuesta:6, Mesa:6, Espigão:6, Várzea:7, Maciço:7, Tabuleiro:7, Dolina:7, Crista:8, Ravina:8, Voçoroca:8, Coxilha:8, Outeiro:9, Moraina:9
+Gêneros literários | Romance:1, Conto:2, Poesia:2, Crônica:2, Fábula:3, Novela:3, Drama:3, Comédia:3, Tragédia:4, Epopeia:4, Soneto:4, Haicai:4, Cordel:5, Biografia:5, Autobiografia:5, Ensaio:5, Memórias:6, Diário:6, Carta:6, Elegia:6, Ode:7, Sátira:7, Apólogo:7, Parábola:7, Lenda:8, Mito:8, Fantasia:8, Ficção científica:8, Suspense:9, Literatura de viagem:9
+Objetos de acampamento | Barraca:1, Lanterna:2, Saco de dormir:2, Mochila:2, Cantil:3, Fogareiro:3, Bússola:3, Isolante térmico:3, Colchonete:4, Corda:4, Canivete:4, Repelente:4, Protetor solar:5, Lona:5, Estaca:5, Martelo:5, Rede:6, Mosquetão:6, Pederneira:6, Filtro de água:6, Caixa térmica:7, Capa de chuva:7, Bota:7, Apito:7, Kit de primeiros socorros:8, Talher:8, Panela:8, Caneca:8, Lampião:9, Cobertor de emergência:9
+Pedras e minerais | Quartzo:1, Diamante:2, Rubi:2, Esmeralda:2, Safira:3, Ametista:3, Topázio:3, Turmalina:3, Opala:4, Ágata:4, Jaspe:4, Ônix:4, Jade:5, Granada:5, Berilo:5, Calcita:5, Fluorita:6, Pirita:6, Hematita:6, Magnetita:6, Galena:7, Malaquita:7, Azurita:7, Olivina:7, Feldspato:8, Mica:8, Talco:8, Gipsita:8, Coríndon:9, Rodocrosita:9
+Tipos de massa italiana | Espaguete|Spaghetti:1, Lasanha:2, Nhoque|Gnocchi:2, Penne:2, Fusilli|Parafuso:3, Talharim|Tagliatelle:3, Ravioli|Ravióli:3, Capeletti:3, Canelone|Cannelloni:4, Fettuccine:4, Farfalle|Gravatinha:4, Rigatoni:4, Linguine:5, Pappardelle:5, Tortellini:5, Conchiglioni:5, Orecchiette:6, Bucatini:6, Orzo|Risoni:6, Ditalini:6, Cavatappi:7, Rotelle:7, Manicotti:7, Agnolotti:7, Tortelloni:8, Strozzapreti:8, Gemelli:8, Mafaldine:8, Paccheri:9, Trofie:9
+`;
+
+export const THEMES = expandThemes(
+  parseBank(BANK.trim() + "\n" + EXTRA_BANK.trim()),
+);

@@ -65,7 +65,7 @@ export default function RarityGame() {
     [today],
   );
   const [state, setState] = useDailyProgress(
-    "rarity-timed-v1",
+    "rarity-timed-v3",
     today?.key ?? null,
     freshTimedRarity,
     parseTimedRarity,
