@@ -9,6 +9,7 @@ import {
   parseCrossword,
   wordCells,
   wrongCells,
+  validateCrossword,
 } from "./crossword.ts";
 
 test("the clue bank has unique, accent-free answers that fit the grid", () => {
@@ -17,6 +18,32 @@ test("the clue bank has unique, accent-free answers that fit the grid", () => {
     assert.match(entry.answer, /^[A-Z]{3,11}$/, entry.answer);
     assert.ok(entry.clue.length > 3, entry.answer);
   }
+});
+
+test("final validation accepts a correct full grid, rejects a wrong one and survives reload", () => {
+  const puzzle = buildCrossword(CLUES, 3);
+  const entries = puzzle.cells.flat().map((letter) => letter ?? "");
+  const filled = { entries, revealed: false, checks: 0, validated: false };
+  assert.ok(isSolved(puzzle, filled.entries));
+  assert.equal(filled.validated, false);
+  const index = entries.findIndex(Boolean);
+  const wrong = {
+    ...filled,
+    entries: entries.map((letter, i) =>
+      i === index ? (letter === "A" ? "Z" : "A") : letter,
+    ),
+  };
+  const rejected = validateCrossword(puzzle, wrong);
+  assert.equal(rejected.validated, false);
+  assert.equal(rejected.revealed, false);
+  const accepted = validateCrossword(puzzle, { ...rejected, entries });
+  assert.equal(accepted.validated, true);
+  assert.equal(validateCrossword(puzzle, accepted), accepted);
+  assert.deepEqual(
+    parseCrossword(JSON.parse(JSON.stringify(accepted))),
+    accepted,
+  );
+  assert.equal(parseCrossword({ ...accepted, validated: "yes" }), null);
 });
 
 /** Every run of two or more letters, across and down. */
@@ -70,4 +97,29 @@ test("checking marks only wrong letters, and a full grid is solved", () => {
     parseCrossword({ entries: ["a"], revealed: false, checks: 0 }),
     null,
   );
+});
+
+test("checking gives feedback for blank, correct and incorrect partial grids", async () => {
+  const { checkEntries } = await import("./crossword.ts");
+  const puzzle = buildCrossword(CLUES, 4);
+  const entries = emptyEntries();
+  const total = puzzle.cells.flat().filter(Boolean).length;
+  assert.deepEqual(checkEntries(puzzle, entries), {
+    wrong: new Set(),
+    correct: 0,
+    empty: total,
+  });
+  const filled = puzzle.cells.flat().findIndex(Boolean);
+  entries[filled] = puzzle.cells.flat()[filled]!;
+  assert.deepEqual(checkEntries(puzzle, entries), {
+    wrong: new Set(),
+    correct: 1,
+    empty: total - 1,
+  });
+  entries[filled] = entries[filled] === "Z" ? "A" : "Z";
+  assert.deepEqual(checkEntries(puzzle, entries), {
+    wrong: new Set([filled]),
+    correct: 0,
+    empty: total - 1,
+  });
 });

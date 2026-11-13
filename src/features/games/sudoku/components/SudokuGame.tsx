@@ -1,17 +1,22 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
-import { Eraser, Eye, Pencil } from "lucide-react";
+import { Eraser, Eye, Pencil, Lightbulb } from "lucide-react";
 import { useSettings } from "@/shared/i18n/SettingsContext";
 import { playCopy } from "@/shared/i18n/play";
 import { sfx } from "@/shared/lib/sfx";
-import {
-  useDailyProgress,
-  useToday,
-} from "@/features/games/daily/hooks/useDaily";
-import DailyFinish from "@/features/games/daily/components/DailyFinish";
+import { useDailyProgress } from "@/features/games/daily/hooks/useDaily";
+import { useUnlock } from "@/features/achievements/hooks/AchievementContext";
+import GameHelp from "../../components/GameHelp";
+import GameTimes from "../../records/components/GameTimes";
+import { advanceClock } from "../../records/model/records";
 import {
   LEVELS,
   PEERS,
+  MAX_MISTAKES,
+  MAX_HINTS,
+  enterDigit,
+  takeHint,
+  sudokuOver,
   buildSudoku,
   conflicts,
   emptySudokuDay,
@@ -27,17 +32,45 @@ const fill = (text: string, values: Record<string, string | number>) =>
 export default function SudokuGame() {
   const { language } = useSettings();
   const c = playCopy[language];
-  const today = useToday();
-  const [level, setLevel] = useState<SudokuLevel>("normal");
-  const sudoku = useMemo(
-    () => (today ? buildSudoku(today.number, level) : null),
-    [today, level],
+  const unlock = useUnlock();
+  const [session, setSession] = useDailyProgress(
+    "sudoku-infinite-v1",
+    "current",
+    () => ({ seed: Date.now() % 2147483647, boards: emptySudokuDay() }),
+    (value) => {
+      // ASVS V2.2: validate persisted seed and all boards before using them.
+      if (
+        !value ||
+        typeof value !== "object" ||
+        !("seed" in value) ||
+        !("boards" in value) ||
+        !Number.isSafeInteger(value.seed) ||
+        Number(value.seed) < 0
+      )
+        return null;
+      const boards = parseSudokuDay(value.boards);
+      return boards ? { seed: Number(value.seed), boards } : null;
+    },
   );
-  const [days, setDays] = useDailyProgress(
-    "sudoku",
-    today?.key ?? null,
-    emptySudokuDay,
-    parseSudokuDay,
+  const days = session?.boards;
+  const setDays = (
+    change: (
+      current: ReturnType<typeof emptySudokuDay>,
+    ) => ReturnType<typeof emptySudokuDay>,
+  ) =>
+    setSession((current) => ({ ...current, boards: change(current.boards) }));
+  const nextGame = () => {
+    setSession((current) => ({
+      seed: current.seed + 1,
+      boards: emptySudokuDay(),
+    }));
+    setSelected(null);
+  };
+  const [level, setLevel] = useState<SudokuLevel>("normal");
+  const seed = session?.seed;
+  const sudoku = useMemo(
+    () => (seed !== undefined ? buildSudoku(seed, level) : null),
+    [seed, level],
   );
   const [selected, setSelected] = useState<number | null>(null);
   const [pencil, setPencil] = useState(false);
@@ -48,38 +81,60 @@ export default function SudokuGame() {
     if (state.revealed) return sudoku.solution;
     return sudoku.puzzle.map((given, index) => given || state.entries[index]);
   }, [sudoku, state]);
-  const solved = Boolean(grid && sudoku && isComplete(grid, sudoku.solution));
-  const done = solved || Boolean(state?.revealed);
+  const done = Boolean(sudoku && state && sudokuOver(sudoku, state));
+  const won = Boolean(
+    grid &&
+    sudoku &&
+    state &&
+    !state.revealed &&
+    state.mistakes < MAX_MISTAKES &&
+    isComplete(grid, sudoku.solution),
+  );
+  const clean =
+    won &&
+    level === "hard" &&
+    state?.mistakes === 0 &&
+    state?.hints.length === 0;
+  useEffect(() => {
+    if (won) unlock("sudoku-solved");
+    if (clean) unlock("sudoku-clean");
+  }, [won, clean, unlock]);
 
-  const update = (change: (current: SudokuState) => SudokuState) =>
-    setDays((current) => ({ ...current, [level]: change(current[level]) }));
+  const update = (change: (current: SudokuState) => SudokuState) => {
+    const now = Date.now();
+    setDays((current) => {
+      const next = change(current[level]);
+      if (next === current[level] || !sudoku) return current;
+      return {
+        ...current,
+        [level]: {
+          ...next,
+          clock: advanceClock(
+            current[level].clock,
+            now,
+            sudokuOver(sudoku, next),
+          ),
+        },
+      };
+    });
+  };
 
   function enter(digit: number) {
     if (selected === null || !sudoku || !grid || done) return;
     if (sudoku.puzzle[selected]) return;
-    if (pencil && digit) {
-      sfx.tick();
-      return update((current) => {
-        const notes = [...current.notes];
-        notes[selected] ^= 1 << (digit - 1);
-        return { ...current, notes };
-      });
-    }
-    const entries = [...(state?.entries ?? [])];
-    entries[selected] = entries[selected] === digit ? 0 : digit;
-    const next = sudoku.puzzle.map((given, index) => given || entries[index]);
-    if (isComplete(next, sudoku.solution)) sfx.reveal(2);
-    else if (digit && conflicts(next).has(selected)) sfx.wrong();
+    if (!state) return;
+    const next = enterDigit(sudoku, state, selected, digit, pencil);
+    if (next === state) return;
+    if (next.mistakes > state.mistakes) sfx.wrong();
+    else if (
+      isComplete(
+        sudoku.puzzle.map((given, index) => given || next.entries[index]),
+        sudoku.solution,
+      )
+    )
+      sfx.reveal(2);
     else sfx.tick();
-    update((current) => {
-      const notes = [...current.notes];
-      notes[selected] = 0;
-      // A placed digit clears it from the pencil marks of its peers.
-      if (entries[selected])
-        for (const peer of PEERS[selected])
-          notes[peer] &= ~(1 << (entries[selected] - 1));
-      return { ...current, entries, notes };
-    });
+    update((current) => enterDigit(sudoku, current, selected, digit, pencil));
   }
 
   useEffect(() => {
@@ -119,7 +174,7 @@ export default function SudokuGame() {
     return () => window.removeEventListener("keydown", onKey);
   });
 
-  if (!today || !sudoku || !state || !grid)
+  if (!sudoku || !state || !grid)
     return (
       <div className="game-loading" role="status">
         {c.loading}
@@ -135,13 +190,18 @@ export default function SudokuGame() {
     <article className="sudoku-lab daily-lab" aria-labelledby="sudoku-title">
       <div className="play-panel-heading">
         <span className="pixel-label">
-          {fill(c.dailyLabel, { n: today.number })}
+          {language === "pt" ? "Jogo infinito" : "Unlimited play"}
         </span>
         <span className="memory-best">
           {c.sudokuLeft} <strong>{String(left).padStart(2, "0")}</strong>
         </span>
       </div>
-      <h2 id="sudoku-title">{c.sudokuTitle}</h2>
+      <h2 id="sudoku-title">{c.sudokuTab}</h2>
+      <GameHelp>
+        {language === "pt"
+          ? "Complete linhas, colunas e blocos com os números de 1 a 9. Cada partida tem três vidas e três dicas. Comece outra partida quando quiser."
+          : "Fill each row, column and box with digits 1 to 9. Each game has three lives and three hints. Start a new game anytime."}
+      </GameHelp>
       <div className="level-picker" role="group" aria-label={c.level}>
         {LEVELS.map((id) => (
           <button
@@ -157,6 +217,16 @@ export default function SudokuGame() {
         ))}
       </div>
 
+      <GameTimes game="sudoku" level={level} clock={state.clock} won={won} />
+      <div className="sudoku-toolbar">
+        <p className="sudoku-resources" role="status" aria-live="polite">
+          {fill(c.sudokuLives, { n: MAX_MISTAKES - state.mistakes })} ·{" "}
+          {fill(c.sudokuHints, { n: MAX_HINTS - state.hints.length })}
+        </p>
+        <button className="memory-replay" onClick={nextGame}>
+          {language === "pt" ? "Nova partida" : "New game"}
+        </button>
+      </div>
       <div className="sudoku-grid" role="grid" aria-label={c.sudokuGrid}>
         {grid.map((digit, index) => {
           const given = Boolean(sudoku.puzzle[index]);
@@ -166,11 +236,15 @@ export default function SudokuGame() {
               key={index}
               role="gridcell"
               className="sudoku-cell"
-              data-given={given}
+              data-given={given || state.hints.includes(index)}
               data-selected={index === selected}
               data-peer={peers.has(index)}
               data-same={Boolean(digit) && digit === focusDigit}
-              data-clash={clash.has(index) && !given}
+              data-clash={
+                !given &&
+                Boolean(digit) &&
+                (clash.has(index) || digit !== sudoku.solution[index])
+              }
               onClick={() => setSelected(index)}
               aria-label={fill(c.sudokuCell, {
                 row: Math.floor(index / 9) + 1,
@@ -193,19 +267,13 @@ export default function SudokuGame() {
       </div>
 
       {done ? (
-        <DailyFinish
-          won={solved && !state.revealed}
-          message={
-            state.revealed
+        <p role="status">
+          {state.mistakes >= MAX_MISTAKES
+            ? c.sudokuLost
+            : state.revealed
               ? c.sudokuRevealed
-              : fill(c.sudokuWon, { level: c.levels[level] })
-          }
-          share={
-            state.revealed
-              ? undefined
-              : fill(c.sudokuShare, { n: today.number, level: c.levels[level] })
-          }
-        />
+              : fill(c.sudokuWon, { level: c.levels[level] })}
+        </p>
       ) : (
         <>
           <div className="sudoku-pad" role="group" aria-label={c.sudokuPad}>
@@ -220,6 +288,17 @@ export default function SudokuGame() {
             ))}
           </div>
           <div className="daily-actions">
+            <button
+              className="memory-replay"
+              disabled={state.hints.length >= MAX_HINTS}
+              onClick={() => {
+                update((current) => takeHint(sudoku, current, selected));
+                sfx.roundClear();
+              }}
+            >
+              <Lightbulb size={15} aria-hidden="true" />
+              {c.sudokuHint} ({MAX_HINTS - state.hints.length})
+            </button>
             <button
               className="memory-replay"
               aria-pressed={pencil}

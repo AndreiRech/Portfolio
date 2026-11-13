@@ -3,6 +3,7 @@ import { sfx } from "@/shared/lib/sfx";
 import { useEffect, useId, useRef, useState, type CSSProperties } from "react";
 import Image from "next/image";
 import { ArrowRight, Pause, Play, SkipForward, X, Check } from "lucide-react";
+import GameHelp from "../../components/GameHelp";
 import { useSettings } from "@/shared/i18n/SettingsContext";
 import { useUnlock } from "@/features/achievements/hooks/AchievementContext";
 import { playCopy } from "@/shared/i18n/play";
@@ -256,8 +257,8 @@ function SongRun({
         </span>
       </div>
       <h2 id="songs-title">{c.songsTitle}</h2>
+      <GameHelp>{copy.intro}</GameHelp>
       {children}
-      <p className="memory-intro">{copy.intro}</p>
 
       <ol className="song-attempts" aria-label={c.attempts}>
         {Array.from({ length: MAX_ATTEMPTS }, (_, index) => {

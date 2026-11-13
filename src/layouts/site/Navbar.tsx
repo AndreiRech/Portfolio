@@ -13,7 +13,7 @@ export default function Navbar() {
     { href: "/#about", label: c.about },
     { href: "/#experience", label: c.experience },
     { href: "/#projects", label: c.projects },
-    { href: "/games", label: c.games },
+    { href: "/cases", label: c.games },
     { href: "/#contact", label: c.contact },
   ];
   const [section, setSection] = useState<string | null>(null);
@@ -46,12 +46,12 @@ export default function Navbar() {
   }, [open]);
   const current = (href: string) =>
     path === href ||
-    (href === "/games" && ["/cases", "/inventory"].includes(path))
+    (href === "/cases" && ["/games", "/inventory"].includes(path))
       ? "page"
       : path === "/" &&
           section &&
           (href === `/#${section}` ||
-            (href === "/games" && section === "games"))
+            (href === "/cases" && section === "games"))
         ? "location"
         : undefined;
   return (

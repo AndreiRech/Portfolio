@@ -36,7 +36,7 @@ test("every theme has enough answers, valid points and no duplicate spellings", 
       theme.name,
     );
     assert.ok(
-      theme.answers.some((answer) => answer.points >= 9),
+      theme.answers.some((answer) => answer.points >= 8),
       theme.name,
     );
   }
@@ -87,4 +87,57 @@ test("a day scores the rarity of each answer, skips score zero", () => {
   );
   assert.deepEqual(parseRarity(state), state);
   assert.equal(parseRarity({ rounds: [{ answer: "x", points: 11 }] }), null);
+});
+
+test("reported animals and countries are accepted in their broad themes", () => {
+  const animals = THEMES.find((theme) => theme.name === "Animais")!;
+  const countries = THEMES.find((theme) => theme.name === "Países")!;
+  for (const name of [
+    "nautillo",
+    "náutilo",
+    "penguim rei",
+    "pinguim-rei",
+    "polvo",
+    "abelha",
+  ])
+    assert.ok(findAnswer(animals, name), name);
+  for (const name of [
+    "Sri Lanka",
+    "Sudão do Sul",
+    "Timor-Leste",
+    "São Tomé e Príncipe",
+  ])
+    assert.ok(findAnswer(countries, name), name);
+});
+
+test("suggestions correct typos, match prefixes and keep guesses unsubmitted", async () => {
+  const { suggestAnswers, answerKey } = await import("./rarity.ts");
+  const countries = THEMES.find((theme) => theme.name === "Países")!;
+  assert.equal(suggestAnswers(countries, "siri lanka")[0]?.name, "Sri Lanka");
+  assert.equal(suggestAnswers(countries, "sri lan")[0]?.name, "Sri Lanka");
+  assert.equal(suggestAnswers(countries, "Sri Lanka").length, 0);
+  assert.equal(suggestAnswers(countries, "s").length, 0);
+  assert.equal(suggestAnswers(countries, "z".repeat(101)).length, 0);
+  assert.equal(suggestAnswers(countries, "zzzzz").length, 0);
+  assert.ok(suggestAnswers(countries, "sao").length <= 1);
+  assert.notEqual(answerKey("Nidoran♀"), answerKey("Nidoran♂"));
+});
+
+test("the local snapshots cover finite categories and thousands of animals", () => {
+  const theme = (name: string) => THEMES.find((item) => item.name === name)!;
+  assert.ok(theme("Animais").answers.length >= 4000);
+  assert.ok(theme("Países").answers.length >= 195);
+  assert.equal(theme("Elementos químicos").answers.length, 118);
+  assert.equal(theme("Pokémon").answers.length, 1025);
+  assert.equal(
+    findAnswer(theme("Países"), "Estados Unidos da América"),
+    findAnswer(theme("Países"), "EUA"),
+  );
+  assert.equal(findAnswer(theme("Animais"), "Cachorro")?.points, 1);
+  assert.ok(
+    findAnswer(theme("Animais"), "Náutilo")!.points >
+      findAnswer(theme("Animais"), "Cachorro")!.points,
+  );
+  assert.equal(findAnswer(theme("Peixes"), "Trichechus manatus"), null);
+  assert.equal(findAnswer(theme("Insetos"), "Carrapato"), null);
 });

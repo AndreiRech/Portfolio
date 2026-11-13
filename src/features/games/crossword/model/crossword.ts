@@ -227,15 +227,44 @@ export function wrongCells(puzzle: Crossword, entries: Entries): Set<number> {
   return wrong;
 }
 
+/** Counts only playable cells, including blanks, for visible check feedback. */
+export function checkEntries(puzzle: Crossword, entries: Entries) {
+  const wrong = wrongCells(puzzle, entries);
+  let correct = 0;
+  let empty = 0;
+  puzzle.cells.flat().forEach((letter, index) => {
+    if (letter === null) return;
+    if (!entries[index]) empty++;
+    else if (entries[index] === letter) correct++;
+  });
+  return { wrong, correct, empty };
+}
+
 export type CrosswordState = {
   entries: Entries;
   revealed: boolean;
   checks: number;
+  validated?: boolean;
 };
+
+/** Filling the last square still requires the player's final check. */
+export function validateCrossword(
+  puzzle: Crossword,
+  state: CrosswordState,
+): CrosswordState {
+  if (state.revealed || (state.validated && isSolved(puzzle, state.entries)))
+    return state;
+  return {
+    ...state,
+    checks: state.checks + 1,
+    validated: isSolved(puzzle, state.entries),
+  };
+}
 
 export function parseCrossword(value: unknown): CrosswordState | null {
   if (!value || typeof value !== "object") return null;
-  const { entries, revealed, checks } = value as Partial<CrosswordState>;
+  const { entries, revealed, checks, validated } =
+    value as Partial<CrosswordState>;
   if (
     !Array.isArray(entries) ||
     entries.length !== SIZE * SIZE ||
@@ -243,8 +272,15 @@ export function parseCrossword(value: unknown): CrosswordState | null {
       (entry) => typeof entry === "string" && /^[A-Z]?$/.test(entry),
     ) ||
     typeof revealed !== "boolean" ||
-    !Number.isInteger(checks)
+    !Number.isSafeInteger(checks) ||
+    Number(checks) < 0 ||
+    (validated !== undefined && typeof validated !== "boolean")
   )
     return null;
-  return { entries, revealed, checks: checks as number };
+  return {
+    entries,
+    revealed,
+    checks: checks as number,
+    ...(validated === undefined ? {} : { validated }),
+  };
 }

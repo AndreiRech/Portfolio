@@ -2,6 +2,7 @@
 import { useCallback, useEffect, useReducer, useRef, useState } from "react";
 import Image from "next/image";
 import { ArrowDown, ArrowUp, Check, RotateCcw, X } from "lucide-react";
+import GameHelp from "../../components/GameHelp";
 import { useSettings } from "@/shared/i18n/SettingsContext";
 import { useUnlock } from "@/features/achievements/hooks/AchievementContext";
 import { playCopy } from "@/shared/i18n/play";
@@ -232,6 +233,11 @@ function HigherLowerRun({
         </span>
       </div>
       <h2 id="anime-title">{copy.title}</h2>
+      <GameHelp>
+        {language === "pt"
+          ? "Compare o item seguinte com o valor mostrado. Escolha mais ou menos. Um erro encerra a sequência. Cada categoria mostra a métrica usada na comparação."
+          : "Compare the next item with the value shown. Choose higher or lower. A wrong answer ends your streak. Each category shows the metric being compared."}
+      </GameHelp>
       {children}
 
       {game.current && game.next ? (

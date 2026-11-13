@@ -67,3 +67,29 @@ test("the classic code completes in order and tolerates extra leading ups", () =
   assert.equal(run([...KONAMI.slice(0, 8), "B", "A"]), KONAMI.length);
   assert.equal(run([...KONAMI.slice(0, 5), "x"]), 0);
 });
+
+test("new game achievements extend existing saves and notify only once", () => {
+  const storage = memoryStorage({ [ACHIEVEMENT_KEY]: '["nat20"]' });
+  const store = createAchievementStore(() => storage);
+  let notifications = 0;
+  store.subscribe(() => notifications++);
+  const ids = [
+    "mine-clear",
+    "mine-expert",
+    "sudoku-solved",
+    "sudoku-clean",
+    "color-five",
+    "color-eye",
+    "scale-five",
+    "scale-eye",
+  ];
+  const before = notifications;
+  for (const id of ids) {
+    assert.equal(store.unlock(id), true);
+    assert.equal(store.unlock(id), false);
+  }
+  assert.equal(notifications - before, ids.length);
+  const reloaded = createAchievementStore(() => storage);
+  reloaded.subscribe(() => {});
+  assert.deepEqual(reloaded.getSnapshot().unlocked, ["nat20", ...ids]);
+});

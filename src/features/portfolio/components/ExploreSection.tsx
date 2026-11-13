@@ -24,7 +24,10 @@ export default function ExploreSection() {
         </div>
       </div>
       <div className="games-teasers">
-        <Link href="/games" className="game-teaser teaser-memory">
+        <Link
+          href="/games?activity=memory"
+          className="game-teaser teaser-memory"
+        >
           <div className="teaser-art teaser-signs" aria-hidden="true">
             <span style={{ color: signColor("aard") }}>
               <SignGlyph id="aard" />
@@ -82,6 +85,9 @@ export default function ExploreSection() {
             ["crossword", play.cwTab],
             ["rarity", play.rarityTab],
             ["sudoku", play.sudokuTab],
+            ["minesweeper", language === "pt" ? "Campo minado" : "Minesweeper"],
+            ["color", language === "pt" ? "Cores" : "Color"],
+            ["scale", language === "pt" ? "Escala" : "Size it up"],
             ["songs", play.songsTab],
             ["higher-lower", play.animeTab],
             ["duel", play.duelTab],

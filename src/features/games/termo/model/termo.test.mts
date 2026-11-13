@@ -79,3 +79,21 @@ test("saved progress with the wrong shape starts fresh", () => {
     status: "won",
   });
 });
+
+test("the expanded local dictionary has 1,800 answers and accepts its entire snapshot", async () => {
+  const { readFile } = await import("node:fs/promises");
+  const words = JSON.parse(
+    await readFile(new URL("../data/words.json", import.meta.url), "utf8"),
+  ) as { answers: string[]; valid: string[] };
+  const dictionary = buildDictionary(words.answers, words.valid);
+  assert.equal(words.answers.length, 1800);
+  assert.ok(dictionary.size >= 10000);
+  for (const word of [...words.answers, ...words.valid]) {
+    assert.match(word, /^[a-záàâãéêíóôõúç]{5}$/);
+    assert.ok(
+      submitGuess({ guesses: [], status: "playing" }, word, "termo", dictionary)
+        .ok,
+      word,
+    );
+  }
+});

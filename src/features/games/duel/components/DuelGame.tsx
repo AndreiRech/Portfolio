@@ -11,6 +11,7 @@ import {
   Swords,
   Users,
 } from "lucide-react";
+import GameHelp from "../../components/GameHelp";
 import { useSettings } from "@/shared/i18n/SettingsContext";
 import { useUnlock } from "@/features/achievements/hooks/AchievementContext";
 import { useCollection } from "@/features/collectibles/hooks/CollectionContext";
@@ -43,6 +44,13 @@ import type { DieSides } from "@/features/dice/components/dice3d";
 import EnemySprite from "./EnemySprite";
 import { useDieThrow } from "../../../dice/hooks/useDieThrow";
 import { useReducedMotion } from "../../../../shared/ui/useReducedMotion";
+import { useDailyProgress } from "../../daily/hooks/useDaily";
+import {
+  beginStreak,
+  finishStreak,
+  freshStreak,
+  parseStreak,
+} from "../../records/model/records";
 
 type Anim = "idle" | "attack" | "hurt" | "dodge" | "defend" | "heal" | "die";
 type Step =
@@ -123,6 +131,12 @@ export default function DuelGame() {
   const c = playCopy[language];
   const unlock = useUnlock();
   const reduced = useReducedMotion();
+  const [streak, setStreak] = useDailyProgress(
+    "duel-streak-v1",
+    "alltime",
+    freshStreak,
+    parseStreak,
+  );
   const { data, ready } = useCollection();
   const owned = Object.keys(PET_STATS).filter((id) =>
     canUseCompanion(data, id),
@@ -167,6 +181,8 @@ export default function DuelGame() {
   };
 
   function begin(stats: FighterStats) {
+    if (!streak) return;
+    setStreak(beginStreak);
     timers.current.forEach(clearTimeout);
     timers.current = [];
     const enemy = ENEMIES[Math.floor(Math.random() * ENEMIES.length)];
@@ -443,6 +459,7 @@ export default function DuelGame() {
         enemy: [current.enemy[0] === "die" ? "die" : "idle", current.enemy[1]],
       }));
       if (next.phase === "won" || next.phase === "lost") {
+        setStreak((current) => finishStreak(current, next.phase === "won"));
         const loser: Side = next.phase === "won" ? "enemy" : "player";
         animate(loser, "die");
         setStep("over");
@@ -539,6 +556,11 @@ export default function DuelGame() {
       >
         <Image src="/collectibles/case.svg" width={220} height={165} alt="" />
         <h2 id="duel-title">{c.duelNeedPet}</h2>
+        <GameHelp>
+          {language === "pt"
+            ? "Libere um companheiro nas caixas e selecione-o para enfrentar um monstro. Escolha atacar, defender, curar ou usar uma habilidade e role os dados para resolver o turno."
+            : "Unlock a companion in Cases, then select it to face a monster. Choose attack, defend, heal or a special ability and roll the dice to resolve each turn."}
+        </GameHelp>
         <p>{c.duelNeedPetHint}</p>
         <Link href="/cases" className="button primary">
           {copy.boxAction}
@@ -554,7 +576,13 @@ export default function DuelGame() {
           <span className="pixel-label">{c.duelLabel}</span>
         </div>
         <h2 id="duel-title">{c.duelTitle}</h2>
-        <p className="memory-intro">{c.duelIntro}</p>
+        <GameHelp>{c.duelIntro}</GameHelp>
+        <p className="duel-streak">
+          {c.duelStreak} <b>{streak?.current ?? 0}</b>
+          <span>
+            {c.duelBestStreak} <b>{streak?.best ?? 0}</b>
+          </span>
+        </p>
         <div className="duel-roster" role="group" aria-label={c.duelTitle}>
           {owned.map((id) => {
             const stats = PET_STATS[id];
@@ -589,7 +617,11 @@ export default function DuelGame() {
           })}
         </div>
         <div className="memory-actions">
-          <button className="button primary" onClick={() => begin(pet)}>
+          <button
+            className="button primary"
+            disabled={!streak}
+            onClick={() => begin(pet)}
+          >
             <Swords size={17} aria-hidden="true" />
             {c.duelStart}
           </button>
@@ -692,6 +724,13 @@ export default function DuelGame() {
       <h2 id="duel-title" className="sr-only">
         {petName} vs {enemyName}
       </h2>
+      <GameHelp>{c.duelIntro}</GameHelp>
+      <p className="duel-streak" role="status">
+        {c.duelStreak} <b>{streak?.current ?? 0}</b>
+        <span>
+          {c.duelBestStreak} <b>{streak?.best ?? 0}</b>
+        </span>
+      </p>
 
       <div className="duel-arena" data-phase={battle.phase}>
         {fighterView("player")}

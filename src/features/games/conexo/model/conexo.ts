@@ -21,8 +21,24 @@ export type ConexoState = {
 };
 
 export const GROUP_SIZE = 4;
-const key = (word: string) =>
-  word.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+const normalized = new Map<string, string>();
+const key = (word: string) => {
+  let result = normalized.get(word);
+  if (result === undefined) {
+    result = word.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+    normalized.set(word, result);
+  }
+  return result;
+};
+const wordSets = new WeakMap<object, Set<string>>();
+function wordSet(group: { words: string[] }) {
+  let words = wordSets.get(group);
+  if (!words) {
+    words = new Set(group.words.map(key));
+    wordSets.set(group, words);
+  }
+  return words;
+}
 
 /**
  * Words of `shown` that would also fit `other`'s category, by the bank's
@@ -30,7 +46,7 @@ const key = (word: string) =>
  * both ways would let two groups swap words, so those puzzles are rejected.
  */
 function crossings(shown: PuzzleGroup, other: ConexoGroup) {
-  const fits = new Set(other.words.map(key));
+  const fits = wordSet(other);
   return shown.words.filter((word) => fits.has(key(word))).length;
 }
 
@@ -66,8 +82,9 @@ export function buildPuzzle(
   const levels = ([1, 2, 3, 4] as const).map((level) =>
     rotation(bank, level, day),
   );
+  let best: { groups: PuzzleGroup[]; score: number } | null = null;
   // Walks each level's rotation from today's group until the set works.
-  for (let tries = 0; tries < 500; tries++) {
+  for (let tries = 0; tries < 150; tries++) {
     const themes = new Set<string>();
     const used = new Set<string>();
     const picked: { source: ConexoGroup; shown: PuzzleGroup }[] = [];
@@ -76,14 +93,42 @@ export function buildPuzzle(
         tries === 0
           ? 0
           : Math.floor(random() * Math.min(options.length, 4 + tries));
-      const group = [
+      const candidates = [
         ...options.slice(offset),
         ...options.slice(0, offset),
-      ].find((item) => !themes.has(item.theme));
+      ].filter((item) => !themes.has(item.theme));
+      // Seek cross-category words rather than four unrelated subjects.
+      const potential = (item: ConexoGroup) =>
+        picked.reduce((sum, previous) => {
+          const forward = crossings(previous.shown, item);
+          const reverse = item.words.filter(
+            (word) =>
+              !used.has(key(word)) && wordSet(previous.source).has(key(word)),
+          ).length;
+          return sum + forward + Math.min(reverse, 2);
+        }, 0);
+      if (tries > 0 && tries % 5 !== 0) {
+        const scores = new Map(
+          candidates.map((candidate) => [candidate, potential(candidate)]),
+        );
+        candidates.sort((a, b) => scores.get(b)! - scores.get(a)!);
+      }
+      const group = candidates[0];
       if (!group) break;
-      const words = shuffled(group.words, random)
-        .filter((word) => !used.has(key(word)))
-        .slice(0, GROUP_SIZE);
+      const pool = shuffled(group.words, random).filter(
+        (word) => !used.has(key(word)),
+      );
+      if (tries > 0)
+        pool.sort((a, b) => {
+          const overlap = (word: string) =>
+            picked.filter(
+              (previous) =>
+                !crossings(previous.shown, group) &&
+                wordSet(previous.source).has(key(word)),
+            ).length;
+          return overlap(b) - overlap(a);
+        });
+      const words = pool.slice(0, GROUP_SIZE);
       if (words.length < GROUP_SIZE) break;
       words.forEach((word) => used.add(key(word)));
       themes.add(group.theme);
@@ -102,16 +147,39 @@ export function buildPuzzle(
       ),
     );
     if (ambiguous) continue;
-    const groups = picked.map((item) => item.shown);
-    return {
-      groups,
-      order: shuffled(
-        groups.flatMap((group) => group.words),
-        random,
+    // Reject longer swap cycles too: they can produce alternate partitions.
+    const edges = picked.map((a, i) =>
+      picked.flatMap((b, j) =>
+        i !== j && crossings(a.shown, b.source) > 0 ? [j] : [],
       ),
+    );
+    const hasCycle = (node: number, path: Set<number>): boolean => {
+      if (path.has(node)) return true;
+      const next = new Set(path).add(node);
+      return edges[node].some((other) => hasCycle(other, next));
     };
+    if (edges.some((_, index) => hasCycle(index, new Set()))) continue;
+    const score = picked.reduce(
+      (sum, a, i) =>
+        sum +
+        picked.reduce(
+          (total, b, j) => total + (i !== j ? crossings(a.shown, b.source) : 0),
+          0,
+        ),
+      0,
+    );
+    if (!best || score > best.score)
+      best = { groups: picked.map((item) => item.shown), score };
+    if (score >= 3) break;
   }
-  throw new Error("No Conexo puzzle could be built from the bank.");
+  if (!best) throw new Error("No Conexo puzzle could be built from the bank.");
+  return {
+    groups: best.groups,
+    order: shuffled(
+      best.groups.flatMap((group) => group.words),
+      random,
+    ),
+  };
 }
 
 export const initialConexo = (): ConexoState => ({
@@ -175,16 +243,26 @@ export function shareText(
   state: ConexoState,
   puzzle: ConexoPuzzle,
   day: number,
+  language: "pt" | "en" = "pt",
 ): string {
   const levelOf = (word: string) =>
     puzzle.groups.find((group) => group.words.includes(word))!.level;
   const rows = state.attempts.map((attempt) =>
     attempt.map((word) => EMOJI[levelOf(word)]).join(""),
   );
-  const outcome = state.gaveUp
-    ? "X"
-    : `${state.attempts.length} ${state.attempts.length === 1 ? "tentativa" : "tentativas"}`;
-  return [`Conexo #${day} · ${outcome}`, ...rows].join("\n");
+  const attempts =
+    language === "pt"
+      ? state.attempts.length === 1
+        ? "tentativa"
+        : "tentativas"
+      : state.attempts.length === 1
+        ? "attempt"
+        : "attempts";
+  const outcome = state.gaveUp ? "X" : `${state.attempts.length} ${attempts}`;
+  return [
+    `${language === "pt" ? "Conexo" : "Connected"} #${day} · ${outcome}`,
+    ...rows,
+  ].join("\n");
 }
 
 /**

@@ -1,10 +1,11 @@
 "use client";
 import { useEffect, useState } from "react";
-import { Check, Share2 } from "lucide-react";
+import { Check, CircleX, Share2, Trophy } from "lucide-react";
 import { useSettings } from "@/shared/i18n/SettingsContext";
 import { playCopy } from "@/shared/i18n/play";
 import { countdown } from "@/features/games/daily/model/daily";
 import { useUntilTomorrow } from "@/features/games/daily/hooks/useDaily";
+import PixelRain from "../../rarity/components/PixelRain";
 
 /** Shown once a daily puzzle ends: the verdict, a share button and the wait. */
 export default function DailyFinish({
@@ -27,7 +28,18 @@ export default function DailyFinish({
   }, [copied]);
   return (
     <div className="daily-finish" data-won={won}>
-      <p role="status">{message}</p>
+      {won ? <PixelRain points={10} seed={731} /> : null}
+      <div className="daily-finish-verdict" role="status">
+        <strong>
+          {won ? (
+            <Trophy size={22} aria-hidden="true" />
+          ) : (
+            <CircleX size={22} aria-hidden="true" />
+          )}
+          {won ? c.dailyWon : c.dailyLost}
+        </strong>
+        <p>{message}</p>
+      </div>
       <div className="daily-finish-row">
         {share ? (
           <button
