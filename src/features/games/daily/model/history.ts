@@ -12,6 +12,8 @@ export const HISTORY_GAMES = [
   "rarity",
   "color",
   "scale",
+  "songs",
+  "higher-lower",
   "sudoku-easy",
   "sudoku-normal",
   "sudoku-hard",

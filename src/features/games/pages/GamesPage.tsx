@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useSettings } from "@/shared/i18n/SettingsContext";
 import { playCopy } from "@/shared/i18n/play";
 import ArcadeHeading, {
+  DAILY_MODE_GAMES,
   GAME_ACTIVITIES,
   type GameActivity,
 } from "@/features/games/components/ArcadeHeading";
@@ -92,7 +93,11 @@ export default function Playground() {
       <div className="game-panel" key={activity}>
         <Game />
       </div>
-      {DAILY_ACTIVITIES.has(activity) ? <DailyHistory /> : null}
+      {DAILY_ACTIVITIES.has(activity) ||
+      ((DAILY_MODE_GAMES as readonly string[]).includes(activity) &&
+        params.get("mode") === "daily") ? (
+        <DailyHistory />
+      ) : null}
     </section>
   );
 }

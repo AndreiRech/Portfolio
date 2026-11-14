@@ -1,7 +1,14 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {
+  DAILY_HL_ROUNDS,
+  DAILY_HL_TARGET,
+  dailyChain,
+  dailyHLCategory,
+  dailyHLResult,
+  hlShare,
   higherLowerReducer,
+  parseDailyGuesses,
   initialHigherLower,
   isRightGuess,
   pickPages,
@@ -98,4 +105,60 @@ test("pages mix the top of the ranking with deeper ones", () => {
   );
   const [top, deep] = pickPages(() => 0.999);
   assert.ok(top <= 6 && deep >= 7 && deep <= 76);
+});
+
+const bank = Array.from({ length: 40 }, (_, index) =>
+  anime(index + 1, 1000 + ((index * 7919) % 40) * 250),
+);
+
+test("the daily chain is the same for a seed and never pairs near ties", () => {
+  const chain = dailyChain(bank, 42);
+  assert.equal(chain.length, DAILY_HL_ROUNDS + 1);
+  assert.deepEqual(chain, dailyChain([...bank].reverse(), 42));
+  assert.notDeepEqual(chain, dailyChain(bank, 43));
+  assert.equal(new Set(chain.map((item) => item.id)).size, chain.length);
+  for (let index = 1; index < chain.length; index++) {
+    const [a, b] = [chain[index - 1].value, chain[index].value];
+    assert.ok(Math.abs(a - b) / Math.max(a, b) > 0.04);
+  }
+});
+
+test("daily categories alternate between the two snapshots", () => {
+  assert.notEqual(dailyHLCategory(1), dailyHLCategory(2));
+  assert.equal(dailyHLCategory(1), dailyHLCategory(3));
+});
+
+test("a daily run ends at the first miss or after the last pair", () => {
+  const chain = [anime(1, 100), anime(2, 900), anime(3, 300), anime(4, 50)];
+  assert.deepEqual(dailyHLResult(chain, ["higher"]), {
+    streak: 1,
+    missed: false,
+    finished: false,
+  });
+  assert.deepEqual(dailyHLResult(chain, ["higher", "higher"]), {
+    streak: 1,
+    missed: true,
+    finished: true,
+  });
+  assert.deepEqual(dailyHLResult(chain, ["higher", "lower", "lower"]), {
+    streak: 3,
+    missed: false,
+    finished: true,
+  });
+  assert.ok(DAILY_HL_TARGET <= DAILY_HL_ROUNDS);
+});
+
+test("saved daily guesses are validated", () => {
+  assert.deepEqual(parseDailyGuesses(["higher", "lower"]), ["higher", "lower"]);
+  assert.equal(parseDailyGuesses(["up"]), null);
+  assert.equal(parseDailyGuesses("higher"), null);
+  assert.equal(
+    parseDailyGuesses(Array(DAILY_HL_ROUNDS + 1).fill("higher")),
+    null,
+  );
+});
+
+test("the daily share marks each pair and the score", () => {
+  const chain = [anime(1, 100), anime(2, 900), anime(3, 300)];
+  assert.equal(hlShare(chain, ["higher", "higher"]), "🟩🟥 1/10");
 });

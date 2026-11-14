@@ -5,7 +5,7 @@ import { matchKey } from "./charts.mjs";
 export const pause = (ms = 350) => new Promise((done) => setTimeout(done, ms));
 
 /** iTunes allows roughly 20 searches a minute; back off when it says no. */
-async function search(params, retries = 4) {
+export async function search(params, retries = 4) {
   const query = new URLSearchParams({ country: "US", limit: "10", ...params });
   for (let attempt = 0; ; attempt++) {
     const response = await fetch(`https://itunes.apple.com/search?${query}`, {
@@ -46,6 +46,8 @@ export async function resolveSong(entry) {
     preview: match.previewUrl,
     artwork: match.artworkUrl100,
     link: match.trackViewUrl.replace(/[&?]uo=\d+/, ""),
+    // Release year, shown on the reveal for the songs-by-year list.
+    ...(entry.year ? { year: entry.year } : {}),
   };
 }
 

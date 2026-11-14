@@ -1,3 +1,5 @@
+import { seededRandom, shuffled } from "../../daily/model/daily.ts";
+
 /**
  * Higher or lower: the visitor sees one item's number (AniList users, IMDb
  * rating or Spotify streams) and guesses whether the next one is higher or
@@ -62,14 +64,13 @@ export const initialHigherLower: HigherLowerState = {
 
 /** Pairs too close to call make for a coin flip, so they are skipped. */
 const TOO_CLOSE = 0.04;
+const callable = (current: HLItem, media: HLItem) =>
+  media.id !== current.id &&
+  Math.abs(media.value - current.value) /
+    Math.max(media.value, current.value, 1) >
+    TOO_CLOSE;
 function nextDistinct(current: HLItem, queue: HLItem[]) {
-  const index = queue.findIndex(
-    (media) =>
-      media.id !== current.id &&
-      Math.abs(media.value - current.value) /
-        Math.max(media.value, current.value, 1) >
-        TOO_CLOSE,
-  );
+  const index = queue.findIndex((media) => callable(current, media));
   if (index < 0) return { next: null, queue };
   return {
     next: queue[index],
@@ -155,4 +156,66 @@ export function shuffle<T>(items: readonly T[], random = Math.random): T[] {
     AniList's popularity ranking and one from far below it. */
 export function pickPages(random = Math.random): [number, number] {
   return [1 + Math.floor(random() * 6), 7 + Math.floor(random() * 70)];
+}
+
+/** Daily run: the same ten pairs for everyone, from a committed snapshot. */
+export const DAILY_HL_ROUNDS = 10;
+/** One miss ends the run; a streak of at least this many wins the day. */
+export const DAILY_HL_TARGET = 5;
+export type DailyHLCategory = Exclude<HLCategory, "anime">;
+
+/** Anime comes live from AniList, so days alternate the two snapshots. */
+export const dailyHLCategory = (day: number): DailyHLCategory =>
+  day % 2 ? "streams" : "screen";
+
+/**
+ * The day's chain of DAILY_HL_ROUNDS + 1 items: a seeded shuffle of the
+ * snapshot sorted by id (so file order does not matter), walked so that each
+ * item can be told apart from the one before it.
+ */
+export function dailyChain(items: readonly HLItem[], seed: number): HLItem[] {
+  if (!items.length) return [];
+  const pool = shuffled(
+    [...items].sort((a, b) => a.id.localeCompare(b.id)),
+    seededRandom(seed),
+  );
+  const chain = pool.splice(0, 1);
+  while (chain.length <= DAILY_HL_ROUNDS) {
+    const index = pool.findIndex((item) => callable(chain.at(-1)!, item));
+    if (index < 0) break;
+    chain.push(...pool.splice(index, 1));
+  }
+  return chain;
+}
+
+/** Replays the saved guesses against the chain. */
+export function dailyHLResult(chain: readonly HLItem[], guesses: Guess[]) {
+  let streak = 0;
+  for (const [index, guess] of guesses.entries()) {
+    const [current, next] = [chain[index], chain[index + 1]];
+    if (!current || !next) break;
+    if (!isRightGuess(current, next, guess))
+      return { streak, missed: true, finished: true };
+    streak++;
+  }
+  return {
+    streak,
+    missed: false,
+    finished: streak >= Math.min(DAILY_HL_ROUNDS, chain.length - 1),
+  };
+}
+
+/** ASVS 2.2: saved guesses are untrusted. */
+export function parseDailyGuesses(value: unknown): Guess[] | null {
+  return Array.isArray(value) &&
+    value.length <= DAILY_HL_ROUNDS &&
+    value.every((guess) => guess === "higher" || guess === "lower")
+    ? (value as Guess[])
+    : null;
+}
+
+/** Spoiler-free result: one square per pair played, then the score. */
+export function hlShare(chain: readonly HLItem[], guesses: Guess[]): string {
+  const { streak, missed } = dailyHLResult(chain, guesses);
+  return `${"🟩".repeat(streak)}${missed ? "🟥" : ""} ${streak}/${DAILY_HL_ROUNDS}`;
 }

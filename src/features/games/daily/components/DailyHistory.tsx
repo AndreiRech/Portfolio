@@ -47,6 +47,8 @@ export default function DailyHistory() {
     rarity: c.rarityTab,
     color: language === "pt" ? "Cores" : "Color",
     scale: language === "pt" ? "Escala" : "Size it up",
+    songs: c.songsTab,
+    "higher-lower": c.animeTab,
     "sudoku-easy": `${c.sudokuTab} · ${c.levels.easy}`,
     "sudoku-normal": `${c.sudokuTab} · ${c.levels.normal}`,
     "sudoku-hard": `${c.sudokuTab} · ${c.levels.hard}`,
