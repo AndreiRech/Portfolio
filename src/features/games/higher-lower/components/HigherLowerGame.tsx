@@ -1,6 +1,18 @@
 "use client";
-import { useCallback, useEffect, useReducer, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useReducer,
+  useRef,
+  useState,
+} from "react";
 import Image from "next/image";
+import { useSearchParams } from "next/navigation";
+import DailyFinish from "../../daily/components/DailyFinish";
+import { useDailyProgress, useToday } from "../../daily/hooks/useDaily";
+import { useRecordDailyResult } from "../../daily/hooks/useHistory";
+import { gameSeed } from "../../daily/model/daily";
 import { ArrowDown, ArrowUp, Check, RotateCcw, X } from "lucide-react";
 import GameHelp from "../../components/GameHelp";
 import { useSettings } from "@/shared/i18n/SettingsContext";
@@ -10,14 +22,25 @@ import { sfx } from "@/shared/lib/sfx";
 import { pixelBurst } from "@/shared/lib/pixelBurst";
 import {
   CATEGORIES,
+  DAILY_HL_ROUNDS,
+  DAILY_HL_TARGET,
   DECIMALS,
   LOW_QUEUE,
+  dailyChain,
+  dailyHLCategory,
+  dailyHLResult,
   higherLowerReducer,
+  hlShare,
   initialHigherLower,
+  parseDailyGuesses,
+  type Guess,
   type HLCategory,
   type HLItem,
 } from "@/features/games/higher-lower/model/higherLower";
-import { loadBatch } from "@/features/games/higher-lower/services/sources";
+import {
+  loadBatch,
+  loadSnapshot,
+} from "@/features/games/higher-lower/services/sources";
 
 /** Time to read the revealed number before the next pair slides in. */
 const REVEAL_MS = 2100;
@@ -83,8 +106,17 @@ function ItemCard({
   );
 }
 
-/** Category picker; each category plays its own run. */
+/**
+ * Free runs by category, or the daily ten pairs (`?mode=daily`, linked from
+ * the daily games strip).
+ */
 export default function HigherLowerGame() {
+  const daily = useSearchParams().get("mode") === "daily";
+  return daily ? <HigherLowerDaily /> : <HigherLowerFree />;
+}
+
+/** Category picker; each category plays its own run. */
+function HigherLowerFree() {
   const { language } = useSettings();
   const c = playCopy[language];
   const [category, setCategory] = useState<HLCategory>("anime");
@@ -361,6 +393,213 @@ function HigherLowerRun({
             {c.animeRestart}
           </button>
         </div>
+      ) : null}
+    </article>
+  );
+}
+
+type DailyHLSave = { start: string; guesses: Guess[] };
+
+/** The same chain for everyone on the same local day. */
+function HigherLowerDaily() {
+  const today = useToday();
+  const { language } = useSettings();
+  const c = playCopy[language];
+  const [items, setItems] = useState<{ day: number; list: HLItem[] } | null>(
+    null,
+  );
+  const [failed, setFailed] = useState(false);
+  const day = today?.number;
+  useEffect(() => {
+    if (!day) return;
+    let live = true;
+    loadSnapshot(dailyHLCategory(day))
+      .then((list) => live && setItems({ day, list }))
+      .catch(() => live && setFailed(true));
+    return () => {
+      live = false;
+    };
+  }, [day]);
+  const chain = useMemo(
+    () =>
+      items && items.day === day
+        ? dailyChain(items.list, gameSeed("higher-lower", items.day))
+        : null,
+    [items, day],
+  );
+  if (!today || !chain || chain.length < 2)
+    return (
+      <div className="game-loading hl-loading" role="status">
+        {failed || chain?.length === 1
+          ? c.hlCategories[dailyHLCategory(today?.number ?? 1)].unavailable
+          : c.hlLoading}
+      </div>
+    );
+  return (
+    <HigherLowerDailyRun
+      key={today.key}
+      day={today.number}
+      date={today.key}
+      chain={chain}
+    />
+  );
+}
+
+function HigherLowerDailyRun({
+  day,
+  date,
+  chain,
+}: {
+  day: number;
+  date: string;
+  chain: HLItem[];
+}) {
+  const { language } = useSettings();
+  const c = playCopy[language];
+  const category = dailyHLCategory(day);
+  const copy = c.hlCategories[category];
+  const unlock = useUnlock();
+  const decimals = DECIMALS[category];
+  const numbers = new Intl.NumberFormat(language === "pt" ? "pt-BR" : "en-US", {
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals,
+  });
+  const start = chain[0].id;
+  // A refreshed snapshot changes the chain; its old guesses no longer apply.
+  const [save, setSave] = useDailyProgress<DailyHLSave>(
+    "higher-lower-v1",
+    date,
+    () => ({ start, guesses: [] }),
+    (value) => {
+      const saved = value as Partial<DailyHLSave> | null;
+      const guesses = parseDailyGuesses(saved?.guesses);
+      return saved?.start === start && guesses ? { start, guesses } : null;
+    },
+  );
+  const [revealing, setRevealing] = useState(false);
+  const guesses = save?.guesses ?? [];
+  const result = dailyHLResult(chain, guesses);
+  const rounds = Math.min(DAILY_HL_ROUNDS, chain.length - 1);
+  const won = result.streak >= Math.min(DAILY_HL_TARGET, rounds);
+  useRecordDailyResult(
+    "higher-lower",
+    date,
+    save && result.finished ? (won ? "won" : "lost") : null,
+  );
+  useEffect(() => {
+    if (result.streak >= 10) unlock("anime-streak");
+  }, [result.streak, unlock]);
+  useEffect(() => {
+    if (!revealing) return;
+    const timer = setTimeout(() => setRevealing(false), REVEAL_MS);
+    return () => clearTimeout(timer);
+  }, [revealing, guesses.length]);
+
+  // While a guess is revealed, and once the run ends, the last pair stays up.
+  const shown =
+    revealing || result.finished
+      ? Math.max(guesses.length - 1, 0)
+      : guesses.length;
+  const current = chain[shown];
+  const next = chain[shown + 1];
+  const answered = shown < guesses.length;
+  const right = answered && !(result.missed && shown === guesses.length - 1);
+  const counted = useCountUp(answered && next ? next.value : null, decimals);
+
+  if (!save || !current || !next)
+    return (
+      <div className="game-loading hl-loading" role="status">
+        {c.hlLoading}
+      </div>
+    );
+
+  function guess(choice: Guess) {
+    if (revealing || result.finished) return;
+    sfx.pop();
+    const after = [...guesses, choice];
+    const verdict = dailyHLResult(chain, after);
+    setSave({ start, guesses: after });
+    setRevealing(true);
+    setTimeout(() => {
+      if (verdict.missed) sfx.wrong();
+      else sfx.roundClear();
+    }, COUNT_MS);
+  }
+
+  return (
+    <article className="anime-lab" aria-labelledby="anime-title">
+      <div className="play-panel-heading">
+        <span className="pixel-label">
+          {c.dailyLabel.replace("{n}", String(day))}
+        </span>
+        <span className="memory-best">
+          {c.hlStreak}{" "}
+          <strong key={result.streak} className="hl-streak">
+            {result.streak}/{rounds}
+          </strong>
+        </span>
+      </div>
+      <h2 id="anime-title">{copy.title}</h2>
+      <GameHelp>{fill(c.hlDailyIntro, { target: DAILY_HL_TARGET })}</GameHelp>
+      <div
+        className="hl-arena"
+        data-phase={answered ? (right ? "reveal" : "lost") : "guess"}
+      >
+        <ItemCard
+          key={`current-${current.id}`}
+          media={current}
+          users={numbers.format(current.value)}
+          label={copy.unit}
+          kind={current.kind && c.hlKinds[current.kind]}
+        />
+        <span className="hl-versus" aria-hidden="true">
+          VS
+        </span>
+        <ItemCard
+          key={`next-${next.id}`}
+          media={next}
+          users={answered ? numbers.format(counted ?? 0) : "?"}
+          label={copy.unit}
+          kind={next.kind && c.hlKinds[next.kind]}
+        >
+          {answered ? (
+            <span className="hl-verdict" data-right={right}>
+              {right ? (
+                <Check size={22} aria-hidden="true" />
+              ) : (
+                <X size={22} aria-hidden="true" />
+              )}
+            </span>
+          ) : (
+            <div
+              className="hl-buttons"
+              role="group"
+              aria-label={fill(copy.ask, { title: current.title })}
+            >
+              <button
+                className="button primary"
+                onClick={() => guess("higher")}
+              >
+                <ArrowUp size={17} aria-hidden="true" />
+                {copy.higher}
+              </button>
+              <button className="button" onClick={() => guess("lower")}>
+                <ArrowDown size={17} aria-hidden="true" />
+                {copy.lower}
+              </button>
+            </div>
+          )}
+        </ItemCard>
+      </div>
+      <p className="song-status" role="status" aria-live="polite">
+        {revealing && right ? c.hlRight : " "}
+      </p>
+      {result.finished && !revealing ? (
+        <DailyFinish
+          won={won}
+          message={fill(c.hlDailyResult, { n: result.streak, total: rounds })}
+          share={`${c.animeTab} #${day}\n${hlShare(chain, guesses)}`}
+        />
       ) : null}
     </article>
   );

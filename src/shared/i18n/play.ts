@@ -68,21 +68,46 @@ const en = {
       intro: "Songs from my own playlist. Play the clip and guess it!",
     },
     global: {
-      tab: "Top 30 world",
-      label: "TOP 30 WORLD",
-      intro: "The 30 most played songs on Spotify worldwide right now.",
+      tab: "Top 50 world",
+      label: "TOP 50 WORLD",
+      intro: "The 50 most played songs on Spotify worldwide right now.",
     },
     brazil: {
-      tab: "Top 30 Brazil",
-      label: "TOP 30 BRAZIL",
-      intro: "The 30 most played songs on Spotify in Brazil right now.",
+      tab: "Top 50 Brazil",
+      label: "TOP 50 BRAZIL",
+      intro: "The 50 most played songs on Spotify in Brazil right now.",
+    },
+    allTime: {
+      tab: "All-time top 50",
+      label: "ALL-TIME TOP 50",
+      intro: "The 50 most streamed songs ever on Spotify.",
+    },
+    byYear: {
+      tab: "Hits by year",
+      label: "HITS BY YEAR",
+      intro:
+        "The biggest Spotify hits of each year from 2010 to 2025, plus the top song of 2000–2004 and of 2005–2009.",
     },
     classics: {
       tab: "Pop classics",
       label: "POP CLASSICS",
-      intro: "30 pop hits from 2000 to 2015.",
+      intro: "50 pop hits from 2000 to 2015.",
+    },
+    brazilClassics: {
+      tab: "Brazil 2000–2015",
+      label: "BRAZIL 2000–2015",
+      intro:
+        "50 Brazilian hits from 2000 to 2015: sertanejo, funk, MPB, pagode and rock.",
     },
   },
+  songDailyIntro:
+    "One song for everyone today, drawn from every list but the charts and my playlist. Eight attempts, from 0.1 s to 16 s.",
+  songDailyWon: "Got it in {n}.",
+  songDailyLost: "It was {title} by {artist}.",
+  songYear: "Released in {y}",
+  hlDailyIntro:
+    "The same ten pairs for everyone today. One wrong answer ends the run. Get at least {target} in a row to win.",
+  hlDailyResult: "{n}/{total} in a row.",
   playClip: "Play clip",
   stopClip: "Stop",
   clipLabel: "Clip",
@@ -90,7 +115,7 @@ const en = {
   attempts: "Attempt",
   guessLabel: "Search for a song or artist",
   guessPlaceholder: "Type a song or artist…",
-  noSongMatch: "No song in this list matches that.",
+  noSongMatch: "No song matches that.",
   skip: "Skip",
   skipMore: "Skip (+{s}s)",
   songWon: "Got it in {n}. +{p} points.",
@@ -251,7 +276,7 @@ const en = {
   historyNext: "Next month",
   historyFiveGames: "Six marks = six daily games",
   historyRules:
-    "Win rate uses finished games only. Revealing an answer or losing all lives counts as a loss. In Rarity, answer all five themes without skipping to win. Termo is tracked by mode. Color and Size it up require an average of 70/100 to win. Previous daily sudoku results stay in your history.",
+    "Win rate uses finished games only. Revealing an answer or losing all lives counts as a loss. In Rarity, answer all five themes without skipping to win. Termo is tracked by mode. Color and Size it up require an average of 70/100 to win. Daily Songs is won by naming the song within eight attempts; daily Higher or lower by getting at least 5 of 10 in a row. Previous daily sudoku results stay in your history.",
   historyEmpty: "Finish a daily game to start your history.",
 
   dailyShare: "Copy result",
@@ -483,21 +508,46 @@ const pt: typeof en = {
       intro: "Músicas da minha playlist. Toque o trecho e adivinhe!",
     },
     global: {
-      tab: "Top 30 mundo",
-      label: "TOP 30 MUNDO",
-      intro: "As 30 músicas mais tocadas no Spotify no mundo agora.",
+      tab: "Top 50 mundo",
+      label: "TOP 50 MUNDO",
+      intro: "As 50 músicas mais tocadas no Spotify no mundo agora.",
     },
     brazil: {
-      tab: "Top 30 Brasil",
-      label: "TOP 30 BRASIL",
-      intro: "As 30 músicas mais tocadas no Spotify no Brasil agora.",
+      tab: "Top 50 Brasil",
+      label: "TOP 50 BRASIL",
+      intro: "As 50 músicas mais tocadas no Spotify no Brasil agora.",
+    },
+    allTime: {
+      tab: "Mais ouvidas da história",
+      label: "TOP 50 DA HISTÓRIA",
+      intro: "As 50 músicas mais tocadas de todos os tempos no Spotify.",
+    },
+    byYear: {
+      tab: "Hits por ano",
+      label: "HITS POR ANO",
+      intro:
+        "Os maiores hits do Spotify de cada ano, de 2010 a 2025, e a mais tocada de 2000–2004 e de 2005–2009.",
     },
     classics: {
       tab: "Clássicos do pop",
       label: "CLÁSSICOS DO POP",
-      intro: "30 sucessos do pop de 2000 a 2015.",
+      intro: "50 sucessos do pop de 2000 a 2015.",
+    },
+    brazilClassics: {
+      tab: "Brasil 2000–2015",
+      label: "BRASIL 2000–2015",
+      intro:
+        "50 sucessos brasileiros de 2000 a 2015: sertanejo, funk, MPB, pagode e rock.",
     },
   },
+  songDailyIntro:
+    "Uma música para todo mundo hoje, sorteada de todas as listas menos as paradas e a minha playlist. Oito tentativas, de 0,1 s a 16 s.",
+  songDailyWon: "Acertou em {n}.",
+  songDailyLost: "Era {title}, de {artist}.",
+  songYear: "Lançada em {y}",
+  hlDailyIntro:
+    "Os mesmos dez pares para todo mundo hoje. Um erro encerra a partida. Acerte pelo menos {target} seguidos para vencer.",
+  hlDailyResult: "{n}/{total} seguidos.",
   playClip: "Tocar trecho",
   stopClip: "Parar",
   clipLabel: "Trecho",
@@ -505,7 +555,7 @@ const pt: typeof en = {
   attempts: "Tentativa",
   guessLabel: "Busque uma música ou artista",
   guessPlaceholder: "Digite uma música ou artista…",
-  noSongMatch: "Nenhuma música desta lista corresponde a isso.",
+  noSongMatch: "Nenhuma música corresponde a isso.",
   skip: "Pular",
   skipMore: "Pular (+{s}s)",
   songWon: "Acertou em {n}. +{p} pontos.",
@@ -670,7 +720,7 @@ const pt: typeof en = {
   historyNext: "Próximo mês",
   historyFiveGames: "Seis marcas = seis jogos diários",
   historyRules:
-    "A taxa considera apenas partidas encerradas. Revelar a resposta ou perder todas as vidas conta como derrota. No Raridade, responda aos cinco temas sem pular para vencer. O Termo é contado por modo. Cores e Escala exigem média de 70/100 para vencer. Resultados anteriores de sudoku diário ficam no histórico.",
+    "A taxa considera apenas partidas encerradas. Revelar a resposta ou perder todas as vidas conta como derrota. No Raridade, responda aos cinco temas sem pular para vencer. O Termo é contado por modo. Cores e Escala exigem média de 70/100 para vencer. Em Músicas, vence quem acerta a música em até oito tentativas; no Mais ou menos, quem acerta pelo menos 5 de 10 seguidos. Resultados anteriores de sudoku diário ficam no histórico.",
   historyEmpty: "Encerre um jogo diário para começar seu histórico.",
 
   dailyShare: "Copiar resultado",

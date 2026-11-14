@@ -335,7 +335,15 @@
   overflow: visible;
 }
 .arcade-navigation .arcade-daily {
+  display: grid;
+  /* 14 daily games: two even rows of seven instead of a ragged wrap. */
+  grid-template-columns: repeat(auto-fit, minmax(132px, 1fr));
   margin-top: 12px;
+}
+@media (min-width: 960px) {
+  .arcade-navigation .arcade-daily {
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+  }
 }
 .arcade-navigation .arcade-primary :is(a, button) {
   display: inline-flex;

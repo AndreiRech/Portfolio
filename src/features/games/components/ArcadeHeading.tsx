@@ -30,6 +30,10 @@ export const GAME_GROUPS = {
   daily: ["termo", "conexo", "crossword", "rarity", "color", "scale"],
 } as const satisfies Record<string, readonly GameActivity[]>;
 type GameGroup = keyof typeof GAME_GROUPS;
+/** Unlimited games whose daily challenge (`mode=daily`) sits in the daily strip. */
+export const DAILY_MODE_GAMES = ["songs", "higher-lower"] as const;
+const hasDailyMode = (page: ArcadePage) =>
+  (DAILY_MODE_GAMES as readonly string[]).includes(page);
 const groupOf = (page: ArcadePage) =>
   (Object.keys(GAME_GROUPS) as GameGroup[]).find((group) =>
     (GAME_GROUPS[group] as readonly string[]).includes(page),
@@ -69,7 +73,9 @@ export default function ArcadeHeading({
   const { saved } = useCollection();
   const { copy: c, language } = useSettings();
   const play = playCopy[language];
-  const [dailyOpen, setDailyOpen] = useState(Boolean(groupOf(page)));
+  const dailyMode = hasDailyMode(page) && mode === "daily";
+  const group = dailyMode ? "daily" : groupOf(page);
+  const [dailyOpen, setDailyOpen] = useState(Boolean(group));
   const labels: Record<ArcadePage, string> = {
     memory: play.memoryTab,
     songs: play.songsTab,
@@ -93,7 +99,6 @@ export default function ArcadeHeading({
   const groupLabels: Record<GameGroup, string> = {
     daily: play.dailyGamesTab,
   };
-  const group = groupOf(page);
   return (
     <>
       <div className="arcade-navigation">
@@ -103,7 +108,9 @@ export default function ArcadeHeading({
               <Link
                 key={tab.id}
                 href={pageHref(tab.id)}
-                aria-current={page === tab.id ? "page" : undefined}
+                aria-current={
+                  page === tab.id && !dailyMode ? "page" : undefined
+                }
                 onClick={() => setDailyOpen(false)}
               >
                 {labels[tab.id]}
@@ -155,6 +162,15 @@ export default function ArcadeHeading({
                     </Link>,
                   ],
             )}
+            {DAILY_MODE_GAMES.map((id) => (
+              <Link
+                key={`${id}-daily`}
+                href={`/games?activity=${id}&mode=daily`}
+                aria-current={page === id && dailyMode ? "page" : undefined}
+              >
+                {labels[id]}
+              </Link>
+            ))}
           </nav>
         ) : null}
       </div>
