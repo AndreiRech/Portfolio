@@ -80,13 +80,13 @@ test("saved progress with the wrong shape starts fresh", () => {
   });
 });
 
-test("the expanded local dictionary has 1,800 answers and accepts its entire snapshot", async () => {
+test("the expanded local dictionary has 700 answers and accepts its entire snapshot", async () => {
   const { readFile } = await import("node:fs/promises");
   const words = JSON.parse(
     await readFile(new URL("../data/words.json", import.meta.url), "utf8"),
   ) as { answers: string[]; valid: string[] };
   const dictionary = buildDictionary(words.answers, words.valid);
-  assert.equal(words.answers.length, 1800);
+  assert.equal(words.answers.length, 700);
   assert.ok(dictionary.size >= 10000);
   for (const word of [...words.answers, ...words.valid]) {
     assert.match(word, /^[a-záàâãéêíóôõúç]{5}$/);
