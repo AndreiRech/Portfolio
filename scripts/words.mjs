@@ -36,7 +36,9 @@ export const EXCLUDED = new Set(
   toner trial guião duche quota corsa veras grado roque modal veado judeu táxis
   gibis netos novos secos altos autos artes bocas copas copos damas dores ervas
   esses fiéis fogos gases horas luvas meias olhos ossos patos ramos unhas dados
-  todos delas epóxi mento ganga batel basal maçom cisto régia sacro marra`.split(
+  todos delas epóxi mento ganga batel basal maçom cisto régia sacro marra
+  blush blitz retro refil babel áries curry hindu hindi sioux flush foyer
+  tweed curie emoji deprê clown yacht husky higgs gauss kanji slack`.split(
     /\s+/,
   ),
 );
@@ -47,7 +49,7 @@ export const EXCLUDED = new Set(
  */
 export function buildWordLists(
   { lexicon, conjugations, frequency },
-  size = 1800,
+  size = 700,
 ) {
   const lexical = lexicon.filter((word) => WORD.test(word));
   const lexiconSet = new Set(lexicon);
