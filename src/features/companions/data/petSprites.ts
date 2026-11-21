@@ -1,15 +1,21 @@
+import { breathe, shift } from "../model/pixelSprite.ts";
+import { DETAILED_PETS } from "./detailedPets.ts";
 /**
  * Pixel art for the companions: 24 × 24 grids of palette keys ("." is
  * transparent), with a few frames each so CSS can animate them.
  */
 export type PetFrames = {
   idle: string[];
+  /** A breath: alternates with idle while the pet stands still. */
+  breathe?: string[];
   blink: string[];
   walkA: string[];
   walkB: string[];
   /** Optional third and fourth beats for a four-step cycle. */
   walkC?: string[];
   walkD?: string[];
+  /** Frames of the pet's own action, played once when it is used. */
+  action?: string[][];
 };
 export type PetSprite = { palette: Record<string, string>; frames: PetFrames };
 
@@ -66,6 +72,7 @@ const closeEyes = (rows: string[]) =>
     y === 6 ? row.replace("k", "w") : y === 7 ? row.replace("k", "o") : row,
   );
 
+const CHICKEN_STAND = [...CHICKEN_BODY, ...CHICKEN_LEGS.stand];
 const CHICKEN: PetSprite = {
   palette: {
     o: "#3a2218",
@@ -78,10 +85,14 @@ const CHICKEN: PetSprite = {
     p: "#f4a0a0",
   },
   frames: {
-    idle: [...CHICKEN_BODY, ...CHICKEN_LEGS.stand],
+    idle: CHICKEN_STAND,
+    // Breathing bends the knees: the body sinks onto shorter legs.
+    breathe: breathe(CHICKEN_STAND, CHICKEN_BODY.length + 1),
     blink: [...closeEyes(CHICKEN_BODY), ...CHICKEN_LEGS.stand],
     walkA: [...CHICKEN_BODY, ...CHICKEN_LEGS.stepA],
     walkB: [...CHICKEN_BODY, ...CHICKEN_LEGS.stepB],
+    // A happy hop.
+    action: [shift(CHICKEN_STAND, 0, -3), shift(CHICKEN_STAND, 0, -1)],
   },
 };
 
@@ -244,6 +255,7 @@ function dieSprite(palette: Record<string, string>): PetSprite {
     palette,
     frames: {
       idle: withLegs(body, "stand"),
+      breathe: breathe(withLegs(body, "stand"), body.length + 1),
       blink: withLegs(blink, "stand"),
       walkA: withLegs(body, "left"),
       walkB: withLegs(body, "right"),
@@ -304,6 +316,8 @@ const MEDALLION: PetSprite = {
   },
   frames: {
     idle: MEDALLION_ROWS,
+    // The eyes flare between blinks.
+    breathe: MEDALLION_ROWS.map((row) => row.replace(/h/g, "i")),
     blink: MEDALLION_ROWS.map((row) => row.replace(/[hi]/g, "g")),
     walkA: MEDALLION_ROWS,
     walkB: MEDALLION_ROWS.map((row, y) =>
@@ -418,6 +432,7 @@ const CAT: PetSprite = {
   },
   frames: {
     idle: catFrame(CAT_STAND),
+    breathe: breathe(catFrame(CAT_STAND), CAT_BELLY + 2),
     blink: catFrame(CAT_STAND, { blink: true }),
     // Contact: the near legs reach apart while the far legs cross under.
     walkA: catFrame(
@@ -537,6 +552,7 @@ const FROG: PetSprite = {
   },
   frames: {
     idle: frogFrame(FROG_SIT),
+    breathe: breathe(frogFrame(FROG_SIT), 19),
     blink: frogFrame(FROG_SIT, true),
     walkA: frogFrame(FROG_SIT),
     walkB: frogFrame(FROG_PUSH),
@@ -606,6 +622,7 @@ const GHOST: PetSprite = {
   },
   frames: {
     idle: ghostFrame(0),
+    breathe: shift(ghostFrame(0), 0, 1),
     blink: ghostFrame(0, true),
     walkA: ghostFrame(0),
     walkB: ghostFrame(1),
@@ -619,12 +636,14 @@ const GHOST: PetSprite = {
  * to face right; front-view pets are never mirrored.
  */
 export const FACES_LEFT: ReadonlySet<string> = new Set([
+  "dragon",
   "chicken",
   "cat",
   "frog",
 ]);
 
 export const PET_SPRITES: Record<string, PetSprite> = {
+  ...DETAILED_PETS,
   chicken: CHICKEN,
   cat: CAT,
   frog: FROG,
@@ -644,20 +663,5 @@ export const PET_SPRITES: Record<string, PetSprite> = {
     t: "#ff6f9f",
     g: "#7a2fc4",
     n: "#ffffff",
-  }),
-  "gold-d20": dieSprite({
-    o: "#3c1400",
-    l: "#fff0a0",
-    p: "#f7c23a",
-    d: "#de921a",
-    f: "#fcd651",
-    e: "#b86a0a",
-    k: "#2a0e00",
-    w: "#ffffff",
-    b: "#f7906e",
-    m: "#4a1600",
-    t: "#ff7a52",
-    g: "#d99a1c",
-    n: "#3c1400",
   }),
 };

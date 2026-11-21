@@ -3,7 +3,7 @@ import PixelPet from "@/features/companions/components/PixelPet";
 import Link from "next/link";
 import { ArrowDownRight, ArrowUpRight, Trophy, Footprints } from "lucide-react";
 import { useSettings } from "@/shared/i18n/SettingsContext";
-import HeroDice from "@/features/portfolio/components/HeroDice";
+import ArcadeCabinet from "@/features/portfolio/components/ArcadeCabinet";
 import HeroName from "@/features/portfolio/components/HeroName";
 
 export default function HeroSection() {
@@ -15,9 +15,9 @@ export default function HeroSection() {
         <HeroName />
         <p className="hero-description">{c.heroBody}</p>
         <div className="hero-links">
-          <a href="#projects" className="button primary">
+          <a href="#projects" className="text-link">
             {c.work}
-            <ArrowDownRight size={20} />
+            <ArrowDownRight size={18} />
           </a>
           <a href="#contact" className="text-link">
             {c.hello}
@@ -25,7 +25,7 @@ export default function HeroSection() {
           </a>
         </div>
       </div>
-      <HeroDice />
+      <ArcadeCabinet />
       <div className="hero-bottom">
         <Link href="/projects/hearme" className="hero-award">
           <span className="hero-trophy">

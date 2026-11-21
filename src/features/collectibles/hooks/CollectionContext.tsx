@@ -9,6 +9,7 @@ import {
   type ReactNode,
 } from "react";
 import { createCollectionStore } from "@/features/collectibles/model/collection";
+import CursorEffects from "@/features/collectibles/components/CursorEffects";
 
 type Store = ReturnType<typeof createCollectionStore>;
 const CollectionContext = createContext<Store | null>(null);
@@ -45,6 +46,9 @@ function ApplyAppearance() {
     document.documentElement.dataset.palette =
       data.equipped.palette ?? "default";
     document.documentElement.dataset.cursor = data.equipped.cursor ?? "default";
-  }, [data.equipped.palette, data.equipped.cursor]);
-  return null;
+    document.documentElement.dataset.trail = data.equipped.trail ?? "default";
+  }, [data.equipped.palette, data.equipped.cursor, data.equipped.trail]);
+  return (
+    <CursorEffects cursor={data.equipped.cursor} trail={data.equipped.trail} />
+  );
 }

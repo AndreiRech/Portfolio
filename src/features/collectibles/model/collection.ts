@@ -1,4 +1,9 @@
-import { REWARDS, getReward, type RewardKind } from "../data/collectibles.ts";
+import {
+  REWARDS,
+  REWARD_KINDS,
+  getReward,
+  type RewardKind,
+} from "../data/collectibles.ts";
 
 export const COLLECTION_KEY = "andrei-collection-v1"; // gitleaks:allow -- Public browser storage namespace, not a credential.
 export interface Collection {
@@ -7,10 +12,16 @@ export interface Collection {
   equipped: Record<RewardKind, string | null>;
   lastOpening: string | null;
 }
+const emptyEquipment = (): Collection["equipped"] => ({
+  palette: null,
+  cursor: null,
+  companion: null,
+  trail: null,
+});
 export const emptyCollection = (): Collection => ({
   version: 1,
   counts: {},
-  equipped: { palette: null, cursor: null, companion: null },
+  equipped: emptyEquipment(),
   lastOpening: null,
 });
 
@@ -63,7 +74,7 @@ export function parseCollection(raw: string | null): Collection {
       }
     }
     if (candidate.equipped && typeof candidate.equipped === "object") {
-      for (const kind of ["palette", "cursor", "companion"] as const) {
+      for (const kind of REWARD_KINDS) {
         const stored: unknown = candidate.equipped[kind];
         const id =
           LEGACY_REWARDS.find((alias) => alias.from === stored)?.to ?? stored;
@@ -175,7 +186,7 @@ export function createCollectionStore(storage: () => CollectionStorage) {
     resetAppearance: () =>
       update((data) => ({
         ...data,
-        equipped: { palette: null, cursor: null, companion: null },
+        equipped: emptyEquipment(),
       })),
   };
 }

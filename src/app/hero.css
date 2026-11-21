@@ -44,155 +44,241 @@
   gap: 24px;
   margin-top: 28px;
 }
-.hero-dice-scene {
-  position: relative;
+/* Arcade cabinet: the hero's daily games. Corners are stepped so the
+   cabinet reads as pixel art at any size. */
+.arcade {
+  display: flex;
+  justify-content: flex-end;
   min-width: 0;
-  min-height: 500px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  isolation: isolate;
-  overflow: clip;
 }
-.hero-dice-scene h2 {
-  font-size: 32px;
-  color: var(--fg);
-  margin-bottom: 12px;
-}
-.hero-dice-trigger {
-  width: min(320px, calc(100% - 20px));
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 18px;
-  padding: 0;
-  border: 0;
-  background: none;
-  color: var(--fg);
-  cursor: grab;
-  touch-action: none;
-  user-select: none;
-}
-.hero-dice-trigger:active {
-  cursor: grabbing;
-}
-.hero-dice-trigger[aria-busy="true"] {
-  cursor: wait;
-}
-.hero-dice-art {
-  display: block;
-  width: min(300px, 100%);
-  aspect-ratio: 1;
-  transform-origin: center;
-  pointer-events: none;
-}
-.hero-dice-art .hero-dice-pet {
-  display: block;
-  width: 100%;
-  height: 100%;
-  image-rendering: pixelated;
-  object-fit: contain;
-  transition: transform 0.2s;
-}
-.hero-dice-action {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  min-height: 44px;
-  font-size: 14px;
-  font-weight: 600;
-  border-bottom: 1px solid var(--line);
-  transition:
-    color 0.2s,
-    border-color 0.2s;
-}
-.hero-dice-trigger:is(:hover, :focus-visible) .hero-dice-action {
-  color: var(--accent);
-  border-color: var(--accent);
-}
-.hero-dice-ground {
-  position: absolute;
-  width: min(300px, 80%);
-  height: 24px;
-  bottom: 128px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: repeating-linear-gradient(
-    90deg,
-    var(--surface) 0 18px,
-    transparent 18px 22px
+.arcade-cabinet {
+  --cab-step: 6px;
+  position: relative;
+  width: min(380px, 100%);
+  display: grid;
+  background: var(--surface);
+  border: 4px solid var(--line);
+  clip-path: polygon(
+    0 var(--cab-step),
+    var(--cab-step) var(--cab-step),
+    var(--cab-step) 0,
+    calc(100% - var(--cab-step)) 0,
+    calc(100% - var(--cab-step)) var(--cab-step),
+    100% var(--cab-step),
+    100% 100%,
+    0 100%
   );
-  border-top: 4px solid var(--line);
-  z-index: -1;
+  box-shadow:
+    inset 8px 0 0 var(--raised),
+    inset -8px 0 0 var(--raised);
+}
+.arcade-marquee {
+  margin: 0;
+  padding: 14px 16px 12px;
+  text-align: center;
+  font:
+    400 26px/1 var(--font-heading),
+    monospace;
+  color: var(--bg);
+  background: var(--accent);
+  border-bottom: 4px solid var(--line);
+  letter-spacing: 0.02em;
+}
+.arcade-bezel {
+  padding: 18px 22px 14px;
+  background: var(--raised);
+}
+.arcade-screen {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+  padding: 16px 14px 14px;
+  min-height: 250px;
+  background: #0c0d10;
+  border: 4px solid #000;
+  color: #e6e7eb;
+  overflow: hidden;
+  font-family: var(--font-heading), monospace;
+}
+/* Scanlines over the whole screen. */
+.arcade-screen::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgb(255 255 255 / 0.04) 0 2px,
+    transparent 2px 4px
+  );
   pointer-events: none;
 }
-.hero-dice-result {
-  position: absolute;
-  top: 115px;
-  right: 8px;
+.arcade-game {
   display: flex;
-  flex-wrap: wrap;
   align-items: baseline;
-  justify-content: end;
+  gap: 10px;
+  margin: 0;
+  font-size: 22px;
+  line-height: 1;
+}
+.arcade-game strong {
+  font-weight: 400;
+}
+.arcade-game span {
+  font-size: 14px;
+  color: #9a9ea8;
+}
+.arcade-preview {
+  width: min(220px, 80%);
+  aspect-ratio: 20 / 12;
+  image-rendering: pixelated;
+  animation: arcade-boot 0.24s steps(3, end);
+}
+.arcade-status {
+  margin: 0;
+  font-size: 14px;
+  color: #9a9ea8;
+}
+.arcade-screen[data-status="won"] .arcade-status {
+  color: #a2cc98;
+}
+.arcade-screen[data-status="lost"] .arcade-status {
+  color: #e56d68;
+}
+.arcade-dots {
+  display: flex;
   gap: 5px;
-  width: 130px;
-  pointer-events: none;
-  font-variant-numeric: tabular-nums;
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
-.hero-dice-result strong {
-  font: 400 80px/0.95 var(--font-heading);
-  color: var(--accent);
-  animation: dice-result 0.28s both;
-}
-.hero-dice-result > span:not(.sr-only) {
-  color: var(--muted);
-  font-size: 12px;
-}
-.hero-dice-result small {
-  flex-basis: 100%;
-  font-size: 12px;
-  text-align: right;
-  color: var(--accent);
-}
-.hero-dice-result[data-critical="high"] :is(strong, small) {
-  color: #eac67d;
-}
-.hero-dice-pixel {
-  position: absolute;
-  width: 12px;
-  height: 12px;
-  background: var(--blue);
-  pointer-events: none;
-}
-.dice-pixel-one {
-  left: 7%;
-  top: 38%;
-  box-shadow: 12px -12px 0 var(--line);
-}
-.dice-pixel-two {
-  right: 14%;
-  bottom: 26%;
+.arcade-dots li {
   width: 8px;
   height: 8px;
+  background: #3c3e44;
+}
+.arcade-dots li[data-status="won"] {
+  background: #a2cc98;
+}
+.arcade-dots li[data-status="lost"] {
+  background: #e56d68;
+}
+.arcade-dots li[data-current="true"] {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.arcade-blink {
+  margin: 0;
+  font-size: 13px;
+  color: var(--accent);
+  animation: arcade-blink 1.2s steps(1, end) infinite;
+}
+.arcade-panel {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 26px;
+  background: var(--surface);
+  border-block: 4px solid var(--line);
+}
+.arcade-stick {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.arcade-stick button {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  background: var(--raised);
+  color: var(--fg);
+  box-shadow: inset 0 -4px 0 var(--line);
+}
+.arcade-stick button:hover {
+  color: var(--accent);
+}
+.arcade-stick button:active {
+  box-shadow: inset 0 -1px 0 var(--line);
+  transform: translateY(3px);
+}
+.arcade-knob {
+  width: 22px;
+  height: 22px;
+  background: #e56d68;
+  box-shadow:
+    inset -4px -4px 0 #ad393b,
+    0 10px 0 -6px var(--line);
+}
+.arcade-start {
+  display: grid;
+  place-items: center;
+  min-width: 96px;
+  min-height: 52px;
+  padding: 0 16px;
+  font:
+    400 20px/1 var(--font-heading),
+    monospace;
+  color: var(--bg);
   background: var(--accent);
-  box-shadow: 8px 8px 0 var(--line);
+  box-shadow: inset 0 -6px 0 rgb(0 0 0 / 0.28);
 }
-@keyframes dice-result {
+.arcade-start:hover {
+  filter: brightness(1.08);
+}
+.arcade-start:active {
+  box-shadow: inset 0 -2px 0 rgb(0 0 0 / 0.28);
+  transform: translateY(3px);
+}
+.arcade-base {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 26px 18px;
+}
+.arcade-coin {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 56px;
+  background: var(--raised);
+  box-shadow: inset 0 0 0 4px var(--line);
+}
+.arcade-coin span {
+  width: 6px;
+  height: 26px;
+  background: #0c0d10;
+  box-shadow: 0 0 0 2px #eac67d;
+}
+.arcade-coin:hover span {
+  box-shadow: 0 0 0 2px var(--accent);
+}
+.arcade-refresh {
+  margin: 0;
+  font-size: 12px;
+  color: var(--muted);
+  text-align: right;
+}
+.arcade-refresh time {
+  display: block;
+  font:
+    400 20px/1.1 var(--font-heading),
+    monospace;
+  color: var(--fg);
+  font-variant-numeric: tabular-nums;
+}
+@keyframes arcade-blink {
+  50% {
+    opacity: 0;
+  }
+}
+@keyframes arcade-boot {
   from {
-    opacity: 0.3;
-    transform: translateY(8px) scale(0.9);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-@media (hover: hover) and (pointer: fine) {
-  .hero-dice-trigger:not([aria-busy="true"]):hover
-    .hero-dice-art
-    .hero-dice-pet {
-    transform: translateY(-6px) rotate(-4deg);
+    opacity: 0;
+    transform: scaleY(0.1);
   }
 }
 .hero-bottom {
@@ -274,13 +360,14 @@
   }
 }
 @media (max-width: 767px) {
-  .hero-dice-result {
-    top: 74px;
-    right: 0;
-    width: 100px;
+  .arcade {
+    justify-content: center;
   }
-  .hero-dice-result strong {
-    font-size: 56px;
+  .arcade-cabinet {
+    width: min(360px, 100%);
+  }
+  .arcade-screen {
+    min-height: 220px;
   }
   .hero {
     grid-template-columns: 1fr;
@@ -328,13 +415,13 @@
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .hero-dice-result strong {
+  .arcade-blink,
+  .arcade-preview {
     animation: none;
   }
   .hero :is(a, button, img, span) {
     transition: none;
   }
-  .hero-dice-trigger:hover .hero-dice-art .hero-dice-pet,
   .hero-award:hover .hero-trophy,
   .hero-sidequests button:hover img {
     transform: none;

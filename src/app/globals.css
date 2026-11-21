@@ -72,14 +72,34 @@
   --line: #564338;
 }
 :root[data-palette="aurora"] {
-  --bg: #18252e;
-  --surface: #20313b;
-  --raised: #293c46;
-  --fg: #e1eff2;
-  --muted: #b5c7cc;
-  --accent: #70d8d4;
-  --blue: #9b67a8;
-  --line: #405361;
+  --bg: #0f1630;
+  --surface: #172040;
+  --raised: #1f2a52;
+  --fg: #e8ecff;
+  --muted: #aab3d9;
+  --accent: #5cf2a6;
+  --blue: #b07cff;
+  --line: #34407a;
+}
+:root[data-palette="ocean"] {
+  --bg: #0f1d2b;
+  --surface: #162838;
+  --raised: #1d3346;
+  --fg: #e3eef7;
+  --muted: #a9bfd0;
+  --accent: #4f9dff;
+  --blue: #2fc4b2;
+  --line: #2e4a63;
+}
+:root[data-palette="treasure"] {
+  --bg: #1d180d;
+  --surface: #282011;
+  --raised: #342a16;
+  --fg: #fbf1d3;
+  --muted: #d4c597;
+  --accent: #ffd23f;
+  --blue: #e0a526;
+  --line: #57471f;
 }
 * {
   box-sizing: border-box;
@@ -956,7 +976,8 @@ svg {
 .palette-art span:nth-child(4) {
   transform: translateY(8px);
 }
-.cursor-art {
+.cursor-art,
+.trail-art {
   width: 65px;
   height: 65px;
   image-rendering: pixelated;
@@ -1027,7 +1048,7 @@ svg {
 }
 .equipped-slots {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 12px;
   margin-top: 26px;
 }
@@ -1044,7 +1065,8 @@ svg {
   flex-shrink: 0;
 }
 .equipped-slot .companion-art,
-.equipped-slot .cursor-art {
+.equipped-slot .cursor-art,
+.equipped-slot .trail-art {
   width: 60px;
   height: 60px;
 }
@@ -1304,9 +1326,14 @@ svg {
       url("/collectibles/cursors/wand.svg") 6 6,
       auto;
   }
-  html[data-cursor="crystal"] :is(body, a, button, input, select, textarea) {
+  html[data-cursor="pickaxe"] :is(body, a, button, input, select, textarea) {
     cursor:
-      url("/collectibles/cursors/crystal.svg") 12 2,
+      url("/collectibles/cursors/pickaxe.svg") 5 6,
+      auto;
+  }
+  html[data-cursor="saber"] :is(body, a, button, input, select, textarea) {
+    cursor:
+      url("/collectibles/cursors/saber.svg") 2 2,
       auto;
   }
 }
@@ -1592,6 +1619,7 @@ svg {
     align-items: start;
   }
   .equipped-slots {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 8px;
   }
   .equipped-slot {
@@ -1711,4 +1739,47 @@ button:disabled {
 }
 .lightbox {
   overscroll-behavior: contain;
+}
+/* Legendary palette: a gold glint sweeps across headings and the main action. */
+@media (prefers-reduced-motion: no-preference) {
+  :root[data-palette="treasure"] h2 {
+    background-image: linear-gradient(
+      110deg,
+      var(--accent) 42%,
+      #fff7d1 50%,
+      var(--accent) 58%
+    );
+    background-size: 260% 100%;
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    animation: treasure-sheen 8s steps(40, end) infinite;
+  }
+  :root[data-palette="treasure"] .button.primary {
+    position: relative;
+    overflow: hidden;
+  }
+  :root[data-palette="treasure"] .button.primary::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      110deg,
+      transparent 40%,
+      rgb(255 247 209 / 0.7) 50%,
+      transparent 60%
+    );
+    background-size: 260% 100%;
+    animation: treasure-sheen 8s steps(40, end) infinite;
+    pointer-events: none;
+  }
+}
+@keyframes treasure-sheen {
+  0%,
+  70% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: 0 0;
+  }
 }

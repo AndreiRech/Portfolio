@@ -4,12 +4,18 @@ export const ACHIEVEMENTS = [
   {
     id: "nat20",
     title: { en: "Natural 20", pt: "20 natural" },
-    hint: { en: "Roll a 20 on the D20.", pt: "Tire 20 no D20." },
+    hint: {
+      en: "Roll a 20 with the D20 companion.",
+      pt: "Tire 20 com o companheiro D20.",
+    },
   },
   {
     id: "fumble",
     title: { en: "Critical fail", pt: "Falha crítica" },
-    hint: { en: "Roll a 1 on the D20.", pt: "Tire 1 no D20." },
+    hint: {
+      en: "Roll a 1 with the D20 companion.",
+      pt: "Tire 1 com o companheiro D20.",
+    },
   },
   {
     id: "first-case",

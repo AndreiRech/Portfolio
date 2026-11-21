@@ -75,7 +75,12 @@ test("the visitor's own companion is chosen first", () => {
   const owned = {
     ...emptyCollection(),
     counts: { chicken: 1, d20: 1 },
-    equipped: { palette: null, cursor: null, companion: "chicken" },
+    equipped: {
+      palette: null,
+      cursor: null,
+      companion: "chicken",
+      trail: null,
+    },
   };
   assert.equal(pickCompanion(owned, "d20"), "d20");
   assert.equal(pickCompanion(owned, null), "chicken");
