@@ -2,14 +2,17 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { CLUES } from "../data/clues.ts";
 import {
+  MAX_CHECKS,
   SIZE,
   buildCrossword,
   emptyEntries,
   isSolved,
+  outOfChecks,
   parseCrossword,
   wordCells,
   wrongCells,
   validateCrossword,
+  type CrosswordState,
 } from "./crossword.ts";
 
 test("the clue bank has unique, accent-free answers that fit the grid", () => {
@@ -18,6 +21,32 @@ test("the clue bank has unique, accent-free answers that fit the grid", () => {
     assert.match(entry.answer, /^[A-Z]{3,11}$/, entry.answer);
     assert.ok(entry.clue.length > 3, entry.answer);
   }
+});
+
+test("the grid is revealed when the last check fails", () => {
+  const puzzle = buildCrossword(CLUES, 3);
+  let state: CrosswordState = {
+    entries: emptyEntries(),
+    revealed: false,
+    checks: 0,
+    validated: false,
+  };
+  for (let check = 1; check < MAX_CHECKS; check++) {
+    state = validateCrossword(puzzle, state);
+    assert.equal(state.revealed, false);
+  }
+  state = validateCrossword(puzzle, state);
+  assert.equal(state.checks, MAX_CHECKS);
+  assert.ok(state.revealed && outOfChecks(state));
+  // Solving on the last check wins.
+  const entries = puzzle.cells.flat().map((letter) => letter ?? "");
+  const last = validateCrossword(puzzle, {
+    entries,
+    revealed: false,
+    checks: MAX_CHECKS - 1,
+    validated: false,
+  });
+  assert.ok(last.validated && !last.revealed && !outOfChecks(last));
 });
 
 test("final validation accepts a correct full grid, rejects a wrong one and survives reload", () => {

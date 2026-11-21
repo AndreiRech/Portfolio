@@ -240,6 +240,9 @@ export function checkEntries(puzzle: Crossword, entries: Entries) {
   return { wrong, correct, empty };
 }
 
+/** Checks allowed per day; the last one unsolved reveals the grid. */
+export const MAX_CHECKS = 5;
+
 export type CrosswordState = {
   entries: Entries;
   revealed: boolean;
@@ -254,12 +257,19 @@ export function validateCrossword(
 ): CrosswordState {
   if (state.revealed || (state.validated && isSolved(puzzle, state.entries)))
     return state;
+  const validated = isSolved(puzzle, state.entries);
+  const checks = state.checks + 1;
   return {
     ...state,
-    checks: state.checks + 1,
-    validated: isSolved(puzzle, state.entries),
+    checks,
+    validated,
+    revealed: !validated && checks >= MAX_CHECKS,
   };
 }
+
+/** The grid was revealed because every check was spent. */
+export const outOfChecks = (state: CrosswordState) =>
+  state.revealed && state.checks >= MAX_CHECKS;
 
 export function parseCrossword(value: unknown): CrosswordState | null {
   if (!value || typeof value !== "object") return null;

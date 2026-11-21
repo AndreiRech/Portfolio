@@ -2,12 +2,14 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { GROUPS } from "../data/groups.ts";
 import {
+  MAX_ATTEMPTS,
   buildPuzzle,
   giveUp,
   guessGroup,
   initialConexo,
   isFinished,
   matchPuzzle,
+  outOfAttempts,
   parseConexo,
   shareText,
 } from "./conexo.ts";
@@ -55,13 +57,13 @@ test("two years of puzzles: one group per level, four themes, 16 different words
   assert.deepEqual(buildPuzzle(GROUPS, 9), buildPuzzle(GROUPS, 9));
 });
 
-test("guesses report solved groups, near misses and repeats", () => {
+test("guesses report solved groups, misses without hints and repeats", () => {
   const puzzle = buildPuzzle(GROUPS, 1);
   const [first, second] = puzzle.groups;
   let state = initialConexo();
   const near = [...first.words.slice(0, 3), second.words[0]];
   let result = guessGroup(state, puzzle, near);
-  assert.equal(result.verdict, "one-away");
+  assert.equal(result.verdict, "wrong");
   state = result.state;
   assert.equal(
     guessGroup(state, puzzle, [...near].reverse()).verdict,
@@ -78,6 +80,39 @@ test("guesses report solved groups, near misses and repeats", () => {
     shareText(result.state, puzzle, 1, "en"),
     /^Connected #1 · 2 attempts/,
   );
+});
+
+test("the day ends once every attempt is spent", () => {
+  const puzzle = buildPuzzle(GROUPS, 1);
+  const [first, second, third] = puzzle.groups;
+  let state = guessGroup(initialConexo(), puzzle, first.words).state;
+  for (let miss = 0; state.attempts.length < MAX_ATTEMPTS; miss++) {
+    assert.ok(!isFinished(state));
+    const guess = [
+      ...second.words.slice(0, 2),
+      third.words[miss % 4],
+      third.words[(miss + 1 + Math.floor(miss / 4)) % 4],
+    ];
+    state = guessGroup(state, puzzle, guess).state;
+  }
+  assert.ok(isFinished(state));
+  assert.ok(outOfAttempts(state));
+  assert.ok(state.gaveUp);
+  assert.deepEqual(state.solved, [0, 1, 2, 3]);
+  assert.match(shareText(state, puzzle, 1), /^Conexo #1 · X/);
+  assert.equal(guessGroup(state, puzzle, second.words).verdict, "invalid");
+  assert.deepEqual(parseConexo(state), state);
+  // A win on the last attempt is still a win.
+  let won = initialConexo();
+  for (const miss of [0, 1, 2, 3])
+    won = guessGroup(won, puzzle, [
+      ...first.words.slice(0, 3),
+      puzzle.groups[1 + (miss % 3)].words[Math.floor(miss / 3)],
+    ]).state;
+  for (const group of puzzle.groups)
+    won = guessGroup(won, puzzle, group.words).state;
+  assert.equal(won.attempts.length, MAX_ATTEMPTS);
+  assert.ok(isFinished(won) && !won.gaveUp && !outOfAttempts(won));
 });
 
 test("saved progress is validated", () => {

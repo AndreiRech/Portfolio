@@ -209,6 +209,10 @@ export function submitMode(
   if (missingLetters(puzzle, state, key).length)
     return { ok: false as const, reason: "yellow" as const };
   const guesses = [...state.guesses, word];
+  const notes = autoNotes(puzzle, guesses, [
+    ...state.notes,
+    Array<Mark | null>(5).fill(null),
+  ]);
   const won = puzzle.answers.every((answer) =>
     guesses.some((guess) => stripAccents(guess) === stripAccents(answer)),
   );
@@ -216,7 +220,7 @@ export function submitMode(
     ok: true as const,
     state: {
       guesses,
-      notes: [...state.notes, Array<Mark | null>(5).fill(null)],
+      notes,
       status: won
         ? ("won" as const)
         : guesses.length >= CONFIG[puzzle.mode].tries
@@ -224,6 +228,29 @@ export function submitMode(
           : ("playing" as const),
     },
   };
+}
+/**
+ * Counts mode: a guess with five reds proves its letters absent, so those
+ * letters are marked red in every row. Squares the visitor marked stay.
+ */
+export function autoNotes(
+  puzzle: ModePuzzle,
+  guesses: readonly string[],
+  notes: (Mark | null)[][],
+): (Mark | null)[][] {
+  if (puzzle.mode !== "counts") return notes;
+  const absent = new Set<string>();
+  for (const guess of guesses)
+    if (colorCounts(guess, puzzle.answers[0]).wrong === 5)
+      for (const letter of stripAccents(guess)) absent.add(letter);
+  if (!absent.size) return notes;
+  return notes.map((row, index) =>
+    row.map(
+      (mark, col) =>
+        mark ??
+        (absent.has(stripAccents(guesses[index])[col]) ? "wrong" : null),
+    ),
+  );
 }
 export function cycleNote(
   state: ModeState,

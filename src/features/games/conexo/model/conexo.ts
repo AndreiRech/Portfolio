@@ -1,7 +1,7 @@
 /**
  * Conexo: sixteen words hide four groups of four. The visitor selects four
- * words at a time; a right guess reveals the group. There is no attempt
- * limit, only a counter, and the visitor may reveal the answer.
+ * words at a time; a right guess reveals the group. The day ends after
+ * MAX_ATTEMPTS guesses, and the visitor may reveal the answer sooner.
  */
 import { gameSeed, seededRandom, shuffled } from "../../daily/model/daily.ts";
 
@@ -21,6 +21,8 @@ export type ConexoState = {
 };
 
 export const GROUP_SIZE = 4;
+/** Four right guesses plus four mistakes. */
+export const MAX_ATTEMPTS = 8;
 const normalized = new Map<string, string>();
 const key = (word: string) => {
   let result = normalized.get(word);
@@ -190,7 +192,7 @@ export const initialConexo = (): ConexoState => ({
 
 export type ConexoResult = {
   state: ConexoState;
-  verdict: "solved" | "one-away" | "wrong" | "repeat" | "invalid";
+  verdict: "solved" | "wrong" | "repeat" | "invalid";
 };
 
 export function guessGroup(
@@ -211,24 +213,23 @@ export function guessGroup(
       !state.solved.includes(position) &&
       group.words.every((word) => chosen.includes(word)),
   );
-  if (index >= 0)
-    return {
-      state: { ...state, attempts, solved: [...state.solved, index] },
-      verdict: "solved",
-    };
-  const best = Math.max(
-    ...puzzle.groups.map(
-      (group) => group.words.filter((word) => chosen.includes(word)).length,
-    ),
-  );
+  const next =
+    index >= 0
+      ? { ...state, attempts, solved: [...state.solved, index] }
+      : { ...state, attempts };
   return {
-    state: { ...state, attempts },
-    verdict: best === GROUP_SIZE - 1 ? "one-away" : "wrong",
+    state: outOfAttempts(next) ? giveUp(next) : next,
+    verdict: index >= 0 ? "solved" : "wrong",
   };
 }
 
 export const isFinished = (state: ConexoState) =>
   state.gaveUp || state.solved.length === 4;
+
+/** Every allowed guess was spent before all four groups were found. */
+export const outOfAttempts = (state: ConexoState) =>
+  state.attempts.length >= MAX_ATTEMPTS &&
+  (state.gaveUp || state.solved.length < 4);
 
 /** Reveals the remaining groups, easiest first. */
 export function giveUp(state: ConexoState): ConexoState {
@@ -307,5 +308,6 @@ export function parseConexo(value: unknown): ConexoState | null {
     typeof gaveUp !== "boolean"
   )
     return null;
-  return { solved, attempts, gaveUp };
+  const state = { solved, attempts, gaveUp };
+  return outOfAttempts(state) ? giveUp(state) : state;
 }

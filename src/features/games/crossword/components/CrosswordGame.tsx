@@ -14,10 +14,12 @@ import { useRecordDailyResult } from "@/features/games/daily/hooks/useHistory";
 import DailyFinish from "@/features/games/daily/components/DailyFinish";
 import PortugueseOnly from "@/features/games/daily/components/PortugueseOnly";
 import {
+  MAX_CHECKS,
   SIZE,
   buildCrossword,
   emptyEntries,
   isSolved,
+  outOfChecks,
   parseCrossword,
   wordCells,
   checkEntries,
@@ -299,14 +301,17 @@ export default function CrosswordGame() {
           {fill(c.dailyLabel, { n: today.number })}
         </span>
         <span className="memory-best">
-          {c.cwWords} <strong>{puzzle.words.length}</strong>
+          {c.cwTries}{" "}
+          <strong>
+            {state.checks}/{MAX_CHECKS}
+          </strong>
         </span>
       </div>
       <h2 id="cw-title">{c.cwTitle}</h2>
       <GameHelp>
         {language === "pt"
-          ? "Selecione uma pista e preencha a palavra na grade. Use as setas para navegar e Tab para trocar de pista. Conferir mostra as letras certas e erradas; revelar encerra o desafio."
-          : "Select a clue and fill in the Portuguese word. Use arrows to navigate and Tab to change clues. Check marks correct and incorrect letters; revealing ends the puzzle."}
+          ? `Selecione uma pista e preencha a palavra na grade. Use as setas para navegar e Tab para trocar de pista. Conferir mostra as letras certas e erradas; você tem ${MAX_CHECKS} conferências. Revelar encerra o desafio.`
+          : `Select a clue and fill in the Portuguese word. Use arrows to navigate and Tab to change clues. Check marks correct and incorrect letters; you have ${MAX_CHECKS} checks. Revealing ends the puzzle.`}
       </GameHelp>
       <PortugueseOnly />
 
@@ -396,13 +401,15 @@ export default function CrosswordGame() {
             <DailyFinish
               won={solved && !state.revealed}
               message={
-                state.revealed
-                  ? c.cwRevealed
-                  : state.checks === 1
-                    ? c.cwWonCheck
-                    : state.checks
-                      ? fill(c.cwWonChecks, { n: state.checks })
-                      : c.cwWon
+                outOfChecks(state)
+                  ? c.cwOutOfTries
+                  : state.revealed
+                    ? c.cwRevealed
+                    : state.checks === 1
+                      ? c.cwWonCheck
+                      : state.checks
+                        ? fill(c.cwWonChecks, { n: state.checks })
+                        : c.cwWon
               }
               share={
                 state.revealed
@@ -414,6 +421,7 @@ export default function CrosswordGame() {
             <div className="daily-actions">
               <button
                 className={filled ? "button primary" : "memory-replay"}
+                disabled={state.entries.every((entry) => !entry)}
                 onClick={() => {
                   const { wrong, correct, empty } = checkEntries(
                     puzzle,
@@ -425,6 +433,7 @@ export default function CrosswordGame() {
                   setChecked(wrong);
                   const next = validateCrossword(puzzle, state);
                   setState(next);
+                  if (next.revealed) setChecked(new Set());
                   if (wrong.size) sfx.wrong();
                   else if (next.validated) sfx.reveal(2);
                   else sfx.roundClear();
