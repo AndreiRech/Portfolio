@@ -16,12 +16,14 @@ import DailyFinish from "@/features/games/daily/components/DailyFinish";
 import PortugueseOnly from "@/features/games/daily/components/PortugueseOnly";
 import {
   GROUP_SIZE,
+  MAX_ATTEMPTS,
   buildPuzzle,
   giveUp,
   guessGroup,
   initialConexo,
   isFinished,
   matchPuzzle,
+  outOfAttempts,
   parseConexo,
   shareText,
 } from "@/features/games/conexo/model/conexo";
@@ -106,10 +108,9 @@ export default function ConexoGame() {
       return;
     }
     sfx.wrong();
-    setNotice({
-      id: Date.now(),
-      text: result.verdict === "one-away" ? c.conexoOneAway : c.conexoWrong,
-    });
+    if (isFinished(result.state)) setSelected([]);
+    // Shakes the board without a hint about how close the guess was.
+    setNotice({ id: Date.now(), text: "" });
   }
 
   return (
@@ -119,14 +120,17 @@ export default function ConexoGame() {
           {fill(c.dailyLabel, { n: today.number })}
         </span>
         <span className="memory-best">
-          {c.conexoAttempts} <strong>{state.attempts.length}</strong>
+          {c.conexoAttempts}{" "}
+          <strong>
+            {state.attempts.length}/{MAX_ATTEMPTS}
+          </strong>
         </span>
       </div>
       <h2 id="conexo-title">{c.conexoTitle}</h2>
       <GameHelp>
         {language === "pt"
-          ? "Encontre quatro grupos de quatro palavras relacionadas. Selecione quatro palavras e confirme. Você pode embaralhar as palavras ou revelar a resposta."
-          : "Find four groups of four related Portuguese words. Select four words and confirm. You can shuffle the board or reveal the answer."}
+          ? `Encontre quatro grupos de quatro palavras relacionadas. Selecione quatro palavras e confirme. Você tem ${MAX_ATTEMPTS} tentativas. Você pode embaralhar as palavras ou revelar a resposta.`
+          : `Find four groups of four related Portuguese words. Select four words and confirm. You have ${MAX_ATTEMPTS} attempts. You can shuffle the board or reveal the answer.`}
       </GameHelp>
       <PortugueseOnly />
 
@@ -170,21 +174,23 @@ export default function ConexoGame() {
       </div>
 
       <p className="song-status" role="status" aria-live="polite">
-        {notice?.text ?? " "}
+        {notice?.text || " "}
       </p>
 
       {done ? (
         <DailyFinish
           won={!state.gaveUp}
           message={
-            state.gaveUp
-              ? c.conexoGaveUp
-              : state.attempts.length === 4
-                ? c.conexoWonOne
-                : fill(c.conexoWon, { n: state.attempts.length })
+            outOfAttempts(state)
+              ? c.conexoOutOfAttempts
+              : state.gaveUp
+                ? c.conexoGaveUp
+                : state.attempts.length === 4
+                  ? c.conexoWonOne
+                  : fill(c.conexoWon, { n: state.attempts.length })
           }
           share={
-            state.gaveUp
+            state.gaveUp && !outOfAttempts(state)
               ? undefined
               : shareText(state, puzzle, today.number, language)
           }

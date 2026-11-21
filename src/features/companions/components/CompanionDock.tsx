@@ -11,6 +11,9 @@ import {
   Heart,
   Dices,
   ChevronUp,
+  Flame,
+  Wind,
+  Copy,
 } from "lucide-react";
 import {
   getReward,
@@ -27,6 +30,7 @@ import {
 } from "@/features/companions/model/companion";
 import { playCopy } from "@/shared/i18n/play";
 import { useReducedMotion } from "@/shared/ui/useReducedMotion";
+import { useUnlock } from "@/features/achievements/hooks/AchievementContext";
 import RewardArt from "../../collectibles/components/RewardArt";
 import PixelPet from "@/features/companions/components/PixelPet";
 import Die3D, { type DieRoll } from "@/features/dice/components/Die3D";
@@ -46,10 +50,24 @@ const companionActions = {
   purr: { Icon: Heart, message: "purring", art: "♥" },
   hop: { Icon: Footprints, message: "hopping", art: "♪" },
   boo: { Icon: Sparkles, message: "haunting", art: "!" },
+  split: { Icon: Copy, message: "splitting", art: "+" },
+  swoop: { Icon: Wind, message: "swooping", art: "»" },
+  breath: { Icon: Flame, message: "breathing", art: "✦" },
 } as const;
+/** Each companion's own action; the rest get petted. */
+const SPECIALS: Record<string, keyof typeof companionActions> = {
+  d20: "roll",
+  medallion: "shine",
+  cat: "purr",
+  frog: "hop",
+  ghost: "boo",
+  slime: "split",
+  bat: "swoop",
+  dragon: "breath",
+};
 /** Time the companion spends picking up a pixel before heading home. */
 const PICK_MS = 900;
-const isDie = (id: string) => id === "d20" || id === "gold-d20";
+const isDie = (id: string) => id === "d20";
 
 /** Dice companions show the number they last rolled on their face. */
 function PetArt({
@@ -77,14 +95,7 @@ function PetArt({
   return (
     <span className="pet-die" data-die={item.id} data-mode={roll ? "3d" : "2d"}>
       <PixelPet id={item.id} face={face} className="companion-art" />
-      {roll ? (
-        <Die3D
-          roll={roll}
-          onLanded={onLanded}
-          variant={item.id === "gold-d20" ? "gold" : "purple"}
-          resolution={40}
-        />
-      ) : null}
+      {roll ? <Die3D roll={roll} onLanded={onLanded} resolution={40} /> : null}
     </span>
   );
 }
@@ -119,6 +130,7 @@ function ActiveCompanion({
   const { language } = useSettings();
   const c = playCopy[language];
   const reduced = useReducedMotion();
+  const unlock = useUnlock();
   const [mode, setMode] = useState<Mode>("roam");
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState<
@@ -155,17 +167,7 @@ function ActiveCompanion({
   useEffect(() => {
     hideAction.current = hide;
   }, [hide]);
-  const special = item.id.includes("d20")
-    ? "roll"
-    : item.id === "medallion"
-      ? "shine"
-      : item.id === "cat"
-        ? "purr"
-        : item.id === "frog"
-          ? "hop"
-          : item.id === "ghost"
-            ? "boo"
-            : "pet";
+  const special = SPECIALS[item.id] ?? "pet";
   const docked = mode === "rest" || reduced;
   const action = companionActions[special];
   const ActionIcon = action.Icon;
@@ -362,6 +364,7 @@ function ActiveCompanion({
   function interact() {
     if (special !== "roll") {
       if (special === "pet") sfx.cluck();
+      else if (special === "swoop" || special === "breath") sfx.whoosh();
       else sfx.sparkle();
       setReaction((count) => count + 1);
       setRoll(null);
@@ -376,6 +379,8 @@ function ActiveCompanion({
     setDieRoll({ value, id: ++rolls.current, direction: 1 });
   }
   function landed({ value }: DieRoll) {
+    if (value === 20) unlock("nat20");
+    if (value === 1) unlock("fumble");
     setRolling(false);
     setFace(value);
     setRoll(value);

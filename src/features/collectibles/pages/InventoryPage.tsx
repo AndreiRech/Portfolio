@@ -5,6 +5,7 @@ import Image from "next/image";
 import { RotateCcw, ArrowUpRight, LockKeyhole, Trophy } from "lucide-react";
 import {
   REWARDS,
+  REWARD_KINDS,
   getReward,
   type RewardKind,
 } from "@/features/collectibles/data/collectibles";
@@ -17,7 +18,7 @@ import ArcadeHeading from "../../games/components/ArcadeHeading";
 import ItemCard from "../components/ItemCard";
 import RewardArt from "../components/RewardArt";
 
-const kinds = ["palette", "cursor", "companion"] as const;
+const kinds = REWARD_KINDS;
 export default function InventoryView() {
   const { data, ready, remove, resetAppearance } = useCollection();
   const { copy: c, language } = useSettings();

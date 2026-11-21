@@ -11,7 +11,13 @@ test("every collectible companion has complete square animation frames and defin
     const sprite = PET_SPRITES[reward.id];
     assert.ok(sprite, reward.id);
     const size = sprite.frames.idle.length;
-    for (const [frame, rows] of Object.entries(sprite.frames)) {
+    const { action = [], ...still } = sprite.frames;
+    const frames = [
+      ...Object.entries(still),
+      ...action.map((rows, index) => [`action${index}`, rows] as const),
+    ];
+    assert.ok(sprite.frames.breathe, `${reward.id} breathes`);
+    for (const [frame, rows] of frames) {
       assert.equal(rows.length, size, `${reward.id}/${frame}`);
       for (const row of rows) {
         assert.equal(row.length, size, `${reward.id}/${frame}: ${row}`);
@@ -33,6 +39,13 @@ test("every collectible companion has complete square animation frames and defin
       beats.length,
       `${reward.id}: repeated walk frame`,
     );
+  }
+});
+test("the new companions are 32 pixels with their own action", () => {
+  for (const id of ["slime", "bat", "dragon"]) {
+    const { idle, action } = PET_SPRITES[id].frames;
+    assert.equal(idle.length, 32, id);
+    assert.equal(action?.length, 2, id);
   }
 });
 test("walking side-view pets keep their feet on the ground", () => {

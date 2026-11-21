@@ -193,15 +193,13 @@ export default function VariantTermoGame({
         /^[a-zç]$/.test(key) ||
         ["enter", "backspace", "arrowleft", "arrowright"].includes(key)
       ) {
-        // Enter always submits from the active row or the on-screen keyboard;
-        // other focused buttons (counts notes, help, share) keep their own.
+        // Enter always submits from the board or the on-screen keyboard, even
+        // on a focused counts note; other buttons (help, share) keep their own.
         const target = event.target as HTMLElement | null;
         if (
           key === "enter" &&
           target?.closest("button") &&
-          !target.closest(
-            '.termo-row[data-active="true"] .termo-tile, .termo-key',
-          )
+          !target.closest(".termo-tile, .termo-key")
         )
           return;
         event.preventDefault();
@@ -224,16 +222,26 @@ export default function VariantTermoGame({
   const label = c.termoModes[mode];
   const keys = puzzle.answers.map((answer) => {
     const marks = new Map<string, Mark>();
-    if (mode === "counts" || mode === "between" || mode === "liar")
+    const keep = (letter: string, mark: Mark) => {
+      if (!marks.has(letter) || RANK[mark] > RANK[marks.get(letter)!])
+        marks.set(letter, mark);
+    };
+    // Counts never labels squares, so the keyboard echoes the visitor's notes.
+    if (mode === "counts") {
+      state.guesses.forEach((guess, row) =>
+        state.notes[row]?.forEach((mark, index) => {
+          if (mark) keep(stripAccents(guess)[index], mark);
+        }),
+      );
       return marks;
+    }
+    if (mode === "between" || mode === "liar") return marks;
     state.guesses
       .slice(0, revealing === null ? undefined : revealing)
       .forEach((guess, row) => {
-        feedback(puzzle, guess, answer, row).forEach((mark, index) => {
-          const letter = stripAccents(guess)[index];
-          if (!marks.has(letter) || RANK[mark] > RANK[marks.get(letter)!])
-            marks.set(letter, mark);
-        });
+        feedback(puzzle, guess, answer, row).forEach((mark, index) =>
+          keep(stripAccents(guess)[index], mark),
+        );
       });
     return marks;
   });
@@ -401,6 +409,8 @@ export default function VariantTermoGame({
                                 role="gridcell"
                                 className="termo-tile"
                                 data-mark={state.notes[row]?.[col] ?? undefined}
+                                // Clicked notes never keep focus, so Enter submits.
+                                onMouseDown={(event) => event.preventDefault()}
                                 onClick={() =>
                                   setState((current) =>
                                     cycleNote(current, row, col),

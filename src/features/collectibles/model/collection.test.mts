@@ -14,12 +14,12 @@ import {
 
 test("companions remain locked until obtained, and other reward kinds cannot be activated", () => {
   const empty = emptyCollection();
-  for (const id of ["chicken", "medallion", "d20", "gold-d20", "unknown"])
+  for (const id of ["chicken", "medallion", "d20", "dragon", "unknown"])
     assert.equal(canUseCompanion(empty, id), false);
   const owned = grantReward(grantReward(empty, "a", "chicken"), "b", "forest");
   assert.equal(canUseCompanion(owned, "chicken"), true);
   assert.equal(canUseCompanion(owned, "forest"), false);
-  assert.equal(canUseCompanion(owned, "gold-d20"), false);
+  assert.equal(canUseCompanion(owned, "dragon"), false);
   const restored = parseCollection(JSON.stringify(owned));
   assert.equal(canUseCompanion(restored, "chicken"), true);
   assert.equal(canUseCompanion(restored, "medallion"), false);
@@ -96,6 +96,7 @@ test("storage input is allowlisted, including quantities, ownership and slot com
     palette: null,
     cursor: null,
     companion: "chicken",
+    trail: null,
   });
   for (const invalid of [
     null,
@@ -233,6 +234,7 @@ test("legacy pool rewards become coral without losing quantities or equipped sta
     palette: "coral",
     cursor: null,
     companion: "cat",
+    trail: null,
   });
   assert.equal(parsed.lastOpening, "before-default-change");
   assert.deepEqual(parseCollection(JSON.stringify(parsed)), parsed);
@@ -270,4 +272,60 @@ test("every palette reward has its own colors in the stylesheet and nothing else
   assert.deepEqual(new Set(styled), new Set(palettes));
   // Restoring the default removes the palette, so the bare :root is the default.
   assert.match(css, /:root \{[^}]*--accent: #65d9df;/);
+});
+
+test("every rarity tier keeps at least one reward", () => {
+  for (const rarity of RARITIES)
+    assert.ok(
+      REWARDS.some((item) => item.rarity === rarity.id),
+      `${rarity.id} has no rewards`,
+    );
+});
+
+test("the legendary tier holds the golden knife, the treasure palette and the dragon", () => {
+  assert.deepEqual(
+    REWARDS.filter((item) => item.rarity === "special")
+      .map((item) => item.id)
+      .sort(),
+    ["dragon", "knife", "treasure"],
+  );
+});
+
+test("removed rewards are dropped from saved counts and slots", () => {
+  const parsed = parseCollection(
+    JSON.stringify({
+      version: 1,
+      counts: { crystal: 2, "gold-d20": 1, cat: 1 },
+      equipped: { cursor: "crystal", companion: "gold-d20" },
+    }),
+  );
+  assert.deepEqual(parsed.counts, { cat: 1 });
+  assert.equal(parsed.equipped.cursor, null);
+  assert.equal(parsed.equipped.companion, null);
+});
+
+test("the trail slot accepts only owned trail rewards", () => {
+  const parsed = parseCollection(
+    JSON.stringify({
+      version: 1,
+      counts: { embers: 1, forest: 1 },
+      equipped: { trail: "forest", palette: "embers" },
+    }),
+  );
+  assert.equal(parsed.equipped.trail, null);
+  assert.equal(parsed.equipped.palette, null);
+  const owned = parseCollection(
+    JSON.stringify({
+      version: 1,
+      counts: { embers: 1 },
+      equipped: { trail: "embers" },
+    }),
+  );
+  assert.equal(owned.equipped.trail, "embers");
+  assert.equal(
+    parseCollection(
+      JSON.stringify({ version: 1, counts: {}, equipped: { trail: "embers" } }),
+    ).equipped.trail,
+    null,
+  );
 });

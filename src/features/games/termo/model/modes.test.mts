@@ -5,6 +5,7 @@ import { buildDictionary, scoreGuess, stripAccents } from "./termo.ts";
 import {
   CONFIG,
   MODES,
+  autoNotes,
   betweenBounds,
   buildModePuzzle,
   colorCounts,
@@ -92,6 +93,45 @@ test("counts do not label positions and handwritten notes persist without changi
   state = cycleNote(cycleNote(cycleNote(state, 0, 0), 0, 0), 0, 0);
   assert.equal(state.notes[0][0], null);
   assert.match(modeShare(state, puzzle, "Contagem"), /🟩2 🟨1 🟥2/);
+});
+
+test("a counts guess with five reds marks its letters red in every row", () => {
+  const puzzle: ModePuzzle = {
+    mode: "counts",
+    answers: ["conta"],
+    lexicon: [...dictionary.keys()].sort(),
+    day: 1,
+  };
+  const absent = [...dictionary.values()].find(
+    (word) => colorCounts(word, "conta").wrong === 5,
+  )!;
+  const shared = [...dictionary.values()].find(
+    (word) =>
+      word !== absent &&
+      colorCounts(word, "conta").wrong < 5 &&
+      [...stripAccents(word)].some((letter) =>
+        stripAccents(absent).includes(letter),
+      ),
+  )!;
+  let result = submitMode(freshMode(), shared, puzzle, dictionary);
+  assert.ok(result.ok);
+  const marked = cycleNote(result.state, 0, 0);
+  result = submitMode(marked, absent, puzzle, dictionary);
+  assert.ok(result.ok);
+  assert.deepEqual(result.state.notes[1], Array(5).fill("wrong"));
+  [...stripAccents(shared)].forEach((letter, col) => {
+    const expected =
+      col === 0
+        ? "right"
+        : stripAccents(absent).includes(letter)
+          ? "wrong"
+          : null;
+    assert.equal(result.state.notes[0][col], expected);
+  });
+  assert.deepEqual(parseMode(result.state, puzzle, dictionary), result.state);
+  const other = { ...puzzle, mode: "liar" as const };
+  const notes = [[null, null, null, null, null]];
+  assert.equal(autoNotes(other, [absent], notes), notes);
 });
 
 test("green letters are mandatory in Fixed mode, including restored games", () => {

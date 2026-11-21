@@ -35,6 +35,9 @@ export default function PixelFeedback() {
       .forEach((element) => reveals.observe(element));
     const burst = (event: MouseEvent) => {
       if (!(event.target instanceof Element)) return;
+      // An equipped cursor draws its own click effect instead.
+      const cursor = document.documentElement.dataset.cursor;
+      if (cursor && cursor !== "default") return;
       const control = event.target.closest("button, a");
       if (
         !control ||
